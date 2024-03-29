@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS "comments";
+DROP TABLE IF EXISTS "entries";
+DROP TABLE IF EXISTS "users";
+DROP TABLE IF EXISTS "entry_types";
