@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My website</title>
-</head>
-<body>
+{{template "base" .}}
 
-  <h1>Index</h1>
-  
-</body>
-</html>
+{{define "content"}}
+  <div class="container d-flex justify-content-center">
+    <h1 style="margin-top: 32px">This is the about page</h1>
+  </div>
+{{end}}
