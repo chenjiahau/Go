@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"net/http"
@@ -6,6 +6,6 @@ import (
 	"example.com/project/page"
 )
 
-func getRouter() {
+func Router() {
 	http.HandleFunc("/", page.Index)
 }

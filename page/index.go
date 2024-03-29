@@ -1,10 +1,11 @@
 package page
 
 import (
-	"fmt"
 	"net/http"
+
+	"example.com/project/render"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "This is the home page")
+	render.Render(w, "index.html")
 }
