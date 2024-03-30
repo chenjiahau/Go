@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -18,9 +17,9 @@ RETURNING id, username, password, full_name, created_at
 `
 
 type CreateUserParams struct {
-	Username string         `db:"username"`
-	Password string         `db:"password"`
-	FullName sql.NullString `db:"full_name"`
+	Username string `db:"username"`
+	Password string `db:"password"`
+	FullName string `db:"full_name"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (Users, error) {
@@ -53,6 +52,40 @@ func (q *Queries) Delete(ctx context.Context, id int32) (Users, error) {
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const deleteAll = `-- name: DeleteAll :many
+DELETE FROM users
+RETURNING id, username, password, full_name, created_at
+`
+
+func (q *Queries) DeleteAll(ctx context.Context) ([]Users, error) {
+	rows, err := q.db.QueryContext(ctx, deleteAll)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Users
+	for rows.Next() {
+		var i Users
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.Password,
+			&i.FullName,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUser = `-- name: GetUser :one
@@ -137,10 +170,10 @@ RETURNING id, username, password, full_name, created_at
 `
 
 type UpdateParams struct {
-	Username string         `db:"username"`
-	Password string         `db:"password"`
-	FullName sql.NullString `db:"full_name"`
-	ID       int32          `db:"id"`
+	Username string `db:"username"`
+	Password string `db:"password"`
+	FullName string `db:"full_name"`
+	ID       int32  `db:"id"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (Users, error) {

@@ -25,3 +25,7 @@ RETURNING *;
 DELETE FROM users
 WHERE id = $1
 RETURNING *;
+
+-- name: DeleteAll :many
+DELETE FROM users
+RETURNING *;

@@ -7,35 +7,27 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createEntry = `-- name: CreateEntry :one
 INSERT INTO entries 
-(entry_id, type_id, release_version, priority) 
-values ($1, $2, $3, $4)
-RETURNING id, entry_id, type_id, release_version, priority, created_at
+(entry_type_id, release_version, priority) 
+values ($1, $2, $3)
+RETURNING id, entry_type_id, release_version, priority, created_at
 `
 
 type CreateEntryParams struct {
-	EntryID        sql.NullInt32  `db:"entry_id"`
-	TypeID         sql.NullInt32  `db:"type_id"`
-	ReleaseVersion sql.NullString `db:"release_version"`
-	Priority       sql.NullInt32  `db:"priority"`
+	EntryTypeID    int32  `db:"entry_type_id"`
+	ReleaseVersion string `db:"release_version"`
+	Priority       int32  `db:"priority"`
 }
 
 func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entries, error) {
-	row := q.db.QueryRowContext(ctx, createEntry,
-		arg.EntryID,
-		arg.TypeID,
-		arg.ReleaseVersion,
-		arg.Priority,
-	)
+	row := q.db.QueryRowContext(ctx, createEntry, arg.EntryTypeID, arg.ReleaseVersion, arg.Priority)
 	var i Entries
 	err := row.Scan(
 		&i.ID,
-		&i.EntryID,
-		&i.TypeID,
+		&i.EntryTypeID,
 		&i.ReleaseVersion,
 		&i.Priority,
 		&i.CreatedAt,
@@ -43,10 +35,44 @@ func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entri
 	return i, err
 }
 
+const deleteAllEntries = `-- name: DeleteAllEntries :many
+DELETE FROM entries
+RETURNING id, entry_type_id, release_version, priority, created_at
+`
+
+func (q *Queries) DeleteAllEntries(ctx context.Context) ([]Entries, error) {
+	rows, err := q.db.QueryContext(ctx, deleteAllEntries)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Entries
+	for rows.Next() {
+		var i Entries
+		if err := rows.Scan(
+			&i.ID,
+			&i.EntryTypeID,
+			&i.ReleaseVersion,
+			&i.Priority,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const deleteEntry = `-- name: DeleteEntry :one
 DELETE FROM entries
 WHERE id = $1
-RETURNING id, entry_id, type_id, release_version, priority, created_at
+RETURNING id, entry_type_id, release_version, priority, created_at
 `
 
 func (q *Queries) DeleteEntry(ctx context.Context, id int32) (Entries, error) {
@@ -54,8 +80,7 @@ func (q *Queries) DeleteEntry(ctx context.Context, id int32) (Entries, error) {
 	var i Entries
 	err := row.Scan(
 		&i.ID,
-		&i.EntryID,
-		&i.TypeID,
+		&i.EntryTypeID,
 		&i.ReleaseVersion,
 		&i.Priority,
 		&i.CreatedAt,
@@ -64,7 +89,7 @@ func (q *Queries) DeleteEntry(ctx context.Context, id int32) (Entries, error) {
 }
 
 const getEntries = `-- name: GetEntries :many
-SELECT id, entry_id, type_id, release_version, priority, created_at FROM entries
+SELECT id, entry_type_id, release_version, priority, created_at FROM entries
 `
 
 func (q *Queries) GetEntries(ctx context.Context) ([]Entries, error) {
@@ -78,8 +103,7 @@ func (q *Queries) GetEntries(ctx context.Context) ([]Entries, error) {
 		var i Entries
 		if err := rows.Scan(
 			&i.ID,
-			&i.EntryID,
-			&i.TypeID,
+			&i.EntryTypeID,
 			&i.ReleaseVersion,
 			&i.Priority,
 			&i.CreatedAt,
@@ -98,7 +122,7 @@ func (q *Queries) GetEntries(ctx context.Context) ([]Entries, error) {
 }
 
 const getEntry = `-- name: GetEntry :one
-SELECT id, entry_id, type_id, release_version, priority, created_at FROM entries
+SELECT id, entry_type_id, release_version, priority, created_at FROM entries
 WHERE id= $1
 `
 
@@ -107,8 +131,25 @@ func (q *Queries) GetEntry(ctx context.Context, id int32) (Entries, error) {
 	var i Entries
 	err := row.Scan(
 		&i.ID,
-		&i.EntryID,
-		&i.TypeID,
+		&i.EntryTypeID,
+		&i.ReleaseVersion,
+		&i.Priority,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getEntryById = `-- name: GetEntryById :one
+SELECT id, entry_type_id, release_version, priority, created_at FROM entries
+WHERE id= $1
+`
+
+func (q *Queries) GetEntryById(ctx context.Context, id int32) (Entries, error) {
+	row := q.db.QueryRowContext(ctx, getEntryById, id)
+	var i Entries
+	err := row.Scan(
+		&i.ID,
+		&i.EntryTypeID,
 		&i.ReleaseVersion,
 		&i.Priority,
 		&i.CreatedAt,
@@ -118,24 +159,29 @@ func (q *Queries) GetEntry(ctx context.Context, id int32) (Entries, error) {
 
 const updateEntry = `-- name: UpdateEntry :one
 UPDATE entries
-SET release_version = $1, priority = $2
-WHERE id = $3
-RETURNING id, entry_id, type_id, release_version, priority, created_at
+SET entry_type_id = $1, release_version = $2, priority = $3
+WHERE id = $4
+RETURNING id, entry_type_id, release_version, priority, created_at
 `
 
 type UpdateEntryParams struct {
-	ReleaseVersion sql.NullString `db:"release_version"`
-	Priority       sql.NullInt32  `db:"priority"`
-	ID             int32          `db:"id"`
+	EntryTypeID    int32  `db:"entry_type_id"`
+	ReleaseVersion string `db:"release_version"`
+	Priority       int32  `db:"priority"`
+	ID             int32  `db:"id"`
 }
 
 func (q *Queries) UpdateEntry(ctx context.Context, arg UpdateEntryParams) (Entries, error) {
-	row := q.db.QueryRowContext(ctx, updateEntry, arg.ReleaseVersion, arg.Priority, arg.ID)
+	row := q.db.QueryRowContext(ctx, updateEntry,
+		arg.EntryTypeID,
+		arg.ReleaseVersion,
+		arg.Priority,
+		arg.ID,
+	)
 	var i Entries
 	err := row.Scan(
 		&i.ID,
-		&i.EntryID,
-		&i.TypeID,
+		&i.EntryTypeID,
 		&i.ReleaseVersion,
 		&i.Priority,
 		&i.CreatedAt,

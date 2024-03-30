@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createEntryType = `-- name: CreateEntryType :one
@@ -17,11 +16,39 @@ values ($1)
 RETURNING id, name, created_at
 `
 
-func (q *Queries) CreateEntryType(ctx context.Context, name sql.NullString) (EntryTypes, error) {
+func (q *Queries) CreateEntryType(ctx context.Context, name string) (EntryTypes, error) {
 	row := q.db.QueryRowContext(ctx, createEntryType, name)
 	var i EntryTypes
 	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
+}
+
+const deleteAllEntryTypes = `-- name: DeleteAllEntryTypes :many
+DELETE FROM entry_types
+RETURNING id, name, created_at
+`
+
+func (q *Queries) DeleteAllEntryTypes(ctx context.Context) ([]EntryTypes, error) {
+	rows, err := q.db.QueryContext(ctx, deleteAllEntryTypes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EntryTypes
+	for rows.Next() {
+		var i EntryTypes
+		if err := rows.Scan(&i.ID, &i.Name, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const deleteEntryType = `-- name: DeleteEntryType :one
@@ -44,6 +71,18 @@ WHERE id= $1
 
 func (q *Queries) GetEntryType(ctx context.Context, id int32) (EntryTypes, error) {
 	row := q.db.QueryRowContext(ctx, getEntryType, id)
+	var i EntryTypes
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
+	return i, err
+}
+
+const getEntryTypeById = `-- name: GetEntryTypeById :one
+SELECT id, name, created_at FROM entry_types
+WHERE id= $1
+`
+
+func (q *Queries) GetEntryTypeById(ctx context.Context, id int32) (EntryTypes, error) {
+	row := q.db.QueryRowContext(ctx, getEntryTypeById, id)
 	var i EntryTypes
 	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
@@ -84,8 +123,8 @@ RETURNING id, name, created_at
 `
 
 type UpdateEntryTypeParams struct {
-	Name sql.NullString `db:"name"`
-	ID   int32          `db:"id"`
+	Name string `db:"name"`
+	ID   int32  `db:"id"`
 }
 
 func (q *Queries) UpdateEntryType(ctx context.Context, arg UpdateEntryTypeParams) (EntryTypes, error) {

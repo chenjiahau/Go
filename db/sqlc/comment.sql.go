@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createComment = `-- name: CreateComment :one
@@ -18,9 +17,9 @@ RETURNING id, entry_id, user_id, content, created_at
 `
 
 type CreateCommentParams struct {
-	EntryID sql.NullInt32  `db:"entry_id"`
-	UserID  sql.NullInt32  `db:"user_id"`
-	Content sql.NullString `db:"content"`
+	EntryID int32  `db:"entry_id"`
+	UserID  int32  `db:"user_id"`
+	Content string `db:"content"`
 }
 
 func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) (Comments, error) {
@@ -55,6 +54,40 @@ func (q *Queries) DeleteComment(ctx context.Context, id int32) (Comments, error)
 	return i, err
 }
 
+const deleteComments = `-- name: DeleteComments :many
+DELETE FROM comments
+RETURNING id, entry_id, user_id, content, created_at
+`
+
+func (q *Queries) DeleteComments(ctx context.Context) ([]Comments, error) {
+	rows, err := q.db.QueryContext(ctx, deleteComments)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Comments
+	for rows.Next() {
+		var i Comments
+		if err := rows.Scan(
+			&i.ID,
+			&i.EntryID,
+			&i.UserID,
+			&i.Content,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getComment = `-- name: GetComment :one
 SELECT id, entry_id, user_id, content, created_at FROM comments
 WHERE id= $1
@@ -62,6 +95,24 @@ WHERE id= $1
 
 func (q *Queries) GetComment(ctx context.Context, id int32) (Comments, error) {
 	row := q.db.QueryRowContext(ctx, getComment, id)
+	var i Comments
+	err := row.Scan(
+		&i.ID,
+		&i.EntryID,
+		&i.UserID,
+		&i.Content,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getCommentById = `-- name: GetCommentById :one
+SELECT id, entry_id, user_id, content, created_at FROM comments
+WHERE id= $1
+`
+
+func (q *Queries) GetCommentById(ctx context.Context, id int32) (Comments, error) {
+	row := q.db.QueryRowContext(ctx, getCommentById, id)
 	var i Comments
 	err := row.Scan(
 		&i.ID,
@@ -114,8 +165,8 @@ RETURNING id, entry_id, user_id, content, created_at
 `
 
 type UpdateCommentParams struct {
-	Content sql.NullString `db:"content"`
-	ID      int32          `db:"id"`
+	Content string `db:"content"`
+	ID      int32  `db:"id"`
 }
 
 func (q *Queries) UpdateComment(ctx context.Context, arg UpdateCommentParams) (Comments, error) {

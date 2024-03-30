@@ -8,6 +8,10 @@ RETURNING *;
 SELECT * FROM entry_types
 WHERE id= $1;
 
+-- name: GetEntryTypeById :one
+SELECT * FROM entry_types
+WHERE id= $1;
+
 -- name: GetEntryTypes :many
 SELECT * FROM entry_types;
 
@@ -20,4 +24,8 @@ RETURNING *;
 -- name: DeleteEntryType :one
 DELETE FROM entry_types
 WHERE id = $1
+RETURNING *;
+
+-- name: DeleteAllEntryTypes :many
+DELETE FROM entry_types
 RETURNING *;

@@ -8,6 +8,10 @@ RETURNING *;
 SELECT * FROM comments
 WHERE id= $1;
 
+-- name: GetCommentById :one
+SELECT * FROM comments
+WHERE id= $1;
+
 -- name: GetComments :many
 SELECT * FROM comments;
 
@@ -20,4 +24,8 @@ RETURNING *;
 -- name: DeleteComment :one
 DELETE FROM comments
 WHERE id = $1
+RETURNING *;
+
+-- name: DeleteComments :many
+DELETE FROM comments
 RETURNING *;
