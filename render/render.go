@@ -15,7 +15,7 @@ import (
 var tmpFuncs = template.FuncMap{}
 var appConfig *config.AppConfig
 
-func NewTemplates(ac *config.AppConfig) {
+func NewAppConfig(ac *config.AppConfig) {
 	appConfig = ac
 }
 

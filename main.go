@@ -29,7 +29,7 @@ func main() {
 	page.NewAppConfig(&appConfig)
 
 	// Set the appConfig for the render package
-	render.NewTemplates(&appConfig)
+	render.NewAppConfig(&appConfig)
 
 	// Use Chi router
 	log.Println("Starting application on port", portNumber)
