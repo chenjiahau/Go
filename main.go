@@ -31,8 +31,15 @@ func main() {
 	// Set the appConfig for the render package
 	render.NewTemplates(&appConfig)
 
-	router.Router()
-
+	// Use Chi router
 	log.Println("Starting application on port", portNumber)
-	_ = http.ListenAndServe(portNumber, nil)
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: router.GetRouter(),
+	}
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
