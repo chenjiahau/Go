@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"example.com/project/config"
+	"example.com/project/data"
 )
 
 var tmpFuncs = template.FuncMap{}
@@ -18,7 +19,11 @@ func NewTemplates(ac *config.AppConfig) {
 	appConfig = ac
 }
 
-func Render(w http.ResponseWriter, tl string) {
+func AddDefaultData(td *data.TemplateData) *data.TemplateData {
+	return td
+}
+
+func Render(w http.ResponseWriter, tl string, td *data.TemplateData) {
 	var tc map[string]*template.Template
 
 	if appConfig.UseCache {
@@ -33,8 +38,9 @@ func Render(w http.ResponseWriter, tl string) {
 	}
 
 	buf := new(bytes.Buffer)
+	td = AddDefaultData(td)
 
-	_ = t.Execute(buf, nil)
+	_ = t.Execute(buf, td)
 
 	_, err := buf.WriteTo(w)
 	if err != nil {
