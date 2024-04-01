@@ -14,7 +14,7 @@ func Message(w http.ResponseWriter, r *http.Request) {
 
 	render.Render(w, "message.html", &data.TemplateData{
 		StringMap: stringMap,
-	})
+	}, r)
 }
 
 func SendMessage(w http.ResponseWriter, r *http.Request) {

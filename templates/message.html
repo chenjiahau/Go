@@ -6,6 +6,7 @@
       <h3> {{index .StringMap "title"}}</h3>
 
       <div class="row mt-4">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <div class="mb-3">
           <label for="emailInput" class="form-label">Email address</label>
           <input 
@@ -86,7 +87,8 @@
         const response = await fetch('/send-message', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('input[name="csrf_token"]').value
           },
           body: JSON.stringify({
             email: emailInput.value,

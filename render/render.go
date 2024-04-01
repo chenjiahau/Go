@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/justinas/nosurf"
+
 	"example.com/project/config"
 	"example.com/project/data"
 )
@@ -19,11 +21,12 @@ func NewAppConfig(ac *config.AppConfig) {
 	appConfig = ac
 }
 
-func AddDefaultData(td *data.TemplateData) *data.TemplateData {
+func AddDefaultData(td *data.TemplateData, r *http.Request) *data.TemplateData {
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
-func Render(w http.ResponseWriter, tl string, td *data.TemplateData) {
+func Render(w http.ResponseWriter, tl string, td *data.TemplateData, r *http.Request) {
 	var tc map[string]*template.Template
 
 	if appConfig.UseCache {
@@ -38,7 +41,7 @@ func Render(w http.ResponseWriter, tl string, td *data.TemplateData) {
 	}
 
 	buf := new(bytes.Buffer)
-	td = AddDefaultData(td)
+	td = AddDefaultData(td, r)
 
 	_ = t.Execute(buf, td)
 

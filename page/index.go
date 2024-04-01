@@ -13,5 +13,5 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	render.Render(w, "index.html", &data.TemplateData{
 		StringMap: stringMap,
-	})
+	}, r)
 }
