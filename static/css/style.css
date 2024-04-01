@@ -4,6 +4,9 @@ header {
   align-items: center;
   height: 48px;
   line-height: 48px;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
 }
 
 header .icon {

@@ -35,7 +35,7 @@ func main() {
 	log.Println("Starting application on port", portNumber)
 	srv := &http.Server{
 		Addr:    portNumber,
-		Handler: router.GetRouter(),
+		Handler: router.GetRoutes(),
 	}
 
 	err = srv.ListenAndServe()
