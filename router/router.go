@@ -12,7 +12,7 @@ func GetRoutes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
-	mux.Use(NoSurf)
+	// mux.Use(NoSurf)
 	mux.Use(WriteToConsole)
 
 	// Static files
@@ -20,6 +20,8 @@ func GetRoutes() http.Handler {
 	mux.Handle("/static/*", http.StripPrefix("/static", staticServer))
 
 	mux.Get("/", page.Index)
+	mux.Get("/message", page.Message)
+	mux.Post("/send-message", page.SendMessage)
 
 	return mux
 }

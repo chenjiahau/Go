@@ -23,5 +23,6 @@ func NoSurf(next http.Handler) http.Handler {
 		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
 	})
+
 	return csrfHandler
 }

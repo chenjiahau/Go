@@ -1,0 +1,109 @@
+{{template "base" .}}
+
+{{define "content"}}
+  <div class="container">
+    <div class="d-flex flex-column">
+      <h3> {{index .StringMap "title"}}</h3>
+
+      <div class="row mt-4">
+        <div class="mb-3">
+          <label for="emailInput" class="form-label">Email address</label>
+          <input 
+            type="email"
+            class="form-control" 
+            id="emailInput" 
+            placeholder="name@example.com"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="mb-3">
+          <label for="messageInput" class="form-label">Message</label>
+          <textarea 
+            class="form-control" 
+            id="messageInput" 
+            rows="3"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6">
+          <button 
+            type="button" 
+            id="cancelBtn" 
+            class="btn btn-secondary"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="col-6 d-flex justify-content-end">
+          <button 
+            type="button"
+            id="sendBtn"
+            disabled="disabled"
+            class="btn btn-primary"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const emailInput = document.getElementById('emailInput');
+    const messageInput = document.getElementById('messageInput');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const sendBtn = document.getElementById('sendBtn');
+
+    const checkForm = () => {
+      if (emailInput.value === "" || messageInput.value === "") {
+        sendBtn.setAttribute('disabled', 'disabled');
+        return;
+      }
+
+      sendBtn.removeAttribute('disabled');
+    }
+
+    emailInput.addEventListener('input', (event) => {
+      checkForm();
+    });
+
+    messageInput.addEventListener('input', (event) => {
+      checkForm();
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      emailInput.value = "";
+      messageInput.value = "";
+      sendBtn.setAttribute('disabled', 'disabled');
+    });
+
+    sendBtn.addEventListener('click', e => {
+      const sendRequest = async () => {
+        const response = await fetch('/send-message', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: emailInput.value,
+            message: messageInput.value
+          })
+        });
+
+        if (response.ok) {
+          emailInput.value = "";
+          messageInput.value = "";
+          sendBtn.setAttribute('disabled', 'disabled');
+        } else {
+          alert('Error sending message');
+        }
+      };
+
+      sendRequest();
+    });
+  </script>
+{{end}}
