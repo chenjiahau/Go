@@ -15,6 +15,10 @@ func GetRouter() http.Handler {
 	mux.Use(NoSurf)
 	mux.Use(WriteToConsole)
 
+	// Static files
+	staticServer := http.FileServer(http.Dir("./static/"))
+	mux.Handle("/static/*", http.StripPrefix("/static", staticServer))
+
 	mux.Get("/", page.Index)
 
 	return mux

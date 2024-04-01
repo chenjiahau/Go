@@ -1,0 +1,11 @@
+header {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  line-height: 48px;
+}
+
+header .icon {
+  width: 100%;
+}
