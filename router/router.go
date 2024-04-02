@@ -24,6 +24,7 @@ func GetRoutes() http.Handler {
 	mux.Post("/send-message", page.SendMessage)
 
 	mux.Post("/login", page.Login)
+	mux.Get("/login/users", page.GetUsers)
 
 	return mux
 }

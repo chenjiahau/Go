@@ -14,6 +14,12 @@ type ResponseTokenData struct {
 	ExpiredTime int64 `json:"expiredTime"`
 }
 
+type ResponseUsersData struct {
+	Success bool `json:"success"`
+	Message string `json:"message"`
+	Data 	  map[string]User `json:"data"`
+}
+
 type User struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -78,4 +84,39 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(rd)
+}
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	tokenString := r.Header.Get("Authorization")
+	if tokenString == "" {
+		pd := data.ResponseData{
+			Success: false,
+			Message: "Unauthorized",
+		}
+
+		json.NewEncoder(w).Encode(pd)
+		return
+	}
+
+	tokenString = tokenString[len("Bearer "):]
+	err := util.VerifyToken(tokenString)
+	if err != nil {
+		pd := data.ResponseData{
+			Success: false,
+			Message: "Unauthorized",
+		}
+
+		json.NewEncoder(w).Encode(pd)
+		return
+	}
+
+	pd := ResponseUsersData{
+		Success: true,
+		Message: "User list retrieved successfully",
+		Data: users,
+	}
+
+	json.NewEncoder(w).Encode(pd)
 }
