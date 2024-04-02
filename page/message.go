@@ -6,6 +6,7 @@ import (
 
 	"example.com/project/data"
 	"example.com/project/render"
+	"github.com/go-playground/validator/v10"
 )
 
 func Message(w http.ResponseWriter, r *http.Request) {
@@ -17,9 +18,13 @@ func Message(w http.ResponseWriter, r *http.Request) {
 	}, r)
 }
 
+var validate *validator.Validate
+
 type PostData struct {
-	Email	 string `json:"email"`
-	Message string `json:"message"`
+	Email			string `json:"email" validate:"required,email"`
+	Priority 	int32 `json:"priority" validate:"required,min=1,max=10"`
+	Status    int32 `json:"status" validate:"required,min=1,max=2"`
+	Message 	string `json:"message" validate:"required"`
 }
 
 type ResponseData struct {
@@ -36,23 +41,19 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if pd.Email == "" || pd.Message == "" {
+	validate = validator.New()
+	err = validate.Struct(pd)
+
+	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	// Send response
 	rd := ResponseData{
 		Success: true,
 		Message: "Message sent successfully",
 	}
 
-	out, err := json.MarshalIndent(rd, "", "  ")
-	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(out)
+	json.NewEncoder(w).Encode(rd)
 }

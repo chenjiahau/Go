@@ -5,14 +5,15 @@
     <div class="d-flex flex-column">
       <h3> {{index .StringMap "title"}}</h3>
 
+      <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
       <div class="row mt-4">
-        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <div class="mb-3">
           <label for="emailInput" class="form-label">Email address</label>
-          <input 
+          <input
             type="email"
-            class="form-control" 
-            id="emailInput" 
+            class="form-control"
+            id="emailInput"
             placeholder="name@example.com"
           />
         </div>
@@ -20,10 +21,40 @@
 
       <div class="row">
         <div class="mb-3">
+          <label for="emailInput" class="form-label">Priority</label>
+          <input 
+            type="number"
+            class="form-control"
+            id="priorityInput"
+            placeholder="1"
+            min="1"
+            max="10"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="emailInput" class="form-label">Status</label>
+        </div>
+        <div class="mb-3">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="statusRadio" id="statusRadioEnable" value="1" checked>
+            <label class="form-check-label" for="statusRadioEnable">Enable</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="statusRadio" id="statusRadioDisable" value="2">
+            <label class="form-check-label" for="statusRadioDisable">Disable</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="mb-3">
           <label for="messageInput" class="form-label">Message</label>
           <textarea 
-            class="form-control" 
-            id="messageInput" 
+            class="form-control"
+            id="messageInput"
             rows="3"
           ></textarea>
         </div>
@@ -32,8 +63,8 @@
       <div class="row">
         <div class="col-6">
           <button 
-            type="button" 
-            id="cancelBtn" 
+            type="button"
+            id="cancelBtn"
             class="btn btn-secondary"
           >
             Cancel
@@ -56,6 +87,8 @@
   <script>
     const emailInput = document.getElementById('emailInput');
     const messageInput = document.getElementById('messageInput');
+    const priorityInput = document.getElementById('priorityInput');
+    const statusRadioEnable = document.getElementById('statusRadioEnable');
     const cancelBtn = document.getElementById('cancelBtn');
     const sendBtn = document.getElementById('sendBtn');
 
@@ -78,6 +111,8 @@
 
     cancelBtn.addEventListener('click', () => {
       emailInput.value = "";
+      priorityInput.value = "1";
+      statusRadioEnable.checked = true;
       messageInput.value = "";
       sendBtn.setAttribute('disabled', 'disabled');
     });
@@ -92,6 +127,8 @@
           },
           body: JSON.stringify({
             email: emailInput.value,
+            priority: +priorityInput.value,
+            status: statusRadioEnable.checked ? 1 : 2,
             message: messageInput.value
           })
         });
