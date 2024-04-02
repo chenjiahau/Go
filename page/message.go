@@ -17,12 +17,17 @@ func Message(w http.ResponseWriter, r *http.Request) {
 	}, r)
 }
 
-func SendMessage(w http.ResponseWriter, r *http.Request) {
-	type PostData struct {
-		Email	 string `json:"email"`
-		Message string `json:"message"`
-	}
+type PostData struct {
+	Email	 string `json:"email"`
+	Message string `json:"message"`
+}
 
+type ResponseData struct {
+	Success bool `json:"success"`
+	Message string `json:"message"`
+}
+
+func SendMessage(w http.ResponseWriter, r *http.Request) {
 	var pd PostData
 	err := json.NewDecoder(r.Body).Decode(&pd)
 
@@ -31,6 +36,23 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Do something with the data
-	w.Write([]byte("[Email: " + pd.Email + ", Message: " + pd.Message + "]"))
+	if pd.Email == "" || pd.Message == "" {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	// Send response
+	rd := ResponseData{
+		Success: true,
+		Message: "Message sent successfully",
+	}
+
+	out, err := json.MarshalIndent(rd, "", "  ")
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
 }
