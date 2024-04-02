@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"example.com/project/util"
@@ -12,7 +13,6 @@ func CreateUser(t *testing.T) Users {
 	arg := CreateUserParams{
 		Username: util.GenerateRandomString(10),
 		Password: util.GenerateRandomString(10),
-		FullName: util.GenerateRandomString(10),
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)
@@ -107,10 +107,10 @@ func TestUpdateUser(t *testing.T) {
 	user1 := CreateUser(t)
 
 	arg := UpdateParams{
-		ID: user1.ID,
+		ID:       user1.ID,
 		Username: util.GenerateRandomString(10),
 		Password: util.GenerateRandomString(10),
-		FullName: util.GenerateRandomString(10),
+		FullName: sql.NullString{},
 	}
 
 	user2, err := testQueries.Update(context.Background(), arg)

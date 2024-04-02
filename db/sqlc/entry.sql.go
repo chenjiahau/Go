@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createEntry = `-- name: CreateEntry :one
@@ -17,9 +18,9 @@ RETURNING id, entry_type_id, release_version, priority, created_at
 `
 
 type CreateEntryParams struct {
-	EntryTypeID    int32  `db:"entry_type_id"`
-	ReleaseVersion string `db:"release_version"`
-	Priority       int32  `db:"priority"`
+	EntryTypeID    int32          `db:"entry_type_id"`
+	ReleaseVersion sql.NullString `db:"release_version"`
+	Priority       sql.NullInt32  `db:"priority"`
 }
 
 func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entries, error) {
@@ -165,10 +166,10 @@ RETURNING id, entry_type_id, release_version, priority, created_at
 `
 
 type UpdateEntryParams struct {
-	EntryTypeID    int32  `db:"entry_type_id"`
-	ReleaseVersion string `db:"release_version"`
-	Priority       int32  `db:"priority"`
-	ID             int32  `db:"id"`
+	EntryTypeID    int32          `db:"entry_type_id"`
+	ReleaseVersion sql.NullString `db:"release_version"`
+	Priority       sql.NullInt32  `db:"priority"`
+	ID             int32          `db:"id"`
 }
 
 func (q *Queries) UpdateEntry(ctx context.Context, arg UpdateEntryParams) (Entries, error) {

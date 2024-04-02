@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"example.com/project/util"
@@ -15,7 +16,6 @@ func CreateComment(t *testing.T) (Users, EntryTypes, Entries ,Comments) {
 	arg := CreateCommentParams{
 		EntryID: entry.ID,
 		UserID:  user.ID,
-		Content: util.GenerateRandomString(100),
 	}
 
 	comment, err := testQueries.CreateComment(context.Background(), arg)
@@ -129,7 +129,7 @@ func TestUpdateComment(t *testing.T) {
 
 	arg := UpdateCommentParams{
 		ID:      comment1.ID,
-		Content: util.GenerateRandomString(100),
+		Content: sql.NullString{String: util.GenerateRandomString(100), Valid: true},
 	}
 
 	comment2, err := testQueries.UpdateComment(context.Background(), arg)

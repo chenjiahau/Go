@@ -9,19 +9,19 @@ import (
 )
 
 type Comments struct {
-	ID        int32        `db:"id"`
-	EntryID   int32        `db:"entry_id"`
-	UserID    int32        `db:"user_id"`
-	Content   string       `db:"content"`
-	CreatedAt sql.NullTime `db:"created_at"`
+	ID        int32          `db:"id"`
+	EntryID   int32          `db:"entry_id"`
+	UserID    int32          `db:"user_id"`
+	Content   sql.NullString `db:"content"`
+	CreatedAt sql.NullTime   `db:"created_at"`
 }
 
 type Entries struct {
-	ID             int32        `db:"id"`
-	EntryTypeID    int32        `db:"entry_type_id"`
-	ReleaseVersion string       `db:"release_version"`
-	Priority       int32        `db:"priority"`
-	CreatedAt      sql.NullTime `db:"created_at"`
+	ID             int32          `db:"id"`
+	EntryTypeID    int32          `db:"entry_type_id"`
+	ReleaseVersion sql.NullString `db:"release_version"`
+	Priority       sql.NullInt32  `db:"priority"`
+	CreatedAt      sql.NullTime   `db:"created_at"`
 }
 
 type EntryTypes struct {
@@ -31,9 +31,9 @@ type EntryTypes struct {
 }
 
 type Users struct {
-	ID        int32        `db:"id"`
-	Username  string       `db:"username"`
-	Password  string       `db:"password"`
-	FullName  string       `db:"full_name"`
-	CreatedAt sql.NullTime `db:"created_at"`
+	ID        int32          `db:"id"`
+	Username  string         `db:"username"`
+	Password  string         `db:"password"`
+	FullName  sql.NullString `db:"full_name"`
+	CreatedAt sql.NullTime   `db:"created_at"`
 }

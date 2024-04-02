@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"example.com/project/util"
@@ -12,8 +13,6 @@ func CreateEntry(t *testing.T) (EntryTypes, Entries) {
 	entryType := CreateEntryType(t)
 	arg := CreateEntryParams{
 		EntryTypeID: entryType.ID,
-		ReleaseVersion: util.GenerateRandomString(10),
-		Priority: 1,
 	}
 
 	entry, err := testQueries.CreateEntry(context.Background(), arg)
@@ -111,10 +110,10 @@ func TestUpdateEntry(t *testing.T) {
 	entryType1, entry1 := CreateEntry(t)
 
 	arg := UpdateEntryParams{
-		ID: entry1.ID,
-		EntryTypeID: entryType1.ID,
-		ReleaseVersion: util.GenerateRandomString(10),
-		Priority: 2,
+		ID:              entry1.ID,
+		EntryTypeID:     entryType1.ID,
+		ReleaseVersion:  sql.NullString{String: util.GenerateRandomString(10), Valid: true},
+		Priority:        sql.NullInt32{Int32: 2, Valid: true},
 	}
 
 	entry2, err := testQueries.UpdateEntry(context.Background(), arg)

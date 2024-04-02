@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -17,9 +18,9 @@ RETURNING id, username, password, full_name, created_at
 `
 
 type CreateUserParams struct {
-	Username string `db:"username"`
-	Password string `db:"password"`
-	FullName string `db:"full_name"`
+	Username string         `db:"username"`
+	Password string         `db:"password"`
+	FullName sql.NullString `db:"full_name"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (Users, error) {
@@ -170,10 +171,10 @@ RETURNING id, username, password, full_name, created_at
 `
 
 type UpdateParams struct {
-	Username string `db:"username"`
-	Password string `db:"password"`
-	FullName string `db:"full_name"`
-	ID       int32  `db:"id"`
+	Username string         `db:"username"`
+	Password string         `db:"password"`
+	FullName sql.NullString `db:"full_name"`
+	ID       int32          `db:"id"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (Users, error) {

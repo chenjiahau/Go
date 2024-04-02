@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createComment = `-- name: CreateComment :one
@@ -17,9 +18,9 @@ RETURNING id, entry_id, user_id, content, created_at
 `
 
 type CreateCommentParams struct {
-	EntryID int32  `db:"entry_id"`
-	UserID  int32  `db:"user_id"`
-	Content string `db:"content"`
+	EntryID int32          `db:"entry_id"`
+	UserID  int32          `db:"user_id"`
+	Content sql.NullString `db:"content"`
 }
 
 func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) (Comments, error) {
@@ -165,8 +166,8 @@ RETURNING id, entry_id, user_id, content, created_at
 `
 
 type UpdateCommentParams struct {
-	Content string `db:"content"`
-	ID      int32  `db:"id"`
+	Content sql.NullString `db:"content"`
+	ID      int32          `db:"id"`
 }
 
 func (q *Queries) UpdateComment(ctx context.Context, arg UpdateCommentParams) (Comments, error) {
