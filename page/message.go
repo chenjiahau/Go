@@ -27,17 +27,18 @@ type PostData struct {
 	Message 	string `json:"message" validate:"required"`
 }
 
-type ResponseData struct {
-	Success bool `json:"success"`
-	Message string `json:"message"`
-}
-
 func SendMessage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var pd PostData
 	err := json.NewDecoder(r.Body).Decode(&pd)
 
 	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+		pd := data.ResponseData{
+			Success: false,
+			Message: "Bad request",
+		}
+
+		json.NewEncoder(w).Encode(pd)
 		return
 	}
 
@@ -45,15 +46,19 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 	err = validate.Struct(pd)
 
 	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+		pd := data.ResponseData{
+			Success: false,
+			Message: "Invalid data",
+		}
+
+		json.NewEncoder(w).Encode(pd)
 		return
 	}
 
-	rd := ResponseData{
+	rd := data.ResponseData{
 		Success: true,
 		Message: "Message sent successfully",
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(rd)
 }
