@@ -7,6 +7,9 @@ createdb:
 dropdb:
 	docker exec -it postgres12 dropdb testdb
 
+migratecreate:
+	migrate create -ext sql -dir db/migration -seq init-schema
+
 migrateup:
 	migrate -path db/migration -database "postgres://root:password@localhost:5432/testdb?sslmode=disable" -verbose up
 
