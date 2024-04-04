@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"example.com/project/config"
+	"example.com/project/db/driver"
 	"example.com/project/page"
 	"example.com/project/render"
 	"example.com/project/router"
@@ -15,6 +16,15 @@ const portNumber = ":8080"
 func main() {
 	// Application wide config
 	var appConfig config.AppConfig
+
+	// Create a connection to the database
+	dbConn, err := driver.ConnectSQL(config.PostgreSQLDataSourceName)
+
+	if err != nil {
+		log.Fatal("cannot connect to database! Dying...")
+	}
+	appConfig.PgConn = dbConn
+	defer dbConn.SQL.Close()
 
 	// Create template cache for application
 	tmpCache, err := render.CreateTemplateCache()
