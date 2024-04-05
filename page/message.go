@@ -9,7 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func Message(w http.ResponseWriter, r *http.Request) {
+func (repo *Repository) Message(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
 	stringMap["title"] = "This is the message page."
 
@@ -27,7 +27,7 @@ type PostData struct {
 	Message 	string `json:"message" validate:"required"`
 }
 
-func SendMessage(w http.ResponseWriter, r *http.Request) {
+func (repo *Repository) SendMessage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var pd PostData
 	err := json.NewDecoder(r.Body).Decode(&pd)

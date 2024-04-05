@@ -36,7 +36,7 @@ var users = map[string]User{
 	},
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func (repo *Repository) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var user User
@@ -86,7 +86,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(rd)
 }
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
+func (repo *Repository) GetUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	tokenString := r.Header.Get("Authorization")

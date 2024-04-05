@@ -2,12 +2,19 @@ package page
 
 import "example.com/project/config"
 
-var appConfig *config.AppConfig
+type Repository struct {
+	AppConfig *config.AppConfig
+	DBConfig  *config.DbConfig
+}
+var Repo *Repository
 
-func NewAppConfig(ac *config.AppConfig) {
-	appConfig = ac
+func NewRepo(ac *config.AppConfig, db *config.DbConfig) *Repository {
+	return &Repository{
+		AppConfig: ac,
+		DBConfig: db,
+	}
 }
 
-func GetAppConfig() *config.AppConfig {
-	return appConfig
+func NewHandler(r *Repository) {
+	Repo = r
 }

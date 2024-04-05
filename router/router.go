@@ -19,12 +19,12 @@ func GetRoutes() http.Handler {
 	staticServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", staticServer))
 
-	mux.Get("/", page.Index)
-	mux.Get("/message", page.Message)
-	mux.Post("/send-message", page.SendMessage)
+	mux.Get("/", page.Repo.Index)
+	mux.Get("/message", page.Repo.Message)
+	mux.Post("/send-message", page.Repo.SendMessage)
 
-	mux.Post("/login", page.Login)
-	mux.Get("/login/users", page.GetUsers)
+	mux.Post("/login", page.Repo.Login)
+	mux.Get("/login/users", page.Repo.GetUsers)
 
 	return mux
 }

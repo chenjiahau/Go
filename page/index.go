@@ -7,7 +7,7 @@ import (
 	"example.com/project/render"
 )
 
-func Index(w http.ResponseWriter, r *http.Request) {
+func (repo *Repository) Index(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
 	stringMap["test"] = "This is the index page."
 
