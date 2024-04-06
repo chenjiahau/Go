@@ -1,122 +1,106 @@
 package page
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
 	"example.com/project/data"
-	"example.com/project/util"
+	"github.com/go-playground/validator/v10"
+	"golang.org/x/crypto/bcrypt"
 )
 
-type ResponseTokenData struct {
-	Email 			string `json:"email"`
-	Token 			string `json:"token"`
-	ExpiredTime int64 `json:"expiredTime"`
+type CreateUserParams struct {
+	Username string `json:"username" validate:"required,min=1,max=32"`
+	Password string `json:"password" validate:"required,min=8,max=20"`
+	ConfirmPassword string `json:"confirmPassword" validate:"required,min=8,max=20"`
+	FullName string `json:"fullName,omitempty" validate:"omitempty,min=1,max=64"`
 }
 
-type ResponseUsersData struct {
-	Success bool `json:"success"`
-	Message string `json:"message"`
-	Data 	  map[string]User `json:"data"`
-}
-
-type User struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-var users = map[string]User{
-	"john": {
-		Email:    "john@test.com", 
-		Password: "password123",
-	},
-	"jane": {
-		Email:    "jane@test.com",
-		Password: "password456",
-	},
-}
-
-func (repo *Repository) Login(w http.ResponseWriter, r *http.Request) {
+func (repo *Repository) SignUp(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var user User
-  err := json.NewDecoder(r.Body).Decode(&user)
+	var p CreateUserParams
+	err := json.NewDecoder(r.Body).Decode(&p)
 
 	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
-		return
-	}
-
-	hasUser := false
-	for _, v := range users {
-		if v.Email == user.Email && v.Password == user.Password {
-			hasUser = true
-			break
-		}
-	}
-
-	if !hasUser {
 		rd := data.ResponseData{
 			Success: false,
-			Message: "Invalid email or password",
+			Message: "Bad request",
 		}
 
 		json.NewEncoder(w).Encode(rd)
 		return
 	}
 
-	tokenString, expiredTime, err := util.CreateToken(user.Email)
+	validate = validator.New()
+	err = validate.Struct(p)
 
 	if err != nil {
 		rd := data.ResponseData{
 			Success: false,
-			Message: "Failed to create token",
+			Message: "Invalid data",
 		}
 
 		json.NewEncoder(w).Encode(rd)
 		return
 	}
 
-	rd := ResponseTokenData{
-		Email: user.Email,
-		Token: tokenString,
-		ExpiredTime: expiredTime,
+	if p.Password != p.ConfirmPassword {
+		rd := data.ResponseData{
+			Success: false,
+			Message: "Passwords do not match",
+		}
+
+		json.NewEncoder(w).Encode(rd)
+		return
+	}
+
+	sqlStatement := `SELECT id FROM users WHERE username = $1`
+	row := repo.DBConfig.PgConn.SQL.QueryRow(sqlStatement, p.Username)
+
+	var id int
+	err = row.Scan(&id)
+
+	if err != sql.ErrNoRows {
+		rd := data.ResponseData{
+			Success: false,
+			Message: "Username already exists",
+		}
+
+		json.NewEncoder(w).Encode(rd)
+		return
+	}
+
+	password, err := bcrypt.GenerateFromPassword([]byte(p.Password), 14)
+
+	if err != nil {
+		rd := data.ResponseData{
+			Success: false,
+			Message: "Error creating user",
+		}
+
+		json.NewEncoder(w).Encode(rd)
+		return
+	}
+
+	sqlStatement = `INSERT INTO users (username, password, full_name) VALUES ($1, $2, $3) RETURNING id`
+	_, err = repo.DBConfig.PgConn.SQL.Exec(sqlStatement, p.Username, password, p.FullName)
+
+	if err != nil {
+		rd := data.ResponseData{
+			Success: false,
+			Message: "Error creating user",
+		}
+
+		json.NewEncoder(w).Encode(rd)
+		return
+	}
+
+	rd := data.ResponseData{
+		Success: true,
+		Message: "User created successfully",
 	}
 
 	json.NewEncoder(w).Encode(rd)
-}
-
-func (repo *Repository) GetUsers(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	tokenString := r.Header.Get("Authorization")
-	if tokenString == "" {
-		pd := data.ResponseData{
-			Success: false,
-			Message: "Unauthorized",
-		}
-
-		json.NewEncoder(w).Encode(pd)
-		return
-	}
-
-	tokenString = tokenString[len("Bearer "):]
-	err := util.VerifyToken(tokenString)
-	if err != nil {
-		pd := data.ResponseData{
-			Success: false,
-			Message: "Unauthorized",
-		}
-
-		json.NewEncoder(w).Encode(pd)
-		return
-	}
-
-	pd := ResponseUsersData{
-		Success: true,
-		Message: "User list retrieved successfully",
-		Data: users,
-	}
-
-	json.NewEncoder(w).Encode(pd)
 }
