@@ -32,6 +32,7 @@ func main() {
 		log.Fatal("cannot connect to database")
 	}
 	dbConfig := config.DbConfig{ PgConn: pgConn }
+  defer pgConn.SQL.Close()
 
 	// Set the appConfig and dbConfig for the page package
 	repo := page.NewRepo(&appConfig, &dbConfig)
