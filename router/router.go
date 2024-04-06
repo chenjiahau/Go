@@ -24,6 +24,8 @@ func GetRoutes() http.Handler {
 	mux.Post("/send-message", page.Repo.SendMessage)
 
 	mux.Post("/sign-up", page.Repo.SignUp)
+	mux.Post("/login", page.Repo.Login)
+	mux.Get("/test-auth", page.Repo.TestAuth)
 
 	return mux
 }
