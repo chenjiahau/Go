@@ -11,7 +11,7 @@ func GetRoutes() http.Handler {
 	mux := chi.NewRouter()
 	mux.Use(WriteToConsole)
 
-	mux.Get("/api", handler.H.Index)
+	mux.Get("/api", handler.Ctrl.Index)
 
 	return mux
 }
