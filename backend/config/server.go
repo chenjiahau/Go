@@ -1,4 +1,6 @@
 package config
 
-var Addr = "127.0.0.1:8080"
+var Server = map[string]string{
+	"Addr": ":8080",
+}
 

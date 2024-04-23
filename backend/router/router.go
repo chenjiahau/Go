@@ -9,6 +9,7 @@ import (
 
 func GetRoutes() http.Handler {
 	mux := chi.NewRouter()
+	mux.Use(EnableCORS)
 	mux.Use(WriteToConsole)
 
 	mux.Get("/api", handler.Ctrl.Index)

@@ -1,11 +1,8 @@
 package handler
 
-import (
-	"encoding/json"
-	"net/http"
-)
-
 type Config struct {
+	AppName string
+	Version string
 }
 
 type Controller struct {
@@ -15,24 +12,15 @@ type Controller struct {
 var Conf *Config
 var Ctrl *Controller
 
-func NewConfig() *Config {
+func NewConfig(appName, version string) *Config {
 	return &Config{
+		AppName: appName,
+		Version: version,
 	}
 }
 
-func NewHandler(hc *Config) {
+func NewHandler(c *Config) {
 	Ctrl = &Controller{
-		Config: hc,
+		Config: c,
 	}
-}
-
-func EnableCrossOriginResourceSharing(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
-}
-
-func ResponseJSONWriter(w http.ResponseWriter, statusCode int, response interface{}) {
-	EnableCrossOriginResourceSharing(w)
-	json.NewEncoder(w).Encode(response)
 }
