@@ -5,16 +5,29 @@ import (
 	"net/http"
 )
 
-type Response struct {
-	Data interface{} `json:"data,omitempty"`
-	Error interface{} `json:"error,omitempty"`
+type DataMap map[string]interface{}
+type ErrorMap map[string]interface{}
+type ResponseFormat struct {
+	Data	DataMap	`json:"data,omitempty"`
+	Error	ErrorMap	`json:"error,omitempty"`
 }
 
-func GetResponseFormat(data interface{}, err interface{}) Response {
-	return Response{
-		Data: data,
-		Error: err,
+func GetResponse(data map[string]interface{}, err map[string]interface{}) ResponseFormat {
+	res := ResponseFormat{}
+
+	if data != nil {
+		res.Data = data
 	}
+
+	if err != nil {
+		res.Error = err
+	}
+
+	return res
+}
+
+func DecodeJSONBody(r *http.Request, data interface{}) error {
+	return json.NewDecoder(r.Body).Decode(data)
 }
 
 func ResponseJSONWriter(w http.ResponseWriter, statusCode int, response interface{}) {

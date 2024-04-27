@@ -12,13 +12,13 @@ import (
 )
 
 var (
-	AppName string
-	Version string
+	AppName	string
+	Version	string
 )
 
 func main() {
 	flag.Parse()
-  AppName = flag.Arg(0)
+	AppName = flag.Arg(0)
 	Version = flag.Arg(1)
 
 	c := handler.NewConfig(AppName, Version)
@@ -28,8 +28,8 @@ func main() {
 
 func RunServer(c *handler.Config) {
 	srv := &http.Server{
-		Addr:    config.Server["Addr"],
-		Handler: router.GetRoutes(),
+		Addr:			config.Server["Addr"],
+		Handler:	router.GetRoutes(),
 	}
 
 	logMessage := fmt.Sprintf("Server is running on %s\n", config.Server["Addr"])
