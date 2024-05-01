@@ -3,34 +3,34 @@ package handler
 import (
 	"net/http"
 
+	"ivanfun.com/mis/db/driver"
+	"ivanfun.com/mis/model"
 	"ivanfun.com/mis/util"
 )
 
-type User struct {
-	UserId		int64		`json:"id"`
-	Username	string	`json:"username"`
-	Password	string	`json:"password"`
-	Token			string	`json:"token"`
-	Expires		float64	`json:"expires"`
+type DbConf struct {
+	PgConn	*driver.DBConn
 }
 
 type Config struct {
 	AppName	string
 	Version	string
+	DbConf	*DbConf
 }
 
 type Controller struct {
 	Config	*Config
-	User		*User
+	User		*model.User
 }
 
 var Conf *Config
 var Ctrl *Controller
 
-func NewConfig(appName, version string) *Config {
+func NewConfig(appName, version string, dbConf *DbConf) *Config {
 	return &Config{
 		AppName: appName,
 		Version: version,
+		DbConf: dbConf,
 	}
 }
 
@@ -40,7 +40,7 @@ func NewHandler(c *Config) {
 	}
 }
 
-func SetUser(u *User) {
+func SetUser(u *model.User) {
 	Ctrl.User = u
 }
 

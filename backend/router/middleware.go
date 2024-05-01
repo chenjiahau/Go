@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"ivanfun.com/mis/handler"
+	"ivanfun.com/mis/model"
 	"ivanfun.com/mis/util"
 )
 
@@ -51,7 +52,7 @@ func ParseAuthorization(next http.Handler) http.Handler {
 			if userId == 0 || userName == "" || !isTokenAlive {
 				handler.SetUser(nil)
 			} else {
-				handler.SetUser(&handler.User{
+				handler.SetUser(&model.User{
 					UserId: userId,
 					Username: userName,
 				})

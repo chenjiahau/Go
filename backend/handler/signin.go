@@ -3,11 +3,12 @@ package handler
 import (
 	"net/http"
 
+	"ivanfun.com/mis/model"
 	"ivanfun.com/mis/util"
 )
 
 func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
-	var u User
+	var u model.User
 
 	util.DecodeJSONBody(r, &u)
 

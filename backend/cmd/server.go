@@ -3,25 +3,36 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 
 	"ivanfun.com/mis/config"
+	"ivanfun.com/mis/db/driver"
 	"ivanfun.com/mis/handler"
 	"ivanfun.com/mis/router"
 	"ivanfun.com/mis/util"
 )
 
 var (
-	AppName	string
-	Version	string
+	appName	string
+	version	string
 )
 
 func main() {
 	flag.Parse()
-	AppName = flag.Arg(0)
-	Version = flag.Arg(1)
+	appName = flag.Arg(0)
+	version = flag.Arg(1)
 
-	c := handler.NewConfig(AppName, Version)
+	pgConn, err := driver.ConnectSQL(driver.PostgreSQLDataSourceName)
+	if err != nil {
+		log.Fatal("cannot connect to database")
+	}
+	dbConf := handler.DbConf{
+		PgConn: pgConn,
+	}
+	defer pgConn.SQL.Close()
+
+	c := handler.NewConfig(appName, version, &dbConf)
 	handler.NewHandler(c)
 	RunServer(c)
 }
