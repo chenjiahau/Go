@@ -53,8 +53,8 @@ func ParseAuthorization(next http.Handler) http.Handler {
 				handler.SetUser(nil)
 			} else {
 				handler.SetUser(&model.User{
-					UserId: userId,
-					Username: userName,
+					Id: userId,
+					Name: userName,
 				})
 			}
 		}

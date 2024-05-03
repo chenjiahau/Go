@@ -9,6 +9,7 @@ import (
 	"ivanfun.com/mis/config"
 	"ivanfun.com/mis/db/driver"
 	"ivanfun.com/mis/handler"
+	"ivanfun.com/mis/model"
 	"ivanfun.com/mis/router"
 	"ivanfun.com/mis/util"
 )
@@ -27,12 +28,10 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot connect to database")
 	}
-	dbConf := handler.DbConf{
-		PgConn: pgConn,
-	}
+	model.NewDbConfig(pgConn)
 	defer pgConn.SQL.Close()
 
-	c := handler.NewConfig(appName, version, &dbConf)
+	c := handler.NewConfig(appName, version)
 	handler.NewHandler(c)
 	RunServer(c)
 }

@@ -3,19 +3,14 @@ package handler
 import (
 	"net/http"
 
-	"ivanfun.com/mis/db/driver"
 	"ivanfun.com/mis/model"
 	"ivanfun.com/mis/util"
 )
 
-type DbConf struct {
-	PgConn	*driver.DBConn
-}
-
 type Config struct {
 	AppName	string
 	Version	string
-	DbConf	*DbConf
+	DbConf	*model.DbConfig
 }
 
 type Controller struct {
@@ -26,11 +21,10 @@ type Controller struct {
 var Conf *Config
 var Ctrl *Controller
 
-func NewConfig(appName, version string, dbConf *DbConf) *Config {
+func NewConfig(appName, version string) *Config {
 	return &Config{
 		AppName: appName,
 		Version: version,
-		DbConf: dbConf,
 	}
 }
 

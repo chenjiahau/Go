@@ -14,6 +14,7 @@ func GetRoutes() http.Handler {
 	mux.Use(ParseAuthorization)
 
 	mux.Get("/api", handler.Ctrl.Index)
+	mux.Post("/api/sign-up", handler.Ctrl.SignUp)
 	mux.Post("/api/sign-in", handler.Ctrl.SignIn)
 
 	// Protected routes
