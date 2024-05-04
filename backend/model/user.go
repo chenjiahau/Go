@@ -1,5 +1,9 @@
 package model
 
+import (
+	"ivanfun.com/mis/util"
+)
+
 // Interface
 // For the methods that have to be implemented by the User struct
 type UserInterface interface {
@@ -63,10 +67,20 @@ func (U *User) Create(sp SignUpParams) error {
 }
 
 func (U *User) Query(si SignInParams) error {
-	sqlStatement := `SELECT id, email, username FROM users WHERE email= $1 and password = $2;`
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, si.Email, si.Password)
+	sqlStatement := `SELECT id, email, username, password FROM users WHERE email= $1;`
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, si.Email)
 
-	err := row.Scan(&U.Id, &U.Email, &U.Name)
+	err := row.Scan(&U.Id, &U.Email, &U.Name, &U.Password)
+	if err != nil {
+		return err
+	}
+
+	hashedPassword, err := util.HashPassword(si.Password)
+	if err != nil {
+		return err
+	}
+
+	err = util.CheckPasswordHash(si.Password, hashedPassword)
 	if err != nil {
 		return err
 	}

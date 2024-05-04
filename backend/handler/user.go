@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"ivanfun.com/mis/model"
@@ -53,6 +54,17 @@ func (Ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	sp.Password, err = util.HashPassword(sp.Password)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to hash password",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
 	err = u.Create(sp)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -85,6 +97,7 @@ func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(si)
 	if si.Email == "" || si.Password == "" {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
@@ -95,7 +108,6 @@ func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = u.Query(si)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusUnauthorized,
