@@ -39,7 +39,20 @@ func SetUser(u *model.User) {
 }
 
 func CheckTokenAlive() bool {
-	return Ctrl.User != nil
+	if Ctrl.User != nil {
+		var t model.TokenInterface = &model.Token{}
+
+		token, err := t.Query(Ctrl.User.Token)
+		if err != nil {
+			return false
+		}
+
+		if !token.IsAlive {
+			return false
+		}
+	}
+
+	return true
 }
 
 func GetUnauthorizedResponse() util.ResponseFormat {

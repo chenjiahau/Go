@@ -55,6 +55,7 @@ func ParseAuthorization(next http.Handler) http.Handler {
 				handler.SetUser(&model.User{
 					Id: userId,
 					Name: userName,
+					Token: tokenString,
 				})
 			}
 		}

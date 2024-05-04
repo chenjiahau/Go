@@ -19,6 +19,7 @@ func GetRoutes() http.Handler {
 
 	// Protected routes
 	mux.Get("/api/auth/test-protecting-route", handler.Ctrl.TestProtectingRoute)
+	mux.Get("/api/auth/sign-out", handler.Ctrl.SignOut)
 
 	return mux
 }
