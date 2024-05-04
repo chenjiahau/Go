@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"ivanfun.com/mis/model"
@@ -97,7 +96,6 @@ func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(si)
 	if si.Email == "" || si.Password == "" {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
@@ -108,22 +106,46 @@ func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = u.Query(si)
 	if err != nil {
 		resErr := map[string]interface{}{
-			"code": http.StatusUnauthorized,
-			"message": "Email or password is incorrect",
+			"code":    http.StatusUnauthorized,
+			"message": "Invalid email or password",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
 		return
 	}
- 
+
 	user := u.(*model.User)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get token",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
 	tokenString, err := util.CreateToken(user.Id, user.Name)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code":    http.StatusInternalServerError,
 			"message": "Failed to create token",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	var t model.TokenInterface = &model.Token{}
+	err = t.Create(user.Id, tokenString, util.GetNow(), util.GetNow().AddDate(0, 0, 1)) // 1 day
+
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code":    http.StatusInternalServerError,
+			"message": "Failed to insert token",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))

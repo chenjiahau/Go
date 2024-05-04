@@ -35,8 +35,6 @@ type User struct {
 	Name			string	`json:"username"`
 	Password	string	`json:"password"`
 	Token			string	`json:"token"`
-	Expires		float64	`json:"expires"`
-	Method    UserInterface
 }
 
 // Methods
@@ -75,12 +73,7 @@ func (U *User) Query(si SignInParams) error {
 		return err
 	}
 
-	hashedPassword, err := util.HashPassword(si.Password)
-	if err != nil {
-		return err
-	}
-
-	err = util.CheckPasswordHash(si.Password, hashedPassword)
+	err = util.CheckPasswordHash(si.Password, U.Password)
 	if err != nil {
 		return err
 	}
