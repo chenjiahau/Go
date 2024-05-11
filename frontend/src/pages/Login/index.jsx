@@ -95,6 +95,7 @@ const Home = (props) => {
     // Call API
     try {
       const response = await apiHandler.post("/sign-in", payload);
+      apiHandler.setToken(response.data.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.data));
       messageUtil.showSuccessMessage(successMessage.SINGIN);
       onSaveUser(response.data);
@@ -140,7 +141,10 @@ const Home = (props) => {
     const savedUser = localStorage.getItem("user");
 
     if (savedUser) {
-      onSaveUser(JSON.parse(savedUser));
+      const userSavedInLocalStorage = JSON.parse(savedUser);
+
+      apiHandler.setToken(userSavedInLocalStorage.token);
+      onSaveUser(userSavedInLocalStorage);
       navigate("/dashboard");
     }
   }, [navigate, onSaveUser, user]);

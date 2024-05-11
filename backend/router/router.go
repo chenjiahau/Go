@@ -10,8 +10,9 @@ import (
 
 func GetRoutes() http.Handler {
 	cors := handlers.CORS(
-    handlers.AllowedHeaders([]string{"content-type"}),
-    handlers.AllowedOrigins([]string{"*"}),
+    handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
+		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
     handlers.AllowCredentials(),
 	)
 

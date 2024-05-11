@@ -1,5 +1,10 @@
 import { toast } from "react-toastify";
 
+export const commonMessage = {
+  success: "Success",
+  error: "Something went wrong, please try again",
+};
+
 const toastConfig = {
   position: "top-center",
   autoClose: 3000,

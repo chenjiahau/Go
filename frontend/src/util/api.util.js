@@ -12,6 +12,10 @@ class APIHandler {
     this.axios = axiosInstance;
   }
 
+  setToken(token) {
+    this.axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  }
+
   get(url, config) {
     return this.axios.get(url, config);
   }
