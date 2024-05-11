@@ -1,0 +1,60 @@
+.divider {
+  border-top: 1px solid var(--primary-color);
+  width: 100%;
+  margin: 8px 0;
+}
+
+.disabled {
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: not-allowed !important;
+
+  &:hover {
+    background-color: var(--white-color) !important;
+  }
+}
+
+.header-title {
+  font-family: var(--title-font);
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.button {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  cursor: pointer;
+  text-align: center;
+  padding: 8px 32px;
+  border-radius: 4px;
+  border: none;
+
+  &:hover {
+    background-color: var(--third-color);
+    color: var(--black-color);
+  }
+}
+
+.cancel-button {
+  background-color: var(--black-color);
+  color: var(--white-color);
+  cursor: pointer;
+  text-align: center;
+  padding: 8px 32px;
+  border-radius: 4px;
+  border: none;
+
+  &:hover {
+    background-color: var(--third-color);
+    color: var(--black-color);
+  }
+}
+
+.link-button {
+  color: var(--primary-color);
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    color: var(--primary-color);
+  }
+}

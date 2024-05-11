@@ -1,0 +1,82 @@
+:root {
+  --primary-color: #5bbcff;
+  --secondary-color: #fffab7;
+  --third-color: #ffd1e3;
+  --fourth-color: #7ea1ff;
+  --success-color: #28a745;
+  --info-color: #17a2b8;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --white-color: #fff;
+  --gray-color: #f8f9fa;
+  --black-color: #000;
+  --title-font: "Pacifico";
+  --regular-font: "Arial";
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  color: var(--black-color);
+  font-family: Arial, sans-serif, "Oswald";
+}
+
+.layout {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--white-color);
+  margin: 0 auto;
+  display: grid;
+}
+
+.layout__header {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+}
+
+.layout__content {
+  margin-top: 76px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+
+  .content__left {
+    .left__menu {
+      font-weight: bold;
+      color: var(--black-color);
+      border-bottom: 1px solid var(--primary-color);
+      text-align: center;
+    }
+  }
+
+  .content__right {
+    background-color: var(--white-color);
+    padding: 16px 16px 48px 16px;
+  }
+}
+
+.layout__footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4px 0;
+  background-color: var(--black-color);
+  color: white;
+  text-align: center;
+}
+
+// Overwrite the default style of the button
+.form-control:focus {
+  border: 1px solid var(--primary-color);
+  box-shadow: none;
+}

@@ -1,29 +1,54 @@
-import { useEffect, useState } from "react";
+import "bootstrap/dist/css/bootstrap.css";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
-const serverUrl = "http://localhost:8080";
+import { useEffect, useState } from "react";
+import { HashRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+
+import Layout from "@/ui/Layout";
+
+import Login from "@/pages/Login";
+import Dashboard from "@/pages/Dashboard";
 
 function App() {
-  const [appName, setAppName] = useState("");
-  const [version, setVersion] = useState("");
-  const [message, setMessage] = useState("");
+  // State
+  const [user, setUser] = useState(null);
+
+  // Method
+  const handleSaveUserInfo = (data) => {
+    setUser(data);
+  };
+
+  const handleCleanUserInfo = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  };
 
   useEffect(() => {
-    fetch(`${serverUrl}/api`)
-      .then((res) => res.json())
-      .then((res) => {
-        setAppName(res.data.appName);
-        setVersion(res.data.version);
-        setMessage(res.data.message);
-      });
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      setUser(user);
+    }
   }, []);
 
   return (
-    <>
-      <h1>App Name: {appName}</h1>
-      <h1>Version: {version}</h1>
-      <h1>Message: {message}</h1>
-    </>
+    <HashRouter>
+      <Routes>
+        <Route
+          path='/'
+          element={<Login user={user} onSaveUser={handleSaveUserInfo} />}
+        />
+        <Route
+          path='/'
+          element={<Layout user={user} onCleanUser={handleCleanUserInfo} />}
+        >
+          <Route path='/dashboard' element={<Dashboard user={user} />} />
+        </Route>
+      </Routes>
+      <ToastContainer />
+    </HashRouter>
   );
 }
 
