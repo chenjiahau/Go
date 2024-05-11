@@ -4,12 +4,18 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/gorilla/handlers"
 	"ivanfun.com/mis/handler"
 )
 
 func GetRoutes() http.Handler {
+	cors := handlers.CORS(
+    handlers.AllowedHeaders([]string{"content-type"}),
+    handlers.AllowedOrigins([]string{"*"}),
+    handlers.AllowCredentials(),
+	)
+
 	mux := chi.NewRouter()
-	mux.Use(EnableCORS)
 	mux.Use(WriteToConsole)
 	mux.Use(ParseAuthorization)
 
@@ -21,5 +27,5 @@ func GetRoutes() http.Handler {
 	mux.Get("/api/auth/test-protecting-route", handler.Ctrl.TestProtectingRoute)
 	mux.Get("/api/auth/sign-out", handler.Ctrl.SignOut)
 
-	return mux
+	return cors(mux)
 }
