@@ -7,7 +7,7 @@ import (
 	"ivanfun.com/mis/util"
 )
 
-func (Ctrl *Controller) TestProtectingRoute(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) VerifyToken(w http.ResponseWriter, r *http.Request) {
 	ok := CheckTokenAlive()
 
 	if !ok {
@@ -16,10 +16,10 @@ func (Ctrl *Controller) TestProtectingRoute(w http.ResponseWriter, r *http.Reque
 	}
 
 	resData := map[string]interface{}{
-		"message": "This is a protected route",
+		"message": "Success to verify token",
 	}
 
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+	util.ResponseJSONWriter(w, http.StatusOK, resData)
 }
 
 func (Ctrl *Controller) SignOut(w http.ResponseWriter, r *http.Request) {

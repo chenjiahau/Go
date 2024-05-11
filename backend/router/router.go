@@ -24,7 +24,7 @@ func GetRoutes() http.Handler {
 	mux.Post("/api/sign-in", handler.Ctrl.SignIn)
 
 	// Protected routes
-	mux.Get("/api/auth/test-protecting-route", handler.Ctrl.TestProtectingRoute)
+	mux.Get("/api/auth/verify-token", handler.Ctrl.VerifyToken)
 	mux.Get("/api/auth/sign-out", handler.Ctrl.SignOut)
 
 	return cors(mux)

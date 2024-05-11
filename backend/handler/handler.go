@@ -50,9 +50,11 @@ func CheckTokenAlive() bool {
 		if !token.IsAlive {
 			return false
 		}
+
+		return true
 	}
 
-	return true
+	return false
 }
 
 func GetUnauthorizedResponse() util.ResponseFormat {
