@@ -1,7 +1,6 @@
 import Logo from "@/assets/img/brand.png";
 
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
 
 import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "../../util/message.util";
@@ -12,14 +11,12 @@ const message = {
 
 const Header = (props) => {
   const { user, onCleanUser } = props;
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await apiHandler.get("/auth/sign-out");
-      onCleanUser();
-      navigate("/");
       messageUtil.showSuccessMessage(message.LOGOUT_SUCCESS);
+      onCleanUser();
     } catch (error) {
       messageUtil.showErrorMessage(commonMessage.error);
     }

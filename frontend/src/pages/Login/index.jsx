@@ -2,11 +2,21 @@ import "./module.scss";
 import Logo from "@/assets/img/brand.png";
 
 import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import _ from "lodash";
 
+// Const
+import routerConfig from "@/const/config/router";
+import apiConfig from "@/const/config/api";
+
+// Slice
+import { userActions } from "@/store/slices/user";
+
+// Component
 import Footer from "@/ui/Footer";
+
+// Util
 import apiHandler from "@/util/api.util";
 import messageUtil from "../../util/message.util";
 
@@ -16,8 +26,8 @@ const stageType = {
 };
 
 const successMessage = {
-  SINGIN: "Login successfully",
-  SINGUP: "Login successfully, please back to login",
+  SIGNIN: "Login successfully",
+  SIGNUP: "Login successfully, please back to login",
 };
 
 const errorMessage = {
@@ -25,8 +35,8 @@ const errorMessage = {
   PASSWORD_NOT_MATCH: "Password and confirm password are not matched",
 };
 
-const Home = (props) => {
-  const { user, onSaveUser } = props;
+const Home = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // State
@@ -94,11 +104,15 @@ const Home = (props) => {
 
     // Call API
     try {
-      const response = await apiHandler.post("/sign-in", payload);
+      const response = await apiHandler.post(
+        apiConfig.resource.SIGNIN,
+        payload
+      );
       apiHandler.setToken(response.data.data.token);
+      messageUtil.showSuccessMessage(successMessage.SIGNIN);
+      dispatch(userActions.setUser(response.data.data));
       localStorage.setItem("user", JSON.stringify(response.data.data));
-      messageUtil.showSuccessMessage(successMessage.SINGIN);
-      onSaveUser(response.data);
+      navigate(routerConfig.routes.DASHBOARD);
     } catch (error) {
       messageUtil.showErrorMessage(apiHandler.extractErrorMessage(error));
     }
@@ -128,7 +142,7 @@ const Home = (props) => {
 
     // Call API
     try {
-      await apiHandler.post("/sign-up", payload);
+      await apiHandler.post(apiConfig.resource.SIGNUP, payload);
       emptySignUpData();
       messageUtil.showSuccessMessage(successMessage.SIGNUP);
     } catch (error) {
@@ -144,10 +158,11 @@ const Home = (props) => {
       const userSavedInLocalStorage = JSON.parse(savedUser);
 
       apiHandler.setToken(userSavedInLocalStorage.token);
-      onSaveUser(userSavedInLocalStorage);
-      navigate("/dashboard");
+      dispatch(userActions.setUser(savedUser));
+      localStorage.setItem("user", JSON.stringify(userSavedInLocalStorage));
+      navigate(routerConfig.routes.HOME);
     }
-  }, [navigate, onSaveUser, user]);
+  }, []);
 
   let content = null;
   if (stage === stageType.LOGIN) {
@@ -332,11 +347,6 @@ const Home = (props) => {
       <Footer />
     </>
   );
-};
-
-Home.propTypes = {
-  user: PropTypes.object,
-  onSaveUser: PropTypes.func.isRequired,
 };
 
 export default Home;
