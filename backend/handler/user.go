@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/go-playground/validator"
 	"ivanfun.com/mis/model"
 	"ivanfun.com/mis/util"
 )
@@ -16,6 +17,18 @@ func (Ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
 			"message": "Invalid request",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	validate := validator.New()
+	err = validate.Struct(sp)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid email, username, password, or confirm password",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
@@ -91,7 +104,19 @@ func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 			"code": http.StatusBadRequest,
 			"message": "Invalid request",
 		}
-		
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	validate := validator.New()
+	err = validate.Struct(si)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid email or password",
+		}
+
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
