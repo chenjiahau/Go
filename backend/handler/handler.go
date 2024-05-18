@@ -39,6 +39,8 @@ func SetUser(u *model.User) {
 }
 
 func CheckTokenAlive() bool {
+	var _ model.TokenInterface = &model.Token{}
+
 	if Ctrl.User != nil {
 		var t model.TokenInterface = &model.Token{}
 

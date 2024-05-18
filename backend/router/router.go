@@ -28,5 +28,18 @@ func GetRoutes() http.Handler {
 	mux.Get("/api/auth/verify-token", handler.Ctrl.VerifyToken)
 	mux.Get("/api/auth/sign-out", handler.Ctrl.SignOut)
 
+	// Category routes
+	mux.Get("/api/category", handler.Ctrl.GetAllCategory)
+	mux.Post("/api/category", handler.Ctrl.AddCategory)
+	mux.Get("/api/category/{id}", handler.Ctrl.GetCategoryById)
+	mux.Put("/api/category/{id}", handler.Ctrl.UpdateCategory)
+	mux.Delete("/api/category/{id}", handler.Ctrl.DeleteCategory)
+
+	mux.Get("/api/category/{id}/subcategory", handler.Ctrl.GetAllSubCategory)
+	mux.Post("/api/category/{id}/subcategory", handler.Ctrl.AddSubCategory)
+	mux.Get("/api/category/{id}/subcategory/{subId}", handler.Ctrl.GetSubCategoryById)
+	mux.Put("/api/category/{id}/subcategory/{subId}", handler.Ctrl.UpdateSubCategory)
+	mux.Delete("/api/category/{id}/subcategory/{subId}", handler.Ctrl.DeleteSubCategory)
+
 	return cors(mux)
 }

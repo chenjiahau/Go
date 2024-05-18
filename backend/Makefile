@@ -1,7 +1,7 @@
 N=1
-# make migrateup N (the first one is 1, the second one is 2, and so on)
-# make migratedown N (the last one is 1, the last two is 2, and so on)
-# make migrateforce N (the first one is 1, the second one is 2, and so on)
+# make migrateup N
+# make migratedown N
+# make migrateforce N
 
 postgres:
 	docker run --name postgres12 -p 5432:5432 -v ./data:/var/lib/postgresql/data -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -d postgres:12-alpine
