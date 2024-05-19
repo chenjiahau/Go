@@ -59,6 +59,30 @@ func CheckTokenAlive() bool {
 	return false
 }
 
+func CheckToken(w http.ResponseWriter, r *http.Request) bool {
+	var _ model.TokenInterface = &model.Token{}
+
+	if Ctrl.User != nil {
+		var t model.TokenInterface = &model.Token{}
+
+		token, err := t.Query(Ctrl.User.Token)
+		if err != nil {
+			util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
+			return false
+		}
+
+		if !token.IsAlive {
+			util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
+			return false
+		}
+	} else {
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
+		return false
+	}
+
+	return true
+}
+
 func GetUnauthorizedResponse() util.ResponseFormat {
 	err := map[string]interface{}{
 		"code": http.StatusUnauthorized,

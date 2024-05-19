@@ -8,12 +8,7 @@ import (
 )
 
 func (Ctrl *Controller) VerifyToken(w http.ResponseWriter, r *http.Request) {
-	ok := CheckTokenAlive()
-
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	resData := map[string]interface{}{
 		"message": "Success to verify token",
@@ -23,14 +18,9 @@ func (Ctrl *Controller) VerifyToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
+	if ok := CheckToken(w, r) ; !ok { return }
+
 	var t model.TokenInterface = &model.Token{}
-
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
-
 	tokenString := Ctrl.User.Token
 	err := t.SetIsAlive(tokenString, false)
 

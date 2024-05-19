@@ -74,7 +74,7 @@ func (C *SubCategory) Create(categoryId int64, name string, createdAt time.Time,
 }
 
 func (C *SubCategory) QueryAll(categoryId int64) ([]SubCategory, error) {
-	sqlStatement := `SELECT category_id, name, created_at, is_alive FROM subcategories WHERE category_id = $1;`
+	sqlStatement := `SELECT id, category_id, name, created_at, is_alive FROM subcategories WHERE category_id = $1;`
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, categoryId)
 	if err != nil {
@@ -84,7 +84,7 @@ func (C *SubCategory) QueryAll(categoryId int64) ([]SubCategory, error) {
 	var subCategories []SubCategory
 	for rows.Next() {
 		var subCategory SubCategory
-		err := rows.Scan(&subCategory.CategoryId, &subCategory.Name, &subCategory.CreatedAt, &subCategory.IsAlive)
+		err := rows.Scan(&subCategory.Id, &subCategory.CategoryId, &subCategory.Name, &subCategory.CreatedAt, &subCategory.IsAlive)
 		if err != nil {
 			return nil, err
 		}

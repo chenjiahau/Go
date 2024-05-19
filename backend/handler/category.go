@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -12,12 +11,7 @@ import (
 )
 
 func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	var c model.CategoryInterface = &model.Category{}
 	var acp model.AddCategoryParams
@@ -77,12 +71,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	var c model.CategoryInterface = &model.Category{}
 	categories, err := c.QueryAll()
@@ -103,12 +92,7 @@ func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	var c model.CategoryInterface = &model.Category{}
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
@@ -144,12 +128,7 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 }
 
 func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -221,12 +200,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	var c model.CategoryInterface = &model.Category{}
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
@@ -258,12 +232,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -347,12 +316,7 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -362,6 +326,18 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 		}
 
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	var c model.CategoryInterface = &model.Category{}
+	_, err = c.GetById(categoryId)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get category",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
@@ -384,12 +360,7 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 }
 
 func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	var c model.CategoryInterface = &model.Category{}
 	var sc model.SubCategoryInterface = &model.SubCategory{}
@@ -427,7 +398,6 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 	}
 
 	subCategory, err := sc.GetById(categoryId, subCategoryId)
-	fmt.Println(subCategory, err)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -449,12 +419,7 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 }
 
 func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -562,12 +527,7 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 }
 
 func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request) {
-	var _ model.TokenInterface = &model.Token{}
-	ok := CheckTokenAlive()
-	if !ok {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-		return
-	}
+	if ok := CheckToken(w, r) ; !ok { return }
 
 	var sc model.SubCategoryInterface = &model.SubCategory{}
 	subCategoryId, err := strconv.ParseInt(chi.URLParam(r, "subId"), 10, 64)
@@ -583,7 +543,6 @@ func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request
 
 
 	subCategory, err := sc.DeleteById(subCategoryId)
-	fmt.Println(subCategory, err)
 	if err != nil || subCategory.Id == 0 {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
