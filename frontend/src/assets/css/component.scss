@@ -1,9 +1,19 @@
+// Section
+.section {
+  margin-top: 16px;
+  border: 1px solid var(--primary-color);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+// Divider
 .divider {
   border-top: 1px solid var(--primary-color);
   width: 100%;
   margin: 8px 0;
 }
 
+// Status
 .disabled {
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   cursor: not-allowed !important;
@@ -13,12 +23,14 @@
   }
 }
 
+// Header
 .header-title {
   font-family: var(--title-font);
   font-weight: bold;
   letter-spacing: 2px;
 }
 
+// Button
 .button {
   background-color: var(--primary-color);
   color: var(--white-color);
@@ -49,6 +61,21 @@
   }
 }
 
+.delete-button {
+  background-color: var(--danger-color);
+  color: var(--white-color);
+  cursor: pointer;
+  text-align: center;
+  padding: 8px 24px;
+  border-radius: 4px;
+  border: none;
+
+  &:hover {
+    background-color: var(--danger-color);
+    color: var(--black-color);
+  }
+}
+
 .link-button {
   color: var(--primary-color);
   cursor: pointer;
@@ -57,4 +84,183 @@
   &:hover {
     color: var(--primary-color);
   }
+}
+
+.edit-button {
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    background-color: var(--third-color);
+    color: var(--black-color);
+  }
+}
+
+// Breadcrumb
+.breadcrumb-container {
+  border: 1px solid var(--primary-color);
+  border-radius: 0.3rem;
+  display: inline-flex;
+  overflow: hidden;
+
+  &-item {
+    background: var(--white-color);
+    color: var(--black-color);
+    outline: none;
+    width: 120px;
+    padding: 8px 16px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover:after,
+    &:hover {
+      background: var(--primary-color);
+      color: var(--white-color);
+      text-decoration: none;
+    }
+
+    &:focus:after,
+    &:focus,
+    &.is-active:focus {
+      background: var(--primary-color);
+      color: var(--white-color);
+    }
+
+    &:after,
+    &:before {
+      background: var(--white-color);
+      bottom: 0;
+      clip-path: polygon(50% 50%, -50% -50%, 0 100%);
+      content: "";
+      left: 100%;
+      position: absolute;
+      top: 0;
+      width: 1em;
+      z-index: 1;
+    }
+
+    &:before {
+      background: var(--primary-color);
+      margin-left: 1px;
+    }
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.is-active {
+      background: var(--primary-color);
+    }
+  }
+}
+
+// Input
+.edit-input {
+  border: 1px solid var(--primary-color);
+  background-color: var(--white-color);
+  border-radius: 4px;
+  width: 100%;
+  position: relative;
+  padding: 0 !important;
+  margin: 4px 8px 8px 8px;
+  display: grid !important;
+  grid-template-columns: 1fr 48px;
+  gap: 8px;
+
+  .form-control:focus {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  & input {
+    border: none;
+    width: 98%;
+    outline: none;
+  }
+
+  &-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+
+    & div {
+      padding: 0 !important;
+    }
+  }
+}
+
+// Table
+.table {
+  border-collapse: collapse;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+
+  & thead tr {
+    background-color: var(--black-color);
+    color: var(--white-color);
+    text-align: left;
+  }
+
+  & th {
+    padding: 8px 16px;
+  }
+
+  & td div {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+  }
+
+  & td div.text-center {
+    justify-content: center;
+  }
+
+  & tbody tr {
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--third-color);
+    }
+  }
+
+  & tr:nth-of-type(even) {
+    background-color: var(--gray-color);
+
+    &:hover {
+      background-color: var(--third-color);
+    }
+  }
+
+  &-action-td {
+    text-align: right;
+  }
+}
+
+// Modal
+.modal-dialog_600 {
+  max-width: 600px;
+}
+
+.modal-dialog_700 {
+  max-width: 700px;
+}
+
+.modal-dialog_800 {
+  max-width: 800px;
+}
+
+.modal-dialog_900 {
+  max-width: 900px;
+}
+
+.modal-dialog_1000 {
+  max-width: 1000px;
 }
