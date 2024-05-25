@@ -31,7 +31,7 @@ type Category struct {
 	Name				string				`json:"name"`
 	CreatedAt		time.Time			`json:"createdAt"`
 	IsAlive			bool					`json:"isAlive"`
-	SubCategory	[]SubCategory `json:"subCategory"`
+	SubCategory	[]SubCategory `json:"subcategories"`
 }
 
 // Method

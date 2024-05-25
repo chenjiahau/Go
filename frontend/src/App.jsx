@@ -10,6 +10,7 @@ import routerConfig from "@/const/config/router";
 import Layout from "@/ui/Layout";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
+import Category from "@/pages/Category";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path={routerConfig.routes.LOGIN} element={<Login />} />
         <Route path={routerConfig.routes.HOME} element={<Layout />}>
           <Route path={routerConfig.routes.DASHBOARD} element={<Dashboard />} />
+          <Route path={routerConfig.routes.CATEGORY} element={<Category />} />
         </Route>
       </Routes>
       <ToastContainer />

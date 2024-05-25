@@ -1,0 +1,16 @@
+.category-section {
+  &-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 8px;
+
+    &-input {
+      grid-column: 1 / 2;
+    }
+
+    &-button {
+      grid-column: 2 / 3;
+    }
+  }
+}

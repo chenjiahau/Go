@@ -354,7 +354,7 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 	}
 
 	resData := map[string]interface{}{
-		"subCategories": subCategories,
+		"subcategories": subCategories,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

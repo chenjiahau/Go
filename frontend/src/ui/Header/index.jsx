@@ -40,9 +40,4 @@ const Header = (props) => {
   );
 };
 
-Header.propTypes = {
-  user: PropTypes.object,
-  onCleanUser: PropTypes.func.isRequired,
-};
-
 export default Header;

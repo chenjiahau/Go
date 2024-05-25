@@ -41,6 +41,7 @@ const Layout = () => {
       try {
         apiHandler.setToken(savedUser.token);
         await apiHandler.get(apiConfig.resource.VERIFY_TOKEN);
+        dispatch(userActions.setUser(savedUser));
       } catch (error) {
         dispatch(userActions.cleanUser());
         navigate(routerConfig.routes.HOME);
@@ -57,18 +58,22 @@ const Layout = () => {
   }, []);
 
   return (
-    <div className='layout'>
-      <Header user={user} onCleanUser={onCleanUser} />
-      <div className='layout__content'>
-        <div className='content__left'>
-          <Navigation />
+    <>
+      {user && (
+        <div className='layout'>
+          <Header user={user} onCleanUser={onCleanUser} />
+          <div className='layout__content'>
+            <div className='content__left'>
+              <Navigation />
+            </div>
+            <div className='content__right'>
+              <Outlet />
+            </div>
+            <Footer />
+          </div>
         </div>
-        <div className='content__right'>
-          <Outlet />
-        </div>
-        <Footer />
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

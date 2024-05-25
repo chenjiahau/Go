@@ -29,13 +29,13 @@ func GetRoutes() http.Handler {
 	mux.Get("/api/auth/sign-out", handler.Ctrl.SignOut)
 
 	// Category routes
-	mux.Get("/api/category", handler.Ctrl.GetAllCategory)
+	mux.Get("/api/categories", handler.Ctrl.GetAllCategory)
 	mux.Post("/api/category", handler.Ctrl.AddCategory)
 	mux.Get("/api/category/{id}", handler.Ctrl.GetCategoryById)
 	mux.Put("/api/category/{id}", handler.Ctrl.UpdateCategory)
 	mux.Delete("/api/category/{id}", handler.Ctrl.DeleteCategory)
 
-	mux.Get("/api/category/{id}/subcategory", handler.Ctrl.GetAllSubCategory)
+	mux.Get("/api/category/{id}/subcategories", handler.Ctrl.GetAllSubCategory)
 	mux.Post("/api/category/{id}/subcategory", handler.Ctrl.AddSubCategory)
 	mux.Get("/api/category/{id}/subcategory/{subId}", handler.Ctrl.GetSubCategoryById)
 	mux.Put("/api/category/{id}/subcategory/{subId}", handler.Ctrl.UpdateSubCategory)
