@@ -43,9 +43,9 @@ const Layout = () => {
         await apiHandler.get(apiConfig.resource.VERIFY_TOKEN);
         dispatch(userActions.setUser(savedUser));
       } catch (error) {
+        localStorage.removeItem("user");
         dispatch(userActions.cleanUser());
-        navigate(routerConfig.routes.HOME);
-        messageUtil.showErrorMessage(commonMessage.error);
+        navigate(routerConfig.routes.LOGIN);
       }
     };
 
