@@ -10,6 +10,8 @@ type CategoryInterface interface {
 	GetByName(string)								(Category, error)
 	Create(string, time.Time, bool)	(int64, error)
 	QueryAll()											([]Category, error)
+	QueryTotalCount()					(int, error)
+	QueryByPage(int, int, int)						([]Category, error)
 	Update(int64, string, bool)			(error)
 	DeleteById(int64)								(Category, error)
 }
@@ -99,7 +101,54 @@ func (C *Category) QueryAll() ([]Category, error) {
 	var categories []Category
 	for rows.Next() {
 		var category Category
+
 		err := rows.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive)
+		if err != nil {
+			return nil, err
+		}
+
+		SubCategory := SubCategory{}
+		subCategories, err := SubCategory.QueryAll(category.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		category.SubCategory = subCategories
+		categories = append(categories, category)
+	}
+
+	return categories, nil
+}
+
+func (C *Category) QueryTotalCount() (int, error) {
+	sqlStatement := `SELECT COUNT(*) FROM categories;`
+
+	var count int
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (C *Category) QueryByPage(number int, size int, order int) ([]Category, error) {
+	sqlStatement := `SELECT id, name, created_at, is_alive FROM categories ORDER BY id DESC LIMIT $1 OFFSET $2;`
+	if order <= 0 {
+		sqlStatement = `SELECT id, name, created_at, is_alive FROM categories ORDER BY id ASC LIMIT $1 OFFSET $2;`
+	}
+
+	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, size, (number - 1) * size)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var categories []Category
+	for rows.Next() {
+		var category Category
+		err := rows.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive)
+
 		if err != nil {
 			return nil, err
 		}
