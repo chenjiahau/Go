@@ -1,0 +1,76 @@
+// Button
+.button {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  cursor: pointer;
+  text-align: center;
+  padding: 8px 32px;
+  border-radius: 4px;
+  border: none;
+
+  &:hover {
+    background-color: var(--third-color);
+    color: var(--black-color);
+  }
+
+  &:disabled {
+    background-color: var(--gray-color);
+    color: var(--black-color);
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: var(--gray-color);
+      color: var(--black-color);
+    }
+  }
+}
+
+.cancel-button {
+  background-color: var(--black-color);
+  color: var(--white-color);
+  cursor: pointer;
+  text-align: center;
+  padding: 4px 24px;
+  border-radius: 4px;
+  border: none;
+
+  &:hover {
+    background-color: var(--third-color);
+    color: var(--black-color);
+  }
+}
+
+.delete-button {
+  background-color: var(--danger-color);
+  color: var(--white-color);
+  cursor: pointer;
+  text-align: center;
+  padding: 4px 24px;
+  border-radius: 4px;
+  border: none;
+
+  &:hover {
+    background-color: var(--danger-color);
+    color: var(--black-color);
+  }
+}
+
+.link-button {
+  color: var(--primary-color);
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    color: var(--primary-color);
+  }
+}
+
+.edit-button {
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--black-color);
+  }
+}

@@ -1,0 +1,52 @@
+// Table
+.table {
+  border-collapse: collapse;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+
+  & thead tr {
+    background-color: var(--black-color);
+    color: var(--white-color);
+    text-align: left;
+  }
+
+  & tbody tr.selected td {
+    background-color: var(--third-color);
+  }
+
+  & th,
+  td {
+    padding: 8px 16px;
+  }
+
+  & td div {
+    height: 42px;
+    display: flex;
+    align-items: center;
+  }
+
+  & td div.text-center {
+    justify-content: center;
+  }
+
+  & tbody tr {
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--third-color);
+    }
+  }
+
+  & tr:nth-of-type(even) {
+    background-color: var(--gray-color);
+
+    &:hover {
+      background-color: var(--third-color);
+    }
+  }
+
+  &-action-td {
+    text-align: right;
+  }
+}

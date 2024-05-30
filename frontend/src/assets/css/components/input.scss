@@ -1,0 +1,37 @@
+// Input
+.edit-input {
+  border: 1px solid var(--primary-color);
+  background-color: var(--white-color);
+  border-radius: 4px;
+  width: 100%;
+  position: relative;
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-columns: 1fr 48px;
+  gap: 8px;
+
+  .form-control:focus {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  & input {
+    border: none;
+    width: 98%;
+    outline: none;
+  }
+
+  &-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+
+    & div {
+      padding: 0 !important;
+    }
+  }
+}

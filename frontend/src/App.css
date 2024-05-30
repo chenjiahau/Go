@@ -1,4 +1,15 @@
 @import "./assets/css/layout.scss";
 @import "./assets/css/header.scss";
 @import "./assets/css/navigation.scss";
-@import "./assets/css/component.scss";
+
+@import "./assets/css/components/breadcrumb.scss";
+@import "./assets/css/components/button.scss";
+@import "./assets/css/components/divider.scss";
+@import "./assets/css/components/dropdown.scss";
+@import "./assets/css/components/input.scss";
+@import "./assets/css/components/modal.scss";
+@import "./assets/css/components/pagination.scss";
+@import "./assets/css/components/section.scss";
+@import "./assets/css/components/state.scss";
+@import "./assets/css/components/table.scss";
+@import "./assets/css/components/title.scss";

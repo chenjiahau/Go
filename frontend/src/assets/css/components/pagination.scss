@@ -1,0 +1,44 @@
+// Pagination
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  &-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--white-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    color: var(--black-color);
+    cursor: pointer;
+    padding: 4px 8px;
+
+    &:hover {
+      background-color: var(--third-color);
+    }
+
+    &.active {
+      background-color: var(--primary-color);
+      color: var(--white-color);
+      cursor: default;
+    }
+
+    &.dots {
+      cursor: default;
+
+      &:hover {
+        background-color: var(--white-color);
+      }
+    }
+
+    &.disabled {
+      background-color: var(--gray-color);
+      color: var(--black-color);
+      cursor: not-allowed;
+    }
+  }
+}

@@ -1,0 +1,59 @@
+// Breadcrumb
+.breadcrumb-container {
+  border: 1px solid var(--primary-color);
+  border-radius: 0.3rem;
+  display: inline-flex;
+  overflow: hidden;
+
+  &-item {
+    background: var(--white-color);
+    color: var(--black-color);
+    outline: none;
+    width: 120px;
+    padding: 8px 16px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover:after,
+    &:hover {
+      background: var(--primary-color);
+      color: var(--white-color);
+      text-decoration: none;
+    }
+
+    &:focus:after,
+    &:focus,
+    &.is-active:focus {
+      background: var(--primary-color);
+      color: var(--white-color);
+    }
+
+    &:after,
+    &:before {
+      background: var(--white-color);
+      bottom: 0;
+      clip-path: polygon(50% 50%, -50% -50%, 0 100%);
+      content: "";
+      left: 100%;
+      position: absolute;
+      top: 0;
+      width: 1em;
+      // z-index: 1;
+    }
+
+    &:before {
+      background: var(--primary-color);
+      margin-left: 1px;
+    }
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.is-active {
+      background: var(--primary-color);
+    }
+  }
+}
