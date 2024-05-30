@@ -22,6 +22,7 @@ import messageUtil, { commonMessage } from "@/util/message.util";
 
 const Category = () => {
   // State
+  const [forceReloadCount, setForceReloadCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeDefinition[1]);
   const [totalCategoryCount, setTotalCategoryCount] = useState(0);
@@ -32,55 +33,60 @@ const Category = () => {
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false);
 
   // Method
-  const handleInitialization = useCallback(
-    async (resetPagin = false) => {
-      if (resetPagin) {
-        setCurrentPage(1);
-        setPageSize(pageSizeDefinition[1]);
+  const handleInitialization = async () => {
+    let response = null;
+    response = await apiHandler.get(apiConfig.resource.NUMBER_OF_CATEGORIES);
+    const totalCategoryNumber = response.data.data.totalCategoryNumber;
+    setTotalCategoryCount(totalCategoryNumber);
+
+    // Check if the current page is greater than the total page number
+    const totalPageNum = Math.ceil(totalCategoryNumber / pageSize);
+    let resetCurrentPage = false;
+    if (totalPageNum < currentPage) {
+      resetCurrentPage = true;
+      setCurrentPage(1);
+    }
+
+    response = await apiHandler.get(
+      apiConfig.resource.CATEGORIES_BY_PAGE.replace(
+        ":page",
+        resetCurrentPage ? 1 : currentPage
+      ).replace(":size", pageSize)
+    );
+
+    let updatedCategories = [];
+    response.data.data.categories?.forEach((category) => {
+      const subcategories = [];
+
+      if (category.subcategories) {
+        category.subcategories.forEach((subcategory) => {
+          subcategories.push(subcategory);
+        });
       }
 
-      let response = null;
-      response = await apiHandler.get(apiConfig.resource.NUMBER_OF_CATEGORIES);
-      setTotalCategoryCount(response.data.data.totalCategoryNumber);
+      updatedCategories.push({
+        ...category,
+        subcategories,
+        originalName: category.name,
+        isEditing: false,
+      });
+    });
+    updatedCategories = orderBy(updatedCategories, ["id"], ["asc"]);
 
-      response = await apiHandler.get(
-        apiConfig.resource.CATEGORIES_BY_PAGE.replace(
-          ":page",
-          currentPage
-        ).replace(":size", pageSize)
+    if (selectedCategory?.id) {
+      const category = updatedCategories.find(
+        (category) => category.id === selectedCategory?.id
       );
 
-      let updatedCategories = [];
-      response.data.data.categories?.forEach((category) => {
-        const subcategories = [];
+      setSelectedCategory(category);
+    }
 
-        if (category.subcategories) {
-          category.subcategories.forEach((subcategory) => {
-            subcategories.push(subcategory);
-          });
-        }
+    setCategories(updatedCategories);
+  };
 
-        updatedCategories.push({
-          ...category,
-          subcategories,
-          originalName: category.name,
-          isEditing: false,
-        });
-      });
-      updatedCategories = orderBy(updatedCategories, ["id"], ["asc"]);
-
-      if (selectedCategory?.id) {
-        const category = updatedCategories.find(
-          (category) => category.id === selectedCategory?.id
-        );
-
-        setSelectedCategory(category);
-      }
-
-      setCategories(updatedCategories);
-    },
-    [currentPage, pageSize, selectedCategory?.id]
-  );
+  const reloadCategories = () => {
+    setForceReloadCount(forceReloadCount + 1);
+  };
 
   const clickCategoryName = (id) => {
     const updatedCategories = categories.map((category) => {
@@ -156,12 +162,8 @@ const Category = () => {
       await apiHandler.delete(apiURL);
       messageUtil.showSuccessMessage(commonMessage.success);
 
-      const updatedCategories = categories.filter(
-        (category) => category.id !== selectedCategory.id
-      );
-      setCategories(updatedCategories);
       setIsOpenConfirmationModal(false);
-      handleInitialization(true);
+      reloadCategories();
     } catch (error) {
       messageUtil.showErrorMessage(commonMessage.error);
     }
@@ -181,8 +183,8 @@ const Category = () => {
 
   // Side effect
   useEffect(() => {
-    handleInitialization();
-  }, [currentPage, handleInitialization, pageSize]);
+    handleInitialization(false);
+  }, [currentPage, pageSize, forceReloadCount]);
 
   return (
     <>
@@ -191,7 +193,9 @@ const Category = () => {
           <div className='breadcrumb-container-item'>Category</div>
         </div>
       </Link>
-      <Add onInitialization={() => handleInitialization(true)} />
+
+      <Add onInitialization={reloadCategories} />
+
       <Table
         categories={categories}
         onClickCategoryName={clickCategoryName}
