@@ -24,6 +24,11 @@ body {
   width: 100%;
   color: var(--black-color);
   font-family: Arial, sans-serif, "Oswald";
+  overflow-x: hidden;
+}
+
+li {
+  list-style: none;
 }
 
 .layout {
@@ -61,6 +66,7 @@ body {
   .content__right {
     background-color: var(--white-color);
     padding: 16px 16px 48px 16px;
+    margin-right: 16px;
   }
 }
 
@@ -73,6 +79,7 @@ body {
   background-color: var(--black-color);
   color: white;
   text-align: center;
+  z-index: -1;
 }
 
 // Overwrite the default style of the button

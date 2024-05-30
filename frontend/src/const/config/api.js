@@ -6,6 +6,8 @@ const resource = {
   VERIFY_TOKEN: "/auth/verify-token",
   // Category
   CATEGORIES: "/categories",
+  NUMBER_OF_CATEGORIES: "/categories/total",
+  CATEGORIES_BY_PAGE: "/categories/page/:page/size/:size",
   ADD_CATEGORY: "/category",
   EDIT_CATEGORY: "/category/:id",
   // Subcategory

@@ -1,6 +1,6 @@
 import "./module.scss";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { cloneDeep, orderBy } from "lodash";
 
@@ -9,17 +9,22 @@ import routerConfig from "@/const/config/router";
 import apiConfig from "@/const/config/api";
 
 // Component
+import { pageSizeDefinition } from "@/components/Pagination";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import Add from "./components/Add";
 import Table from "./components/Table";
+import Page from "./components/Page";
+import Subcategories from "./components/Subcategories";
 
 // Util
 import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "@/util/message.util";
-import Subcategories from "./components/Subcategories";
 
 const Category = () => {
   // State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(pageSizeDefinition[1]);
+  const [totalCategoryCount, setTotalCategoryCount] = useState(0);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [isOpenSubcategoriesModal, setIsOpenSubcategoriesModal] =
@@ -27,38 +32,55 @@ const Category = () => {
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false);
 
   // Method
-  const handleInitialization = async () => {
-    const response = await apiHandler.get(apiConfig.resource.CATEGORIES);
-
-    let updatedCategories = [];
-    response.data.data.categories?.forEach((category) => {
-      const subcategories = [];
-
-      if (category.subcategories) {
-        category.subcategories.forEach((subcategory) => {
-          subcategories.push(subcategory);
-        });
+  const handleInitialization = useCallback(
+    async (resetPagin = false) => {
+      if (resetPagin) {
+        setCurrentPage(1);
+        setPageSize(pageSizeDefinition[1]);
       }
 
-      updatedCategories.push({
-        ...category,
-        subcategories,
-        originalName: category.name,
-        isEditing: false,
-      });
-    });
-    updatedCategories = orderBy(updatedCategories, ["id"], ["asc"]);
+      let response = null;
+      response = await apiHandler.get(apiConfig.resource.NUMBER_OF_CATEGORIES);
+      setTotalCategoryCount(response.data.data.totalCategoryNumber);
 
-    if (selectedCategory.id) {
-      const category = updatedCategories.find(
-        (category) => category.id === selectedCategory.id
+      response = await apiHandler.get(
+        apiConfig.resource.CATEGORIES_BY_PAGE.replace(
+          ":page",
+          currentPage
+        ).replace(":size", pageSize)
       );
 
-      setSelectedCategory(category);
-    }
+      let updatedCategories = [];
+      response.data.data.categories?.forEach((category) => {
+        const subcategories = [];
 
-    setCategories(updatedCategories);
-  };
+        if (category.subcategories) {
+          category.subcategories.forEach((subcategory) => {
+            subcategories.push(subcategory);
+          });
+        }
+
+        updatedCategories.push({
+          ...category,
+          subcategories,
+          originalName: category.name,
+          isEditing: false,
+        });
+      });
+      updatedCategories = orderBy(updatedCategories, ["id"], ["asc"]);
+
+      if (selectedCategory?.id) {
+        const category = updatedCategories.find(
+          (category) => category.id === selectedCategory?.id
+        );
+
+        setSelectedCategory(category);
+      }
+
+      setCategories(updatedCategories);
+    },
+    [currentPage, pageSize, selectedCategory?.id]
+  );
 
   const clickCategoryName = (id) => {
     const updatedCategories = categories.map((category) => {
@@ -139,6 +161,7 @@ const Category = () => {
       );
       setCategories(updatedCategories);
       setIsOpenConfirmationModal(false);
+      handleInitialization(true);
     } catch (error) {
       messageUtil.showErrorMessage(commonMessage.error);
     }
@@ -159,7 +182,7 @@ const Category = () => {
   // Side effect
   useEffect(() => {
     handleInitialization();
-  }, []);
+  }, [currentPage, handleInitialization, pageSize]);
 
   return (
     <>
@@ -168,7 +191,7 @@ const Category = () => {
           <div className='breadcrumb-container-item'>Category</div>
         </div>
       </Link>
-      <Add onInitialization={handleInitialization} />
+      <Add onInitialization={() => handleInitialization(true)} />
       <Table
         categories={categories}
         onClickCategoryName={clickCategoryName}
@@ -178,6 +201,14 @@ const Category = () => {
         onShowSubcategoriesModal={showSubcategoriesModal}
         onShowConfirmationModal={showConfirmationModal}
         saveCategory={saveCategory}
+      />
+
+      <Page
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalCategoryCount={totalCategoryCount}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
       />
 
       <Subcategories
