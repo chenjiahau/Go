@@ -1,6 +1,6 @@
 import "./module.scss";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { cloneDeep, orderBy } from "lodash";
 

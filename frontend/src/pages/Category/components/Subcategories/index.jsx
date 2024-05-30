@@ -161,11 +161,17 @@ const Subcategories = (props) => {
     handleInitialization(category);
   }, [category]);
 
+  if (!category) {
+    return null;
+  }
+
   return (
     <>
       <Modal fullscreen={true} scrollable={true} show={isOpen} onHide={onClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Subcategory</Modal.Title>
+          <Modal.Title>
+            {category.name}({subcategories.length})
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className='section mb-2'>
