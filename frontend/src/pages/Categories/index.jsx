@@ -189,9 +189,9 @@ const Category = () => {
   return (
     <>
       <div className='breadcrumb-container'>
-        <Link to={routerConfig.routes.CATEGORY} className='breadcrumb--item'>
+        <Link to={routerConfig.routes.CATEGORIES} className='breadcrumb--item'>
           <span className='breadcrumb--item--inner'>
-            <span className='breadcrumb--item-title'>Category</span>
+            <span className='breadcrumb--item-title'>Categories</span>
           </span>
         </Link>
       </div>
