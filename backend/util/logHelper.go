@@ -1,6 +1,8 @@
 package util
 
-import "go.uber.org/zap"
+import (
+	"go.uber.org/zap"
+)
 
 func WriteInfoLog(message string) {
 	logger, _ := zap.NewProduction()
