@@ -9,9 +9,15 @@
   --danger-color: #dc3545;
   --white-color: #fff;
   --gray-color: #f8f9fa;
+  --heavy-gray-color: #c0c0c0;
   --black-color: #000;
   --title-font: "Pacifico";
   --regular-font: "Arial";
+  --general-width: 200px;
+  --small-width: 128px;
+  --general-height: 36px;
+  --general-double-height: 100%;
+  --small-height: 32px;
 }
 
 * {
@@ -47,12 +53,13 @@ li {
   align-items: center;
   position: fixed;
   width: 100%;
+  z-index: 3;
 }
 
 .layout__content {
   margin-top: 76px;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 240px 1fr;
 
   .content__left {
     .left__menu {
@@ -66,7 +73,7 @@ li {
   .content__right {
     background-color: var(--white-color);
     padding: 16px 16px 48px 16px;
-    margin-right: 16px;
+    z-index: 1;
   }
 }
 
@@ -74,12 +81,14 @@ li {
   position: fixed;
   bottom: 0;
   width: 100%;
-  margin: 0 auto;
-  padding: 4px 0;
+  height: var(--general-height);
   background-color: var(--black-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: white;
   text-align: center;
-  z-index: -1;
+  z-index: 2;
 }
 
 // Overwrite the default style of the button

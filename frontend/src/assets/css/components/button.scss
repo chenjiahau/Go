@@ -1,5 +1,23 @@
 // Button
-.button {
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+
+  &--right {
+    justify-content: flex-end;
+    gap: 8px;
+  }
+}
+
+.general-button {
+  display: flex;
+  justify-content: center;
+  min-width: var(--general-width);
+  max-width: 100%;
+  height: var(--general-height);
+  align-items: center;
   background-color: var(--primary-color);
   color: var(--white-color);
   cursor: pointer;
@@ -30,9 +48,9 @@
   color: var(--white-color);
   cursor: pointer;
   text-align: center;
-  padding: 4px 24px;
   border-radius: 4px;
   border: none;
+  min-width: var(--small-width);
 
   &:hover {
     background-color: var(--third-color);
@@ -45,9 +63,9 @@
   color: var(--white-color);
   cursor: pointer;
   text-align: center;
-  padding: 4px 24px;
   border-radius: 4px;
   border: none;
+  min-width: var(--small-width) !important;
 
   &:hover {
     background-color: var(--danger-color);

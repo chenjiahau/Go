@@ -3,6 +3,10 @@ import { useState } from "react";
 // Const
 import apiConfig from "@/const/config/api";
 
+// Component
+import Input from "@/components/Input";
+import Button from "@/components/Button";
+
 // Util
 import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "@/util/message.util";
@@ -38,12 +42,11 @@ const Add = (props) => {
 
   return (
     <div className='section'>
-      <div className='mb-2'>
-        <input
+      <div className='input-group'>
+        <Input
+          id='category'
           type='text'
           name='category'
-          id='category'
-          className='form-control'
           autoComplete='off'
           placeholder='New category'
           value={category}
@@ -56,11 +59,12 @@ const Add = (props) => {
           required
         />
       </div>
+      <div className='space-t-2'></div>
       <div className='text-right'>
-        <button className='button w-100' onClick={addCategory}>
+        <Button onClick={addCategory}>
           <i className='fa-solid fa-plus'></i>
-          <span className='ms-1'>Add</span>
-        </button>
+          <span className='space-l-1'>Add</span>
+        </Button>
       </div>
     </div>
   );

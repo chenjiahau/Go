@@ -1,5 +1,7 @@
 import Modal from "react-bootstrap/Modal";
 
+import Button from "../Button";
+
 const ConfirmationModal = (props) => {
   const { isOpen, onClose, onConfirm } = props;
 
@@ -12,20 +14,12 @@ const ConfirmationModal = (props) => {
         <p>Do you want to delete it?</p>
       </Modal.Body>
       <Modal.Footer>
-        <button
-          type='button'
-          className='button cancel-button'
-          onClick={onClose}
-        >
+        <Button extraClasses={["cancel-button"]} onClick={onClose}>
           Close
-        </button>
-        <button
-          type='button'
-          className='button delete-button'
-          onClick={onConfirm}
-        >
+        </Button>
+        <Button extraClasses={["delete-button"]} onClick={onConfirm}>
           Delete
-        </button>
+        </Button>
       </Modal.Footer>
     </Modal>
   );

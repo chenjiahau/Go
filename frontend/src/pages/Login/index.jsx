@@ -15,6 +15,8 @@ import { userActions } from "@/store/slices/user";
 
 // Component
 import Footer from "@/ui/Footer";
+import Input from "@/components/Input";
+import Button from "@/components/Button";
 
 // Util
 import apiHandler from "@/util/api.util";
@@ -176,64 +178,55 @@ const Home = () => {
             <h2>Sign In</h2>
           </div>
           <div className='login-block__body'>
-            <form action='' method='post'>
-              <div className='form-group mb-3'>
-                <label htmlFor='username'>E-mail</label>
-                <input
-                  type='text'
-                  name='email'
-                  id='email'
-                  className='form-control'
-                  placeholder='Your email'
-                  required
-                  value={signInData.email}
-                  onChange={(e) => {
-                    changeSignInData("email")(e);
-                  }}
-                />
-              </div>
-              <div className='form-group mb-4'>
-                <label htmlFor='password'>Password</label>
-                <input
-                  type='password'
-                  name='password'
-                  id='password'
-                  className='form-control'
-                  placeholder='at least 8 characters'
-                  required
-                  value={signInData.password}
-                  onChange={(e) => {
-                    changeSignInData("password")(e);
-                  }}
-                />
-              </div>
-              <div className='form-group d-flex justify-content-between'>
-                <button
-                  id='submitBtn'
-                  type='button'
-                  className='button mr-2'
-                  onClick={handleSignIn}
-                >
-                  Submit
-                </button>
-                <button
-                  type='button'
-                  className='button cancel-button'
-                  onClick={emptySignInData}
-                >
-                  Reset
-                </button>
-              </div>
-              <div className='d-flex justify-content-end mt-4'>
-                <div className='me-2'>Do you have not an account?</div>
-                <Link
-                  className='link-button'
-                  onClick={changeStage(stageType.REGISTER)}
-                >
-                  Sign up
-                </Link>
-              </div>
-            </form>
+            <div className='input-group'>
+              <label htmlFor='username'>E-mail</label>
+              <Input
+                id='email'
+                type='text'
+                name='email'
+                placeholder='Your email'
+                value={signInData.email}
+                onChange={(e) => {
+                  changeSignInData("email")(e);
+                }}
+              />
+            </div>
+            <div className='space-b-3'></div>
+            <div className='input-group'>
+              <label htmlFor='password'>Password</label>
+              <Input
+                id='password'
+                type='password'
+                name='password'
+                placeholder='at least 8 characters'
+                value={signInData.password}
+                onChange={(e) => {
+                  changeSignInData("password")(e);
+                }}
+              />
+            </div>
+            <div className='space-b-4'></div>
+            <div className='button-container'>
+              <Button id='submitBtn' onClick={handleSignIn}>
+                Submit
+              </Button>
+              <Button
+                id='cancelBtn'
+                extraClasses={["cancel-button"]}
+                onClick={emptySignInData}
+              >
+                Reset
+              </Button>
+            </div>
+            <div className='button-container button-container--right'>
+              <div className='me-2'>Do you have not an account?</div>
+              <Link
+                className='link-button'
+                onClick={changeStage(stageType.REGISTER)}
+              >
+                Sign up
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -249,84 +242,74 @@ const Home = () => {
             <h2>Sign Up</h2>
           </div>
           <div className='login-block__body'>
-            <div className='form-group mb-3'>
+            <div className='input-group'>
               <label htmlFor='username'>E-mail</label>
-              <input
+              <Input
+                id='email'
                 type='text'
                 name='email'
-                id='email'
-                className='form-control'
                 placeholder='Your email'
-                required
                 value={signUpData.email}
                 onChange={(e) => {
                   changeSignUpData("email")(e);
                 }}
               />
             </div>
-            <div className='form-group mb-3'>
+            <div className='space-b-3'></div>
+            <div className='input-group'>
               <label htmlFor='username'>Username</label>
-              <input
+              <Input
+                id='username'
                 type='text'
                 name='username'
-                id='username'
-                className='form-control'
                 placeholder='Your username'
-                required
                 value={signUpData.username}
                 onChange={(e) => {
                   changeSignUpData("username")(e);
                 }}
               />
             </div>
-            <div className='form-group mb-3'>
+            <div className='space-b-3'></div>
+            <div className='input-group'>
               <label htmlFor='password'>Password</label>
-              <input
+              <Input
+                id='password'
                 type='password'
                 name='password'
-                id='password'
-                className='form-control'
                 placeholder='at least 8 characters'
-                required
                 value={signUpData.password}
                 onChange={(e) => {
                   changeSignUpData("password")(e);
                 }}
               />
             </div>
-            <div className='form-group mb-4'>
+            <div className='space-b-3'></div>
+            <div className='input-group space-b-3'>
               <label htmlFor='password'>Confirm Password</label>
-              <input
+              <Input
+                id='confirm-password'
                 type='password'
                 name='confirm-password'
-                id='confirm-password'
-                className='form-control'
                 placeholder='confirm your password'
-                required
                 value={signUpData.confirmPassword}
                 onChange={(e) => {
                   changeSignUpData("confirmPassword")(e);
                 }}
               />
             </div>
-            <div className='form-group d-flex justify-content-between'>
-              <button
-                id='submitBtn'
-                type='button'
-                className='button mr-2'
-                onClick={handleSignUp}
-              >
+            <div className='space-b-4'></div>
+            <div className='button-container'>
+              <Button id='submitBtn' onClick={handleSignUp}>
                 Submit
-              </button>
-              <button
-                type='button'
-                className='button cancel-button'
+              </Button>
+              <Button
+                extraClasses={["cancel-button"]}
                 onClick={emptySignUpData}
               >
                 Reset
-              </button>
+              </Button>
             </div>
-            <div className='d-flex justify-content-end mt-4'>
+            <div className='button-container button-container--right'>
               <div className='me-2'>Do you have an account?</div>
               <Link
                 className='link-button'

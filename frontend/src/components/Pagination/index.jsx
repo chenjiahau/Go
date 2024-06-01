@@ -73,14 +73,16 @@ const Pagination = (props) => {
         <span>Next</span>
         <i className='fa-solid fa-caret-right'></i>
       </div>
-      <PaginationDropdown
-        pageSizeDefinition={pageSizeDefinition}
-        pageSize={pageSize}
-        onChangePageSize={(size) => {
-          setPageSize(size);
-          onPageChange(1);
-        }}
-      />
+      <div className='space-t-1'>
+        <PaginationDropdown
+          pageSizeDefinition={pageSizeDefinition}
+          pageSize={pageSize}
+          onChangePageSize={(size) => {
+            setPageSize(size);
+            onPageChange(1);
+          }}
+        />
+      </div>
     </div>
   );
 };

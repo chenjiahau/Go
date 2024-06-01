@@ -2,6 +2,8 @@
 @import "./assets/css/header.scss";
 @import "./assets/css/navigation.scss";
 
+@import "./assets/css/components/space.scss";
+@import "./assets/css/components/message.scss";
 @import "./assets/css/components/breadcrumb.scss";
 @import "./assets/css/components/button.scss";
 @import "./assets/css/components/divider.scss";

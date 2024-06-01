@@ -6,6 +6,7 @@ const PaginationDropdown = (props) => {
   const body = document.querySelector("body");
 
   const handleClick = () => {
+    const contentRight = document.querySelector(".content__right");
     const options = dropdownRef.current.querySelector(".options");
     const arrowUp = dropdownRef.current.querySelector(".arrow-up");
     const arrowDown = dropdownRef.current.querySelector(".arrow-down");
@@ -14,10 +15,12 @@ const PaginationDropdown = (props) => {
       options.classList.remove("active");
       arrowUp.classList.add("hidden");
       arrowDown.classList.remove("hidden");
+      contentRight.classList.remove("space-b-6");
     } else {
       options.classList.add("active");
       arrowUp.classList.remove("hidden");
       arrowDown.classList.add("hidden");
+      contentRight.classList.add("space-b-6");
     }
   };
 

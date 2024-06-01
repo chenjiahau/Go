@@ -1,8 +1,21 @@
 // Table
+.table-response {
+  width: calc(100vw - 310px);
+  overflow-y: auto;
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.table-response--inner {
+  width: 100%;
+}
+
 .table {
+  width: 100%;
   border-collapse: collapse;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
+  margin-bottom: 0px;
   overflow: hidden;
 
   & thead tr {
@@ -21,9 +34,12 @@
   }
 
   & td div {
-    height: 42px;
     display: flex;
     align-items: center;
+
+    &.height {
+      height: var(--general-height);
+    }
   }
 
   & td div.text-center {

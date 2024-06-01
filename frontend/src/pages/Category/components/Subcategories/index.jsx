@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
+import { orderBy } from "lodash";
 
 // Const
 import apiConfig from "@/const/config/api";
@@ -10,7 +11,8 @@ import messageUtil, { commonMessage } from "@/util/message.util";
 
 // Component
 import ConfirmationModal from "@/components/ConfirmationModal";
-import { orderBy } from "lodash";
+import Input from "@/components/Input";
+import Button from "@/components/Button";
 
 const errorMessage = {
   category: "Subcategory is required.",
@@ -158,8 +160,10 @@ const Subcategories = (props) => {
 
   // Side effect
   useEffect(() => {
-    handleInitialization(category);
-  }, [category]);
+    if (isOpen) {
+      handleInitialization(category);
+    }
+  }, [category, isOpen]);
 
   if (!category) {
     return null;
@@ -167,7 +171,7 @@ const Subcategories = (props) => {
 
   return (
     <>
-      <Modal fullscreen={true} scrollable={true} show={isOpen} onHide={onClose}>
+      <Modal size='xl' scrollable={true} show={isOpen} onHide={onClose}>
         <Modal.Header closeButton>
           <Modal.Title>
             {category.name}({subcategories.length})
@@ -175,12 +179,10 @@ const Subcategories = (props) => {
         </Modal.Header>
         <Modal.Body>
           <div className='section mb-2'>
-            <div className='mb-2'>
-              <input
-                type='text'
-                name='subcategory'
+            <div className='input-group'>
+              <Input
                 id='subcategory'
-                className='form-control'
+                name='subcategory'
                 autoComplete='off'
                 placeholder='New subcategory'
                 value={subcategory}
@@ -193,143 +195,144 @@ const Subcategories = (props) => {
                 required
               />
             </div>
-            <div className='mb-2 text-right'>
-              <button className='button w-100' onClick={addSubcategory}>
+            <div className='space-t-2'></div>
+            <div className='text-right'>
+              <Button onClick={addSubcategory}>
                 <i className='fa-solid fa-plus'></i>
                 <span className='ms-1'>Add</span>
-              </button>
+              </Button>
             </div>
           </div>
 
           <div className='section'>
-            <table className='table table-hover'>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th width='160'>Status</th>
-                  <th width='160'>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {subcategories.map((subcategory, index) => (
-                  <tr
-                    key={index}
-                    className={`${
-                      selectedSubcategory?.id &&
-                      selectedSubcategory?.id === subcategory.id
-                        ? "selected"
-                        : ""
-                    }`}
-                  >
-                    <td>
-                      {subcategory.isEditing ? (
-                        <div className='edit-input'>
-                          <input
-                            type='text'
-                            className='form-control'
-                            value={subcategory.name}
-                            onChange={(e) =>
-                              changeSubcategoryName(
-                                subcategory.id,
-                                e.target.value
-                              )
-                            }
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                saveSubcategory(subcategory.id);
-                              }
-
-                              if (e.key === "Escape") {
+            <div className='table-response table-response--inner'>
+              <table className='table table-hover'>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th width='160'>Status</th>
+                    <th width='160'>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {subcategories.map((subcategory, index) => (
+                    <tr
+                      key={index}
+                      className={`${
+                        selectedSubcategory?.id &&
+                        selectedSubcategory?.id === subcategory.id
+                          ? "selected"
+                          : ""
+                      }`}
+                    >
+                      <td>
+                        {subcategory.isEditing ? (
+                          <div className='input-group edit-input'>
+                            <Input
+                              id={`subcategoryName-${subcategory.id}`}
+                              value={subcategory.name}
+                              extraClasses={["no-border"]}
+                              onChange={(e) =>
                                 changeSubcategoryName(
                                   subcategory.id,
-                                  subcategory.originalName
-                                );
-                                clickSubcategoryName(subcategory.id);
+                                  e.target.value
+                                )
                               }
-                            }}
-                          />
-                          <div className='edit-input-icon'>
-                            <div>
-                              <i
-                                className='fa-solid fa-check'
-                                onClick={() => saveSubcategory(subcategory.id)}
-                              />
-                            </div>
-                            <div>
-                              <i
-                                className='fa-solid fa-xmark'
-                                onClick={() => {
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  saveSubcategory(subcategory.id);
+                                }
+
+                                if (e.key === "Escape") {
                                   changeSubcategoryName(
                                     subcategory.id,
                                     subcategory.originalName
                                   );
                                   clickSubcategoryName(subcategory.id);
-                                }}
-                              />
+                                }
+                              }}
+                            />
+                            <div className='edit-input-icon'>
+                              <div>
+                                <i
+                                  className='fa-solid fa-check'
+                                  onClick={() =>
+                                    saveSubcategory(subcategory.id)
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <i
+                                  className='fa-solid fa-xmark'
+                                  onClick={() => {
+                                    changeSubcategoryName(
+                                      subcategory.id,
+                                      subcategory.originalName
+                                    );
+                                    clickSubcategoryName(subcategory.id);
+                                  }}
+                                />
+                              </div>
                             </div>
                           </div>
+                        ) : (
+                          <div
+                            className='edit-button height'
+                            onClick={() => clickSubcategoryName(subcategory.id)}
+                          >
+                            {subcategory.name}
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        <div className='height'>
+                          <input
+                            className='space-r-2'
+                            type='radio'
+                            checked={subcategory.isAlive}
+                            onChange={() => {
+                              changeSubcategoryAlive(subcategory.id, true);
+                              saveSubcategory(subcategory.id);
+                            }}
+                          />
+                          <label className='space-r-3' htmlFor='status'>
+                            Enable
+                          </label>
+                          <input
+                            className='space-r-2'
+                            type='radio'
+                            checked={!subcategory.isAlive}
+                            onChange={() => {
+                              changeSubcategoryAlive(subcategory.id, false);
+                              saveSubcategory(subcategory.id);
+                            }}
+                          />
+                          <label htmlFor='status'>Disable</label>
                         </div>
-                      ) : (
-                        <div
-                          className='edit-button'
-                          onClick={() => clickSubcategoryName(subcategory.id)}
-                        >
-                          {subcategory.name}
+                      </td>
+                      <td className='table-action-td'>
+                        <div>
+                          <Button
+                            extraClasses={["delete-button", "delete-category"]}
+                            onClick={() =>
+                              showConfirmationModal(subcategory.id)
+                            }
+                          >
+                            Delete
+                          </Button>
                         </div>
-                      )}
-                    </td>
-                    <td>
-                      <div>
-                        <input
-                          className='me-2'
-                          type='radio'
-                          checked={subcategory.isAlive}
-                          onChange={() => {
-                            changeSubcategoryAlive(subcategory.id, true);
-                            saveSubcategory(subcategory.id);
-                          }}
-                        />
-                        <label className='me-2' htmlFor='status'>
-                          Enable
-                        </label>
-                        <input
-                          className='me-2'
-                          type='radio'
-                          checked={!subcategory.isAlive}
-                          onChange={() => {
-                            changeSubcategoryAlive(subcategory.id, false);
-                            saveSubcategory(subcategory.id);
-                          }}
-                        />
-                        <label className='me-2' htmlFor='status'>
-                          Disable
-                        </label>
-                      </div>
-                    </td>
-                    <td className='table-action-td'>
-                      <div>
-                        <button
-                          className='button delete-button delete-category'
-                          onClick={() => showConfirmationModal(subcategory.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <button
-            type='button'
-            className='button cancel-button'
-            onClick={onClose}
-          >
+          <Button extraClasses={["cancel-button"]} onClick={onClose}>
             Close
-          </button>
+          </Button>
         </Modal.Footer>
       </Modal>
 

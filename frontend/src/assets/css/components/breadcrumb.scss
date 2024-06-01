@@ -1,59 +1,50 @@
-// Breadcrumb
 .breadcrumb-container {
-  border: 1px solid var(--primary-color);
-  border-radius: 0.3rem;
-  display: inline-flex;
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  border-radius: 8px;
+  text-align: center;
+}
 
-  &-item {
-    background: var(--white-color);
-    color: var(--black-color);
-    outline: none;
-    width: 120px;
-    padding: 8px 16px;
-    position: relative;
-    text-align: center;
+.breadcrumb--item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--general-width);
+  background-color: var(--primary-color);
+  border-radius: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+  padding: 4px 32px;
+  margin-right: 16px;
+  cursor: pointer;
+  transform: skew(-20deg);
+  transition: all 0.3s ease;
+
+  &:link {
     text-decoration: none;
-    cursor: pointer;
+    color: var(--white-color);
+  }
 
-    &:hover:after,
-    &:hover {
-      background: var(--primary-color);
-      color: var(--white-color);
-      text-decoration: none;
-    }
+  &:hover {
+    background: var(--third-color);
+    color: var(--white-color);
+    font-weight: bold;
+    font-size: 18px;
+  }
 
-    &:focus:after,
-    &:focus,
-    &.is-active:focus {
-      background: var(--primary-color);
-      color: var(--white-color);
-    }
+  &--inner {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    z-index: 2;
 
-    &:after,
-    &:before {
-      background: var(--white-color);
-      bottom: 0;
-      clip-path: polygon(50% 50%, -50% -50%, 0 100%);
-      content: "";
-      left: 100%;
-      position: absolute;
-      top: 0;
-      width: 1em;
-      // z-index: 1;
-    }
-
-    &:before {
-      background: var(--primary-color);
-      margin-left: 1px;
-    }
-
-    &:last-child {
-      border-right: none;
-    }
-
-    &.is-active {
-      background: var(--primary-color);
+    &--title {
+      font-size: 16px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
   }
 }

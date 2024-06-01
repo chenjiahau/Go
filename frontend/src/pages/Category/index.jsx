@@ -188,11 +188,13 @@ const Category = () => {
 
   return (
     <>
-      <Link to={routerConfig.routes.CATEGORY}>
-        <div className='breadcrumb-container'>
-          <div className='breadcrumb-container-item'>Category</div>
-        </div>
-      </Link>
+      <div className='breadcrumb-container'>
+        <Link to={routerConfig.routes.CATEGORY} className='breadcrumb--item'>
+          <span className='breadcrumb--item--inner'>
+            <span className='breadcrumb--item-title'>Category</span>
+          </span>
+        </Link>
+      </div>
 
       <Add onInitialization={reloadCategories} />
 
