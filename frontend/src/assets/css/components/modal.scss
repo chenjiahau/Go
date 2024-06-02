@@ -18,3 +18,48 @@
 .modal-dialog_1000 {
   max-width: 1000px;
 }
+
+.modal {
+  width: 600px;
+  position: absolute;
+  top: 20%;
+  left: calc(50% - 300px);
+  background-color: var(--white-color);
+  border: 1px solid var(--gray-color);
+  border-radius: 8px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  z-index: 5;
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 38px;
+    padding: 12px;
+    border-bottom: 1px solid var(--gray-color);
+  }
+
+  &-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  &-close {
+    cursor: pointer;
+  }
+
+  &-body {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    min-height: 64px;
+  }
+
+  &-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 12px;
+    border-top: 1px solid var(--gray-color);
+  }
+}

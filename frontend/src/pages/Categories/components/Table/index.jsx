@@ -9,7 +9,6 @@ const Table = (props) => {
     changeCategoryName,
     changeCategoryAlive,
     selectedCategory,
-    onShowSubcategoriesModal,
     onShowConfirmationModal,
     saveCategory,
   } = props;
@@ -94,10 +93,7 @@ const Table = (props) => {
                   )}
                 </td>
                 <td>
-                  <div
-                    className='height text-center edit-button'
-                    onClick={() => onShowSubcategoriesModal(category.id)}
-                  >
+                  <div className='height text-center'>
                     {category.subcategories.length}
                   </div>
                 </td>

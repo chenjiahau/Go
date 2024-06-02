@@ -18,9 +18,6 @@ import Header from "../Header";
 import Navigation from "../Navigation";
 import Footer from "../Footer";
 
-// Util
-import messageUtil, { commonMessage } from "../../util/message.util";
-
 const Layout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();

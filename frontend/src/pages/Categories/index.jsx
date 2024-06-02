@@ -14,7 +14,6 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import Add from "./components/Add";
 import Table from "./components/Table";
 import Page from "./components/Page";
-import Subcategories from "./components/Subcategories";
 
 // Util
 import apiHandler from "@/util/api.util";
@@ -22,14 +21,11 @@ import messageUtil, { commonMessage } from "@/util/message.util";
 
 const Category = () => {
   // State
-  const [forceReloadCount, setForceReloadCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeDefinition[1]);
   const [totalCategoryCount, setTotalCategoryCount] = useState(0);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState({});
-  const [isOpenSubcategoriesModal, setIsOpenSubcategoriesModal] =
-    useState(false);
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false);
 
   // Method
@@ -82,10 +78,6 @@ const Category = () => {
     }
 
     setCategories(updatedCategories);
-  };
-
-  const reloadCategories = () => {
-    setForceReloadCount(forceReloadCount + 1);
   };
 
   const clickCategoryName = (id) => {
@@ -161,18 +153,11 @@ const Category = () => {
       );
       await apiHandler.delete(apiURL);
       messageUtil.showSuccessMessage(commonMessage.success);
-
       setIsOpenConfirmationModal(false);
-      reloadCategories();
+      handleInitialization();
     } catch (error) {
       messageUtil.showErrorMessage(commonMessage.error);
     }
-  };
-
-  const showSubcategoriesModal = (id) => {
-    const category = categories.find((category) => category.id === id);
-    setSelectedCategory(category);
-    setIsOpenSubcategoriesModal(true);
   };
 
   const showConfirmationModal = (id) => {
@@ -184,7 +169,7 @@ const Category = () => {
   // Side effect
   useEffect(() => {
     handleInitialization(false);
-  }, [currentPage, pageSize, forceReloadCount]);
+  }, [currentPage, pageSize]);
 
   return (
     <>
@@ -196,7 +181,7 @@ const Category = () => {
         </Link>
       </div>
 
-      <Add onInitialization={reloadCategories} />
+      <Add onInitialization={handleInitialization} />
 
       <Table
         categories={categories}
@@ -204,7 +189,6 @@ const Category = () => {
         changeCategoryName={changeCategoryName}
         changeCategoryAlive={changeCategoryAlive}
         selectedCategory={selectedCategory}
-        onShowSubcategoriesModal={showSubcategoriesModal}
         onShowConfirmationModal={showConfirmationModal}
         saveCategory={saveCategory}
       />
@@ -217,12 +201,12 @@ const Category = () => {
         setPageSize={setPageSize}
       />
 
-      <Subcategories
+      {/* <Subcategories
         isOpen={isOpenSubcategoriesModal}
         onClose={() => setIsOpenSubcategoriesModal(false)}
         category={selectedCategory}
         onInitialization={handleInitialization}
-      />
+      /> */}
 
       <ConfirmationModal
         isOpen={isOpenConfirmationModal}
