@@ -1,5 +1,6 @@
 // Component
 import Input from "@/components/Input";
+import RadioButton from "@/components/RadioButton";
 import Button from "@/components/Button";
 
 const Table = (props) => {
@@ -99,8 +100,8 @@ const Table = (props) => {
                 </td>
                 <td>
                   <div className='height'>
-                    <input
-                      className='space-r-2'
+                    <RadioButton
+                      extraClasses={["space-r-2"]}
                       type='radio'
                       checked={category.isAlive}
                       onChange={() => {
@@ -111,9 +112,9 @@ const Table = (props) => {
                     <label className='space-r-3' htmlFor='status'>
                       Enable
                     </label>
-                    <input
-                      className='space-r-2'
+                    <RadioButton
                       type='radio'
+                      extraClasses={["space-r-2"]}
                       checked={!category.isAlive}
                       onChange={() => {
                         changeCategoryAlive(category.id, false);

@@ -82,13 +82,14 @@ li {
   position: fixed;
   bottom: 0;
   width: 100%;
-  height: var(--general-height);
+  height: var(--small-height);
   background-color: var(--black-color);
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
   text-align: center;
+  font-size: 12px;
   z-index: 2;
 }
 
