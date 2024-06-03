@@ -16,7 +16,11 @@ class APIHandler {
     this.axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
 
-  get(url, config) {
+  get(url, queryString = null, config) {
+    if (queryString) {
+      url += queryString;
+    }
+
     return this.axios.get(url, config);
   }
 

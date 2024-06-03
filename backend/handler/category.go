@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -211,13 +212,20 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// get the value of order of query string
-	order, err := strconv.Atoi(r.URL.Query().Get("order"))
-	if err != nil {
-		order = 0
+	// orderBy: id, name, created_at, is_alive
+	orderBy := r.URL.Query().Get("orderBy")
+	if orderBy == "" {
+		orderBy = "id"
 	}
 
-	categories, err := c.QueryByPage(number, size, order)
+	// order: asc, desc
+	order := r.URL.Query().Get("order")
+	if order == "" {
+		order = "asc"
+	}
+
+	categories, err := c.QueryByPage(number, size, orderBy, order)
+	fmt.Println(err)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -233,6 +241,8 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 		"totalPageNumber": totalPageNumber,
 		"number": number,
 		"size": size,
+		"order": order,
+		"orderBy": orderBy,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

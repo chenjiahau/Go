@@ -31,7 +31,8 @@
     color: var(--black-color);
   }
 
-  &:disabled {
+  &:disabled,
+  &.disabled {
     background-color: var(--gray-color);
     color: var(--black-color);
     cursor: not-allowed;

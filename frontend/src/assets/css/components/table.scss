@@ -13,7 +13,6 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   margin-bottom: 0px;
   overflow: hidden;
@@ -28,9 +27,30 @@
     background-color: var(--third-color);
   }
 
-  & th,
-  td {
+  & th .n {
     padding: 8px 16px;
+  }
+
+  & th .order {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--primary-color);
+    }
+
+    & i {
+      font-size: 12px;
+    }
+  }
+
+  & td {
+    padding: 8px 16px;
+    text-align: center;
   }
 
   & td div {
@@ -62,7 +82,15 @@
     }
   }
 
-  &-action-td {
-    text-align: right;
+  & .action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  & i.disabled {
+    filter: opacity(0.5);
+    cursor: not-allowed;
   }
 }

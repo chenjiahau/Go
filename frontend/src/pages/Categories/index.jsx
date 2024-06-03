@@ -1,8 +1,8 @@
 import "./module.scss";
 
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { cloneDeep, orderBy } from "lodash";
+import { useState, useEffect, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { cloneDeep } from "lodash";
 
 // Const
 import routerConfig from "@/const/config/router";
@@ -20,7 +20,11 @@ import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "@/util/message.util";
 
 const Category = () => {
+  const navigate = useNavigate();
+
   // State
+  const [orderBy, setOrderBy] = useState("id");
+  const [order, setOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeDefinition[1]);
   const [totalCategoryCount, setTotalCategoryCount] = useState(0);
@@ -29,7 +33,7 @@ const Category = () => {
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false);
 
   // Method
-  const handleInitialization = async () => {
+  const handleInitialization = useCallback(async () => {
     let response = null;
     response = await apiHandler.get(apiConfig.resource.NUMBER_OF_CATEGORIES);
     const totalCategoryNumber = response.data.data.totalCategoryNumber;
@@ -43,31 +47,23 @@ const Category = () => {
       setCurrentPage(1);
     }
 
+    let queryString = "?orderBy=" + orderBy + "&order=" + order;
     response = await apiHandler.get(
       apiConfig.resource.CATEGORIES_BY_PAGE.replace(
         ":page",
         resetCurrentPage ? 1 : currentPage
-      ).replace(":size", pageSize)
+      ).replace(":size", pageSize),
+      queryString
     );
 
     let updatedCategories = [];
     response.data.data.categories?.forEach((category) => {
-      const subcategories = [];
-
-      if (category.subcategories) {
-        category.subcategories.forEach((subcategory) => {
-          subcategories.push(subcategory);
-        });
-      }
-
       updatedCategories.push({
         ...category,
-        subcategories,
         originalName: category.name,
         isEditing: false,
       });
     });
-    updatedCategories = orderBy(updatedCategories, ["id"], ["asc"]);
 
     if (selectedCategory?.id) {
       const category = updatedCategories.find(
@@ -78,6 +74,15 @@ const Category = () => {
     }
 
     setCategories(updatedCategories);
+  }, [currentPage, order, orderBy, pageSize, selectedCategory?.id]);
+
+  const changeOrder = (newOrderBy) => {
+    if (newOrderBy === orderBy) {
+      setOrder(order === "asc" ? "desc" : "asc");
+    } else {
+      setOrderBy(newOrderBy);
+      setOrder("asc");
+    }
   };
 
   const clickCategoryName = (id) => {
@@ -162,14 +167,19 @@ const Category = () => {
 
   const showConfirmationModal = (id) => {
     const category = categories.find((category) => category.id === id);
+    if (category.subcategoryCount > 0) return;
     setSelectedCategory(category);
     setIsOpenConfirmationModal(true);
   };
 
+  const linkToEditSubcategory = (category) => {
+    navigate(routerConfig.routes.CATEGORY.replace(":id", category.id));
+  };
+
   // Side effect
   useEffect(() => {
-    handleInitialization(false);
-  }, [currentPage, pageSize]);
+    handleInitialization();
+  }, [currentPage, handleInitialization, pageSize, orderBy, order]);
 
   return (
     <>
@@ -184,12 +194,18 @@ const Category = () => {
       <Add onInitialization={handleInitialization} />
 
       <Table
+        currentPage={currentPage}
+        pageSize={pageSize}
+        orderBy={orderBy}
+        order={order}
+        onChangeOrder={changeOrder}
         categories={categories}
         onClickCategoryName={clickCategoryName}
         changeCategoryName={changeCategoryName}
         changeCategoryAlive={changeCategoryAlive}
         selectedCategory={selectedCategory}
         onShowConfirmationModal={showConfirmationModal}
+        onLinkToEditCategory={linkToEditSubcategory}
         saveCategory={saveCategory}
       />
 

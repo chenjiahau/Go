@@ -1,19 +1,20 @@
 package model
 
 import (
+	"fmt"
 	"time"
 )
 
 // Interface
 type CategoryInterface interface {
-	GetById(int64)									(Category, error)
-	GetByName(string)								(Category, error)
-	Create(string, time.Time, bool)	(int64, error)
-	QueryAll()											([]Category, error)
-	QueryTotalCount()					(int, error)
-	QueryByPage(int, int, int)						([]Category, error)
-	Update(int64, string, bool)			(error)
-	DeleteById(int64)								(Category, error)
+	GetById(int64)												(Category, error)
+	GetByName(string)											(Category, error)
+	Create(string, time.Time, bool)				(int64, error)
+	QueryAll()														([]Category, error)
+	QueryTotalCount()											(int, error)
+	QueryByPage(int, int, string, string)	([]CategorySimply, error)
+	Update(int64, string, bool)						(error)
+	DeleteById(int64)											(Category, error)
 }
 
 // Request model
@@ -34,6 +35,14 @@ type Category struct {
 	CreatedAt		time.Time			`json:"createdAt"`
 	IsAlive			bool					`json:"isAlive"`
 	SubCategory	[]SubCategory `json:"subcategories"`
+}
+
+type CategorySimply struct {
+	Id								int64					`json:"id"`
+	Name							string				`json:"name"`
+	CreatedAt					time.Time			`json:"createdAt"`
+	IsAlive						bool					`json:"isAlive"`
+	SubCategoryCount	int64					`json:"subcategoryCount"`
 }
 
 // Method
@@ -132,11 +141,28 @@ func (C *Category) QueryTotalCount() (int, error) {
 	return count, nil
 }
 
-func (C *Category) QueryByPage(number int, size int, order int) ([]Category, error) {
-	sqlStatement := `SELECT id, name, created_at, is_alive FROM categories ORDER BY id DESC LIMIT $1 OFFSET $2;`
-	if order <= 0 {
-		sqlStatement = `SELECT id, name, created_at, is_alive FROM categories ORDER BY id ASC LIMIT $1 OFFSET $2;`
+func (C *Category) QueryByPage(number int, size int, orderBy string, order string) ([]CategorySimply, error) {
+	switch orderBy {
+	case "id":
+		orderBy = "id"
+	case "name":
+		orderBy = "name"
+	case "created":
+		orderBy = "created_at"
+	case "subcategory":
+		orderBy = "subcategory_count"
+	case "status":
+		orderBy = "is_alive"
+	default:
+		orderBy = "id"
 	}
+
+	sqlStatement := fmt.Sprintf(`
+	  SELECT 
+		c.id, c.name, c.created_at, c.is_alive,
+		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count 
+		FROM categories c ORDER BY %s %s LIMIT $1 OFFSET $2;`, 
+		orderBy, order)
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, size, (number - 1) * size)
 	if err != nil {
@@ -144,22 +170,15 @@ func (C *Category) QueryByPage(number int, size int, order int) ([]Category, err
 	}
 	defer rows.Close()
 
-	var categories []Category
+	var categories []CategorySimply
 	for rows.Next() {
-		var category Category
-		err := rows.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive)
+		var category CategorySimply
+		err := rows.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
 
 		if err != nil {
 			return nil, err
 		}
 
-		SubCategory := SubCategory{}
-		subCategories, err := SubCategory.QueryAll(category.Id)
-		if err != nil {
-			return nil, err
-		}
-
-		category.SubCategory = subCategories
 		categories = append(categories, category)
 	}
 

@@ -1,16 +1,21 @@
 // Component
 import Input from "@/components/Input";
 import RadioButton from "@/components/RadioButton";
-import Button from "@/components/Button";
 
 const Table = (props) => {
   const {
+    currentPage,
+    pageSize,
+    orderBy,
+    order,
+    onChangeOrder,
     categories,
     onClickCategoryName,
     changeCategoryName,
     changeCategoryAlive,
     selectedCategory,
     onShowConfirmationModal,
+    onLinkToEditCategory,
     saveCategory,
   } = props;
 
@@ -20,12 +25,52 @@ const Table = (props) => {
         <table className='table table-hover'>
           <thead>
             <tr>
-              <th>Name</th>
-              <th className='text-center' width='160'>
-                Subcategory
+              <th width='30'>
+                <div className='n'>#</div>
               </th>
-              <th width='160'>Status</th>
-              <th width='160'>Action</th>
+              <th onClick={() => onChangeOrder("name")}>
+                <div className='order'>
+                  <span>Name</span>
+                  {orderBy === "name" && (
+                    <i
+                      className={`fa-solid fa-arrow-${
+                        order === "asc" ? "down" : "up"
+                      }`}
+                    />
+                  )}
+                </div>
+              </th>
+              <th
+                width='160'
+                className='text-center'
+                onClick={() => onChangeOrder("subcategory")}
+              >
+                <div className='order'>
+                  <span>Subcategory</span>
+                  {orderBy === "subcategory" && (
+                    <i
+                      className={`fa-solid fa-arrow-${
+                        order === "asc" ? "down" : "up"
+                      }`}
+                    />
+                  )}
+                </div>
+              </th>
+              <th width='160' onClick={() => onChangeOrder("status")}>
+                <div className='order'>
+                  <span>Status</span>
+                  {orderBy === "status" && (
+                    <i
+                      className={`fa-solid fa-arrow-${
+                        order === "asc" ? "down" : "up"
+                      }`}
+                    />
+                  )}
+                </div>
+              </th>
+              <th width='50'>
+                <div className='n'></div>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -38,6 +83,9 @@ const Table = (props) => {
                     : ""
                 }`}
               >
+                <td>
+                  <div>{index + 1 + (currentPage - 1) * pageSize}</div>
+                </td>
                 <td>
                   {category.isEditing ? (
                     <div className='input-group edit-input'>
@@ -95,7 +143,7 @@ const Table = (props) => {
                 </td>
                 <td>
                   <div className='height text-center'>
-                    {category.subcategories.length}
+                    {category.subcategoryCount}
                   </div>
                 </td>
                 <td>
@@ -124,15 +172,18 @@ const Table = (props) => {
                     <label htmlFor='status'>Disable</label>
                   </div>
                 </td>
-                <td className='table-action-td'>
-                  <div>
-                    <Button
-                      extraClasses={["delete-button", "delete-category"]}
-                      disabled={category.subcategories.length > 0}
+                <td>
+                  <div className='action'>
+                    <i
+                      className={`fa-solid fa-trash ${
+                        category.subcategoryCount > 0 ? "disabled" : ""
+                      }`}
                       onClick={() => onShowConfirmationModal(category.id)}
-                    >
-                      Delete
-                    </Button>
+                    />
+                    <i
+                      className='fa-solid fa-pen'
+                      onClick={() => onLinkToEditCategory(category)}
+                    />
                   </div>
                 </td>
               </tr>
