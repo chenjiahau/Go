@@ -40,6 +40,7 @@ func GetRoutes() http.Handler {
 
 	mux.Get("/api/category/{id}/subcategories", handler.Ctrl.GetAllSubCategory)
 	mux.Get("/api/category/{id}/subcategory/total", handler.Ctrl.GetTotalSubCategoryNumber)
+	mux.Get("/api/category/{id}/subcategory/page/{size}", handler.Ctrl.GetTotalSubCategoryPageNumber)
 	mux.Get("/api/category/{id}/subcategory/page/{number}/size/{size}", handler.Ctrl.GetSubCategoryByPage)
 	mux.Post("/api/category/{id}/subcategory", handler.Ctrl.AddSubCategory)
 	mux.Get("/api/category/{id}/subcategory/{subId}", handler.Ctrl.GetSubCategoryById)
