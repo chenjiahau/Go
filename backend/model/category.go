@@ -7,8 +7,8 @@ import (
 
 // Interface
 type CategoryInterface interface {
-	GetById(int64)												(Category, error)
-	GetByName(string)											(Category, error)
+	GetById(int64)												(CategorySimply, error)
+	GetByName(string)											(CategorySimply, error)
 	Create(string, time.Time, bool)				(int64, error)
 	QueryAll()														([]Category, error)
 	QueryTotalCount()											(int, error)
@@ -46,42 +46,34 @@ type CategorySimply struct {
 }
 
 // Method
-func (C *Category) GetById(id int64) (Category, error) {
-	sqlStatement := `SELECT id, name, created_at, is_alive FROM categories WHERE id = $1;`
+func (C *Category) GetById(id int64) (CategorySimply, error) {
+	sqlStatement := `
+		SELECT c.id, c.name, c.created_at, c.is_alive,
+		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
+		FROM categories c WHERE c.id = $1;`
 
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, id)
-	var category Category
-	err := row.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive)
+	var category CategorySimply
+	err := row.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
 	if err != nil {
-		return Category{}, err
+		return CategorySimply{}, err
 	}
-
-	SubCategory := SubCategory{}
-	subCategories, err := SubCategory.QueryAll(category.Id)
-	if err != nil {
-		return Category{}, err
-	}
-
-	category.SubCategory = subCategories
 
 	return category, nil
 }
 
-func (C *Category) GetByName(name string) (Category, error) {
-	sqlStatement := `SELECT * FROM categories WHERE name = $1;`
+func (C *Category) GetByName(name string) (CategorySimply, error) {
+	sqlStatement := `
+		SELECT c.id, c.name, c.created_at, c.is_alive,
+		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
+		FROM categories c
+		WHERE c.name = $1;`
 
-	var category Category
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name).Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive)
+	var category CategorySimply
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name).Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
 	if err != nil {
-		return Category{}, err
+		return CategorySimply{}, err
 	}
-
-	subCategory := SubCategory{}
-	subCategories, err := subCategory.QueryAll(category.Id)
-	if err != nil {
-		return Category{}, err
-	}
-	category.SubCategory = subCategories
 
 	return category, nil
 }

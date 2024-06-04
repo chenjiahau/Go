@@ -277,8 +277,8 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 		"id": category.Id,
 		"name": category.Name,
 		"isAlive": category.IsAlive,
+		"subcategoryCount": category.SubCategoryCount,
 		"createdAt": category.CreatedAt,
-		"subCategory": category.SubCategory,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
