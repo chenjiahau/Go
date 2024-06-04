@@ -11,7 +11,7 @@ type CategoryInterface interface {
 	GetByName(string)											(CategorySimply, error)
 	Create(string, time.Time, bool)				(int64, error)
 	QueryAll()														([]Category, error)
-	QueryTotalCount()											(int, error)
+	QueryTotalCount()											(int64, error)
 	QueryByPage(int, int, string, string)	([]CategorySimply, error)
 	Update(int64, string, bool)						(error)
 	DeleteById(int64)											(Category, error)
@@ -121,10 +121,10 @@ func (C *Category) QueryAll() ([]Category, error) {
 	return categories, nil
 }
 
-func (C *Category) QueryTotalCount() (int, error) {
+func (C *Category) QueryTotalCount() (int64, error) {
 	sqlStatement := `SELECT COUNT(*) FROM categories;`
 
-	var count int
+	var count int64
 	err := DbConf.PgConn.SQL.QueryRow(sqlStatement).Scan(&count)
 	if err != nil {
 		return 0, err
@@ -133,7 +133,7 @@ func (C *Category) QueryTotalCount() (int, error) {
 	return count, nil
 }
 
-func (C *Category) QueryByPage(number int, size int, orderBy string, order string) ([]CategorySimply, error) {
+func (C *Category) QueryByPage(number, size int, orderBy, order string) ([]CategorySimply, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "id"
@@ -150,10 +150,10 @@ func (C *Category) QueryByPage(number int, size int, orderBy string, order strin
 	}
 
 	sqlStatement := fmt.Sprintf(`
-	  SELECT 
+	  SELECT
 		c.id, c.name, c.created_at, c.is_alive,
-		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count 
-		FROM categories c ORDER BY %s %s LIMIT $1 OFFSET $2;`, 
+		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
+		FROM categories c ORDER BY %s %s LIMIT $1 OFFSET $2;`,
 		orderBy, order)
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, size, (number - 1) * size)

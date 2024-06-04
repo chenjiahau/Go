@@ -31,7 +31,7 @@ func GetRoutes() http.Handler {
 	// Category routes
 	mux.Get("/api/categories", handler.Ctrl.GetAllCategory)
 	mux.Get("/api/categories/total", handler.Ctrl.GetTotalCategoryNumber)
-	mux.Get("/api/categories/page/{size}", handler.Ctrl.GetTotalPageNumber)
+	mux.Get("/api/categories/page/{size}", handler.Ctrl.GetTotalCategoryPageNumber)
 	mux.Get("/api/categories/page/{number}/size/{size}", handler.Ctrl.GetCategoryByPage)
 	mux.Post("/api/category", handler.Ctrl.AddCategory)
 	mux.Get("/api/category/{id}", handler.Ctrl.GetCategoryById)
@@ -39,6 +39,8 @@ func GetRoutes() http.Handler {
 	mux.Delete("/api/category/{id}", handler.Ctrl.DeleteCategory)
 
 	mux.Get("/api/category/{id}/subcategories", handler.Ctrl.GetAllSubCategory)
+	mux.Get("/api/category/{id}/subcategory/total", handler.Ctrl.GetTotalSubCategoryNumber)
+	mux.Get("/api/category/{id}/subcategory/page/{number}/size/{size}", handler.Ctrl.GetSubCategoryByPage)
 	mux.Post("/api/category/{id}/subcategory", handler.Ctrl.AddSubCategory)
 	mux.Get("/api/category/{id}/subcategory/{subId}", handler.Ctrl.GetSubCategoryById)
 	mux.Put("/api/category/{id}/subcategory/{subId}", handler.Ctrl.UpdateSubCategory)

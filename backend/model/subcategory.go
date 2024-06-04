@@ -1,17 +1,20 @@
 package model
 
 import (
+	"fmt"
 	"time"
 )
 
 // Interface
 type SubCategoryInterface interface {
-	GetById(int64, int64)										(SubCategory, error)
-	GetByName(int64, string)								(SubCategory, error)
-	Create(int64, string, time.Time, bool)	(int64, error)
-	QueryAll(int64)													([]SubCategory, error)
-	Update(int64, string, bool)							(error)
-	DeleteById(int64)												(SubCategory, error)
+	GetById(int64, int64)													(SubCategory, error)
+	GetByName(int64, string)											(SubCategory, error)
+	Create(int64, string, time.Time, bool)				(int64, error)
+	QueryAll(int64)																([]SubCategory, error)
+	QueryTotalCount(int64)												(int64, error)
+	QueryByPage(int64, int, int, string, string)	([]SubCategory, error)
+	Update(int64, string, bool)										(error)
+	DeleteById(int64)															(SubCategory, error)
 }
 
 // Request model
@@ -85,6 +88,58 @@ func (C *SubCategory) QueryAll(categoryId int64) ([]SubCategory, error) {
 	for rows.Next() {
 		var subCategory SubCategory
 		err := rows.Scan(&subCategory.Id, &subCategory.CategoryId, &subCategory.Name, &subCategory.CreatedAt, &subCategory.IsAlive)
+		if err != nil {
+			return nil, err
+		}
+
+		subCategories = append(subCategories, subCategory)
+	}
+
+	return subCategories, nil
+}
+
+func (C *SubCategory) QueryTotalCount(id int64) (int64, error) {
+	sqlStatement := `SELECT COUNT(*) FROM subcategories WHERE category_id = $1;`
+
+	var count int64
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, id).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (C *SubCategory) QueryByPage(id int64, number, size int, orderBy, order string) ([]SubCategory, error) {
+	switch orderBy {
+	case "id":
+		orderBy = "id"
+	case "name":
+		orderBy = "name"
+	case "created":
+		orderBy = "created_at"
+	case "status":
+		orderBy = "is_alive"
+	default:
+		orderBy = "id"
+	}
+
+	sqlStatement := fmt.Sprintf(`
+	  SELECT id, name, created_at, is_alive
+		FROM subcategories
+		WHERE category_id = $1 ORDER BY %s %s LIMIT $2 OFFSET $3;`,
+		orderBy, order)
+
+	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, id, size, (number - 1) * size)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var subCategories []SubCategory
+	for rows.Next() {
+		var subCategory SubCategory
+		err := rows.Scan(&subCategory.Id, &subCategory.Name, &subCategory.CreatedAt, &subCategory.IsAlive)
 		if err != nil {
 			return nil, err
 		}

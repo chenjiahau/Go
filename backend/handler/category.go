@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -113,7 +112,7 @@ func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Re
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetTotalPageNumber(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	var c model.CategoryInterface = &model.Category{}
@@ -139,8 +138,8 @@ func (Ctrl *Controller) GetTotalPageNumber(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	totalPageNumber := count / size
-	restCount := count % size
+	totalPageNumber := count / int64(size)
+	restCount := count % int64(size)
 	if restCount > 0 {
 		totalPageNumber++
 	}
@@ -191,18 +190,21 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 	if count == 0 {
 		resData := map[string]interface{}{
 			"categories": []model.Category{},
+			"totalPageNumber": 0,
+			"number": number,
+			"size": size,
 		}
 		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 		return
 	}
 
-	totalPageNumber := count / size
-	restCount := count % size
+	totalPageNumber := count / int64(size)
+	restCount := count %  int64(size)
 	if restCount > 0 {
 		totalPageNumber++
 	}
 
-	if number > totalPageNumber {
+	if int64(number) > totalPageNumber {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
 			"message": "Invalid page number",
@@ -225,7 +227,6 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 	}
 
 	categories, err := c.QueryByPage(number, size, orderBy, order)
-	fmt.Println(err)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -511,6 +512,148 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 
 	resData := map[string]interface{}{
 		"subcategories": subCategories,
+	}
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (Ctrl *Controller) GetTotalSubCategoryNumber(w http.ResponseWriter, r *http.Request) {
+	if ok := CheckToken(w, r) ; !ok { return }
+
+	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid category id",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	var sc model.SubCategoryInterface = &model.SubCategory{}
+	count, err := sc.QueryTotalCount(categoryId)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to query all subcategories",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	resData := map[string]interface{}{
+		"totalSubcategoryNumber": count,
+	}
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (Ctrl *Controller) GetSubCategoryByPage(w http.ResponseWriter, r *http.Request) {
+	if ok := CheckToken(w, r) ; !ok { return }
+
+	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid category id",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	var sc model.SubCategoryInterface = &model.SubCategory{}
+	number, err := strconv.Atoi(chi.URLParam(r, "number"))
+	if err != nil || number < 1 {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid page number",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	size, err := strconv.Atoi(chi.URLParam(r, "size"))
+	if err != nil || size < 1 {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid page size",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	count, err := sc.QueryTotalCount(categoryId)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to query all subcategories",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	if count == 0 {
+		resData := map[string]interface{}{
+			"subcategories": []model.SubCategory{},
+			"totalPageNumber": 0,
+			"number": number,
+			"size": size,
+		}
+		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+		return
+	}
+
+	totalPageNumber := count / int64(size)
+	restCount := count % int64(size)
+	if restCount > 0 {
+		totalPageNumber++
+	}
+
+	if int64(number) > totalPageNumber {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid page number",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// orderBy: id, name, created_at, is_alive
+	orderBy := r.URL.Query().Get("orderBy")
+	if orderBy == "" {
+		orderBy = "id"
+	}
+
+	// order: asc, desc
+	order := r.URL.Query().Get("order")
+	if order == "" {
+		order = "asc"
+	}
+
+	subCategories, err := sc.QueryByPage(categoryId, number, size, orderBy, order)
+
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to query all subcategories",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	resData := map[string]interface{}{
+		"subcategories": subCategories,
+		"totalPageNumber": totalPageNumber,
+		"number": number,
+		"size": size,
+		"order": order,
+		"orderBy": orderBy,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
