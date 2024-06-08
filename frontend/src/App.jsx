@@ -11,6 +11,7 @@ import Layout from "@/ui/Layout";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Categories from "@/pages/Categories";
+import Category from "@/pages/Category";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             path={routerConfig.routes.CATEGORIES}
             element={<Categories />}
           />
+          <Route path={routerConfig.routes.CATEGORY} element={<Category />} />
         </Route>
       </Routes>
       <ToastContainer />

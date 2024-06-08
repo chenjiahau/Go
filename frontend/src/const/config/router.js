@@ -3,7 +3,7 @@ const routes = {
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
   CATEGORIES: '/categories',
-
+  CATEGORY: '/category/:id',
 };
 
 export default {
