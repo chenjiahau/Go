@@ -13,6 +13,7 @@ import messageUtil, { commonMessage } from "@/util/message.util";
 
 const errorMessage = {
   category: "Category is required.",
+  duplicated: "Category is duplicated.",
 };
 
 const Add = (props) => {
@@ -36,6 +37,10 @@ const Add = (props) => {
       messageUtil.showSuccessMessage(commonMessage.success);
       onInitialization();
     } catch (error) {
+      if (error.response.data.error.code === 500) {
+        messageUtil.showErrorMessage(errorMessage.duplicated);
+        return;
+      }
       messageUtil.showErrorMessage(commonMessage.error);
     }
   };
