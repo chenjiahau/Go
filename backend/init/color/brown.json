@@ -1,0 +1,227 @@
+[
+  {
+    "COLOR_NAME": "Almond",
+    "HEX_CODE": "#EADDCA",
+    "RGB_CODE": "rgb(234, 221, 202)"
+  },
+  {
+    "COLOR_NAME": "Brass",
+    "HEX_CODE": "#E1C16E",
+    "RGB_CODE": "rgb(225, 193, 110)"
+  },
+  {
+    "COLOR_NAME": "Bronze",
+    "HEX_CODE": "#CD7F32",
+    "RGB_CODE": "rgb(205, 127, 50)"
+  },
+  {
+    "COLOR_NAME": "Brown",
+    "HEX_CODE": "#A52A2A",
+    "RGB_CODE": "rgb(165, 42, 42)"
+  },
+  {
+    "COLOR_NAME": "Buff",
+    "HEX_CODE": "#DAA06D",
+    "RGB_CODE": "rgb(218, 160, 109)"
+  },
+  {
+    "COLOR_NAME": "Burgundy",
+    "HEX_CODE": "#800020",
+    "RGB_CODE": "rgb(128, 0, 32)"
+  },
+  {
+    "COLOR_NAME": "Burnt Sienna",
+    "HEX_CODE": "#E97451",
+    "RGB_CODE": "rgb(233, 116, 81)"
+  },
+  {
+    "COLOR_NAME": "Burnt Umber",
+    "HEX_CODE": "#6E260E",
+    "RGB_CODE": "rgb(110, 38, 14)"
+  },
+  {
+    "COLOR_NAME": "Camel",
+    "HEX_CODE": "#C19A6B",
+    "RGB_CODE": "rgb(193, 154, 107)"
+  },
+  {
+    "COLOR_NAME": "Chestnut",
+    "HEX_CODE": "#954535",
+    "RGB_CODE": "rgb(149, 69, 53)"
+  },
+  {
+    "COLOR_NAME": "Chocolate",
+    "HEX_CODE": "#7B3F00",
+    "RGB_CODE": "rgb(123, 63, 0)"
+  },
+  {
+    "COLOR_NAME": "Cinnamon",
+    "HEX_CODE": "#D27D2D",
+    "RGB_CODE": "rgb(210, 125, 45)"
+  },
+  {
+    "COLOR_NAME": "Coffee",
+    "HEX_CODE": "#6F4E37",
+    "RGB_CODE": "rgb(111, 78, 55)"
+  },
+  {
+    "COLOR_NAME": "Cognac",
+    "HEX_CODE": "#834333",
+    "RGB_CODE": "rgb(131, 67, 51)"
+  },
+  {
+    "COLOR_NAME": "Copper",
+    "HEX_CODE": "#B87333",
+    "RGB_CODE": "rgb(184, 115, 51)"
+  },
+  {
+    "COLOR_NAME": "Cordovan",
+    "HEX_CODE": "#814141",
+    "RGB_CODE": "rgb(129, 65, 65)"
+  },
+  {
+    "COLOR_NAME": "Dark Brown",
+    "HEX_CODE": "#5C4033",
+    "RGB_CODE": "rgb(92, 64, 51)"
+  },
+  {
+    "COLOR_NAME": "Dark Red",
+    "HEX_CODE": "#8B0000",
+    "RGB_CODE": "rgb(139, 0, 0)"
+  },
+  {
+    "COLOR_NAME": "Dark Tan",
+    "HEX_CODE": "#988558",
+    "RGB_CODE": "rgb(152, 133, 88)"
+  },
+  {
+    "COLOR_NAME": "Ecru",
+    "HEX_CODE": "#C2B280",
+    "RGB_CODE": "rgb(194, 178, 128)"
+  },
+  {
+    "COLOR_NAME": "Fallow",
+    "HEX_CODE": "#C19A6B",
+    "RGB_CODE": "rgb(193, 154, 107)"
+  },
+  {
+    "COLOR_NAME": "Fawn",
+    "HEX_CODE": "#E5AA70",
+    "RGB_CODE": "rgb(229, 170, 112)"
+  },
+  {
+    "COLOR_NAME": "Garnet",
+    "HEX_CODE": "#9A2A2A",
+    "RGB_CODE": "rgb(154, 42, 42)"
+  },
+  {
+    "COLOR_NAME": "Golden Brown",
+    "HEX_CODE": "#966919",
+    "RGB_CODE": "rgb(150, 105, 25)"
+  },
+  {
+    "COLOR_NAME": "Khaki",
+    "HEX_CODE": "#F0E68C",
+    "RGB_CODE": "rgb(240, 230, 140)"
+  },
+  {
+    "COLOR_NAME": "Light Brown",
+    "HEX_CODE": "#C4A484",
+    "RGB_CODE": "rgb(196, 164, 132)"
+  },
+  {
+    "COLOR_NAME": "Mahogany",
+    "HEX_CODE": "#C04000",
+    "RGB_CODE": "rgb(192, 64, 0)"
+  },
+  {
+    "COLOR_NAME": "Maroon",
+    "HEX_CODE": "#800000",
+    "RGB_CODE": "rgb(128, 0, 0)"
+  },
+  {
+    "COLOR_NAME": "Mocha",
+    "HEX_CODE": "#967969",
+    "RGB_CODE": "rgb(150, 121, 105)"
+  },
+  {
+    "COLOR_NAME": "Nude",
+    "HEX_CODE": "#F2D2BD",
+    "RGB_CODE": "rgb(242, 210, 189)"
+  },
+  {
+    "COLOR_NAME": "Ochre",
+    "HEX_CODE": "#CC7722",
+    "RGB_CODE": "rgb(204, 119, 34)"
+  },
+  {
+    "COLOR_NAME": "Olive Green",
+    "HEX_CODE": "#808000",
+    "RGB_CODE": "rgb(128, 128, 0)"
+  },
+  {
+    "COLOR_NAME": "Oxblood",
+    "HEX_CODE": "#4A0404",
+    "RGB_CODE": "rgb(74, 4, 4)"
+  },
+  {
+    "COLOR_NAME": "Puce",
+    "HEX_CODE": "#A95C68",
+    "RGB_CODE": "rgb(169, 92, 104)"
+  },
+  {
+    "COLOR_NAME": "Red Brown",
+    "HEX_CODE": "#A52A2A",
+    "RGB_CODE": "rgb(165, 42, 42)"
+  },
+  {
+    "COLOR_NAME": "Red Ochre",
+    "HEX_CODE": "#913831",
+    "RGB_CODE": "rgb(145, 56, 49)"
+  },
+  {
+    "COLOR_NAME": "Russet",
+    "HEX_CODE": "#80461B",
+    "RGB_CODE": "rgb(128, 70, 27)"
+  },
+  {
+    "COLOR_NAME": "Saddle Brown",
+    "HEX_CODE": "#8B4513",
+    "RGB_CODE": "rgb(139, 69, 19)"
+  },
+  {
+    "COLOR_NAME": "Sand",
+    "HEX_CODE": "#C2B280",
+    "RGB_CODE": "rgb(194, 178, 128)"
+  },
+  {
+    "COLOR_NAME": "Sienna",
+    "HEX_CODE": "#A0522D",
+    "RGB_CODE": "rgb(160, 82, 45)"
+  },
+  {
+    "COLOR_NAME": "Tan",
+    "HEX_CODE": "#D2B48C",
+    "RGB_CODE": "rgb(210, 180, 140)"
+  },
+  {
+    "COLOR_NAME": "Taupe",
+    "HEX_CODE": "#483C32",
+    "RGB_CODE": "rgb(72, 60, 50)"
+  },
+  {
+    "COLOR_NAME": "Tuscan Red",
+    "HEX_CODE": "#7C3030",
+    "RGB_CODE": "rgb(124, 48, 48)"
+  },
+  {
+    "COLOR_NAME": "Wheat",
+    "HEX_CODE": "#F5DEB3",
+    "RGB_CODE": "rgb(245, 222, 179)"
+  },
+  {
+    "COLOR_NAME": "Wine",
+    "HEX_CODE": "#722F37",
+    "RGB_CODE": "rgb(114, 47, 55)"
+  }
+]

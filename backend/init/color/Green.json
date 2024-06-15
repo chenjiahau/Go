@@ -1,0 +1,237 @@
+[
+  {
+    "COLOR_NAME": "Aqua",
+    "HEX_CODE": "#00FFFF",
+    "RGB_CODE": "rgb(0, 255, 255)"
+  },
+  {
+    "COLOR_NAME": "Aquamarine",
+    "HEX_CODE": "#7FFFD4",
+    "RGB_CODE": "rgb(127, 255, 212)"
+  },
+  {
+    "COLOR_NAME": "Army Green",
+    "HEX_CODE": "#454B1B",
+    "RGB_CODE": "rgb(69, 75, 27)"
+  },
+  {
+    "COLOR_NAME": "Blue Green",
+    "HEX_CODE": "#088F8F",
+    "RGB_CODE": "rgb(8, 143, 143)"
+  },
+  {
+    "COLOR_NAME": "Bright Green",
+    "HEX_CODE": "#AAFF00",
+    "RGB_CODE": "rgb(170, 255, 0)"
+  },
+  {
+    "COLOR_NAME": "Cadet Blue",
+    "HEX_CODE": "#5F9EA0",
+    "RGB_CODE": "rgb(95, 158, 160)"
+  },
+  {
+    "COLOR_NAME": "Cadmium Green",
+    "HEX_CODE": "#097969",
+    "RGB_CODE": "rgb(9, 121, 105)"
+  },
+  {
+    "COLOR_NAME": "Celadon",
+    "HEX_CODE": "#AFE1AF",
+    "RGB_CODE": "rgb(175, 225, 175)"
+  },
+  {
+    "COLOR_NAME": "Chartreuse",
+    "HEX_CODE": "#DFFF00",
+    "RGB_CODE": "rgb(223, 255, 0)"
+  },
+  {
+    "COLOR_NAME": "Citrine",
+    "HEX_CODE": "#E4D00A",
+    "RGB_CODE": "rgb(228, 208, 10)"
+  },
+  {
+    "COLOR_NAME": "Cyan",
+    "HEX_CODE": "#00FFFF",
+    "RGB_CODE": "rgb(0, 255, 255)"
+  },
+  {
+    "COLOR_NAME": "Dark Green",
+    "HEX_CODE": "#023020",
+    "RGB_CODE": "rgb(2, 48, 32)"
+  },
+  {
+    "COLOR_NAME": "Electric Blue",
+    "HEX_CODE": "#7DF9FF",
+    "RGB_CODE": "rgb(125, 249, 255)"
+  },
+  {
+    "COLOR_NAME": "Emerald Green",
+    "HEX_CODE": "#50C878",
+    "RGB_CODE": "rgb(80, 200, 120)"
+  },
+  {
+    "COLOR_NAME": "Eucalyptus",
+    "HEX_CODE": "#5F8575",
+    "RGB_CODE": "rgb(95, 133, 117)"
+  },
+  {
+    "COLOR_NAME": "Fern Green",
+    "HEX_CODE": "#4F7942",
+    "RGB_CODE": "rgb(79, 121, 66)"
+  },
+  {
+    "COLOR_NAME": "Forest Green",
+    "HEX_CODE": "#228B22",
+    "RGB_CODE": "rgb(34, 139, 34)"
+  },
+  {
+    "COLOR_NAME": "Grass Green",
+    "HEX_CODE": "#7CFC00",
+    "RGB_CODE": "rgb(124, 252, 0)"
+  },
+  {
+    "COLOR_NAME": "Green",
+    "HEX_CODE": "#008000",
+    "RGB_CODE": "rgb(0, 128, 0)"
+  },
+  {
+    "COLOR_NAME": "Hunter Green",
+    "HEX_CODE": "#355E3B",
+    "RGB_CODE": "rgb(53, 94, 59)"
+  },
+  {
+    "COLOR_NAME": "Jade",
+    "HEX_CODE": "#00A36C",
+    "RGB_CODE": "rgb(0, 163, 108)"
+  },
+  {
+    "COLOR_NAME": "Jungle Green",
+    "HEX_CODE": "#2AAA8A",
+    "RGB_CODE": "rgb(42, 170, 138)"
+  },
+  {
+    "COLOR_NAME": "Kelly Green",
+    "HEX_CODE": "#4CBB17",
+    "RGB_CODE": "rgb(76, 187, 23)"
+  },
+  {
+    "COLOR_NAME": "Light Green",
+    "HEX_CODE": "#90EE90",
+    "RGB_CODE": "rgb(144, 238, 144)"
+  },
+  {
+    "COLOR_NAME": "Lime Green",
+    "HEX_CODE": "#32CD32",
+    "RGB_CODE": "rgb(50, 205, 50)"
+  },
+  {
+    "COLOR_NAME": "Lincoln Green",
+    "HEX_CODE": "#478778",
+    "RGB_CODE": "rgb(71, 135, 120)"
+  },
+  {
+    "COLOR_NAME": "Malachite",
+    "HEX_CODE": "#0BDA51",
+    "RGB_CODE": "rgb(11, 218, 81)"
+  },
+  {
+    "COLOR_NAME": "Mint Green",
+    "HEX_CODE": "#98FB98",
+    "RGB_CODE": "rgb(152, 251, 152)"
+  },
+  {
+    "COLOR_NAME": "Moss Green",
+    "HEX_CODE": "#8A9A5B",
+    "RGB_CODE": "rgb(138, 154, 91)"
+  },
+  {
+    "COLOR_NAME": "Neon Green",
+    "HEX_CODE": "#0FFF50",
+    "RGB_CODE": "rgb(15, 255, 80)"
+  },
+  {
+    "COLOR_NAME": "Nyanza",
+    "HEX_CODE": "#ECFFDC",
+    "RGB_CODE": "rgb(236, 255, 220)"
+  },
+  {
+    "COLOR_NAME": "Olive Green",
+    "HEX_CODE": "#808000",
+    "RGB_CODE": "rgb(128, 128, 0)"
+  },
+  {
+    "COLOR_NAME": "Pastel Green",
+    "HEX_CODE": "#C1E1C1",
+    "RGB_CODE": "rgb(193, 225, 193)"
+  },
+  {
+    "COLOR_NAME": "Pear",
+    "HEX_CODE": "#C9CC3F",
+    "RGB_CODE": "rgb(201, 204, 63)"
+  },
+  {
+    "COLOR_NAME": "Peridot",
+    "HEX_CODE": "#B4C424",
+    "RGB_CODE": "rgb(180, 196, 36)"
+  },
+  {
+    "COLOR_NAME": "Pistachio",
+    "HEX_CODE": "#93C572",
+    "RGB_CODE": "rgb(147, 197, 114)"
+  },
+  {
+    "COLOR_NAME": "Robin Egg Blue",
+    "HEX_CODE": "#96DED1",
+    "RGB_CODE": "rgb(150, 222, 209)"
+  },
+  {
+    "COLOR_NAME": "Sage Green",
+    "HEX_CODE": "#8A9A5B",
+    "RGB_CODE": "rgb(138, 154, 91)"
+  },
+  {
+    "COLOR_NAME": "Sea Green",
+    "HEX_CODE": "#2E8B57",
+    "RGB_CODE": "rgb(46, 139, 87)"
+  },
+  {
+    "COLOR_NAME": "Seafoam Green",
+    "HEX_CODE": "#9FE2BF",
+    "RGB_CODE": "rgb(159, 226, 191)"
+  },
+  {
+    "COLOR_NAME": "Shamrock Green",
+    "HEX_CODE": "#009E60",
+    "RGB_CODE": "rgb(0, 158, 96)"
+  },
+  {
+    "COLOR_NAME": "Spring Green",
+    "HEX_CODE": "#00FF7F",
+    "RGB_CODE": "rgb(0, 255, 127)"
+  },
+  {
+    "COLOR_NAME": "Teal",
+    "HEX_CODE": "#008080",
+    "RGB_CODE": "rgb(0, 128, 128)"
+  },
+  {
+    "COLOR_NAME": "Turquoise",
+    "HEX_CODE": "#40E0D0",
+    "RGB_CODE": "rgb(64, 224, 208)"
+  },
+  {
+    "COLOR_NAME": "Vegas Gold",
+    "HEX_CODE": "#C4B454",
+    "RGB_CODE": "rgb(196, 180, 84)"
+  },
+  {
+    "COLOR_NAME": "Verdigris",
+    "HEX_CODE": "#40B5AD",
+    "RGB_CODE": "rgb(64, 181, 173)"
+  },
+  {
+    "COLOR_NAME": "Viridian",
+    "HEX_CODE": "#40826D",
+    "RGB_CODE": "rgb(64, 130, 109)"
+  }
+]

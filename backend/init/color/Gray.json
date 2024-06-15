@@ -1,0 +1,77 @@
+[
+  {
+    "COLOR_NAME": "Ash Gray",
+    "HEX_CODE": "#B2BEB5",
+    "RGB_CODE": "rgb(178, 190, 181)"
+  },
+  {
+    "COLOR_NAME": "Blue Gray",
+    "HEX_CODE": "#7393B3",
+    "RGB_CODE": "rgb(115, 147, 179)"
+  },
+  {
+    "COLOR_NAME": "Charcoal",
+    "HEX_CODE": "#36454F",
+    "RGB_CODE": "rgb(54, 69, 79)"
+  },
+  {
+    "COLOR_NAME": "Dark Gray",
+    "HEX_CODE": "#A9A9A9",
+    "RGB_CODE": "rgb(169, 169, 169)"
+  },
+  {
+    "COLOR_NAME": "Glaucous",
+    "HEX_CODE": "#6082B6",
+    "RGB_CODE": "rgb(96, 130, 182)"
+  },
+  {
+    "COLOR_NAME": "Gray",
+    "HEX_CODE": "#808080",
+    "RGB_CODE": "rgb(128, 128, 128)"
+  },
+  {
+    "COLOR_NAME": "Gunmetal Gray",
+    "HEX_CODE": "#818589",
+    "RGB_CODE": "rgb(129, 133, 137)"
+  },
+  {
+    "COLOR_NAME": "Light Gray",
+    "HEX_CODE": "#D3D3D3",
+    "RGB_CODE": "rgb(211, 211, 211)"
+  },
+  {
+    "COLOR_NAME": "Pewter",
+    "HEX_CODE": "#899499",
+    "RGB_CODE": "rgb(137, 148, 153)"
+  },
+  {
+    "COLOR_NAME": "Platinum",
+    "HEX_CODE": "#E5E4E2",
+    "RGB_CODE": "rgb(229, 228, 226)"
+  },
+  {
+    "COLOR_NAME": "Sage Green",
+    "HEX_CODE": "#8A9A5B",
+    "RGB_CODE": "rgb(138, 154, 91)"
+  },
+  {
+    "COLOR_NAME": "Silver",
+    "HEX_CODE": "#C0C0C0",
+    "RGB_CODE": "rgb(192, 192, 192)"
+  },
+  {
+    "COLOR_NAME": "Slate Gray",
+    "HEX_CODE": "#708090",
+    "RGB_CODE": "rgb(112, 128, 144)"
+  },
+  {
+    "COLOR_NAME": "Smoke",
+    "HEX_CODE": "#848884",
+    "RGB_CODE": "rgb(132, 136, 132)"
+  },
+  {
+    "COLOR_NAME": "Steel Gray",
+    "HEX_CODE": "#71797E",
+    "RGB_CODE": "rgb(113, 121, 126)"
+  }
+]

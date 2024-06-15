@@ -1,0 +1,212 @@
+[
+  {
+    "COLOR_NAME": "Almond",
+    "HEX_CODE": "#EADDCA",
+    "RGB_CODE": "rgb(234, 221, 202)"
+  },
+  {
+    "COLOR_NAME": "Amber",
+    "HEX_CODE": "#FFBF00",
+    "RGB_CODE": "rgb(255, 191, 0)"
+  },
+  {
+    "COLOR_NAME": "Apricot",
+    "HEX_CODE": "#FBCEB1",
+    "RGB_CODE": "rgb(251, 206, 177)"
+  },
+  {
+    "COLOR_NAME": "Beige",
+    "HEX_CODE": "#F5F5DC",
+    "RGB_CODE": "rgb(245, 245, 220)"
+  },
+  {
+    "COLOR_NAME": "Brass",
+    "HEX_CODE": "#E1C16E",
+    "RGB_CODE": "rgb(225, 193, 110)"
+  },
+  {
+    "COLOR_NAME": "Bright Yellow",
+    "HEX_CODE": "#FFEA00",
+    "RGB_CODE": "rgb(255, 234, 0)"
+  },
+  {
+    "COLOR_NAME": "Cadmium Yellow",
+    "HEX_CODE": "#FDDA0D",
+    "RGB_CODE": "rgb(253, 218, 13)"
+  },
+  {
+    "COLOR_NAME": "Canary Yellow",
+    "HEX_CODE": "#FFFF8F",
+    "RGB_CODE": "rgb(255, 255, 143)"
+  },
+  {
+    "COLOR_NAME": "Chartreuse",
+    "HEX_CODE": "#DFFF00",
+    "RGB_CODE": "rgb(223, 255, 0)"
+  },
+  {
+    "COLOR_NAME": "Citrine",
+    "HEX_CODE": "#E4D00A",
+    "RGB_CODE": "rgb(228, 208, 10)"
+  },
+  {
+    "COLOR_NAME": "Cornsilk",
+    "HEX_CODE": "#FFF8DC",
+    "RGB_CODE": "rgb(255, 248, 220)"
+  },
+  {
+    "COLOR_NAME": "Cream",
+    "HEX_CODE": "#FFFDD0",
+    "RGB_CODE": "rgb(255, 253, 208)"
+  },
+  {
+    "COLOR_NAME": "Dark Yellow",
+    "HEX_CODE": "#8B8000",
+    "RGB_CODE": "rgb(139, 128, 0)"
+  },
+  {
+    "COLOR_NAME": "Desert",
+    "HEX_CODE": "#FAD5A5",
+    "RGB_CODE": "rgb(250, 213, 165)"
+  },
+  {
+    "COLOR_NAME": "Ecru",
+    "HEX_CODE": "#C2B280",
+    "RGB_CODE": "rgb(194, 178, 128)"
+  },
+  {
+    "COLOR_NAME": "Flax",
+    "HEX_CODE": "#EEDC82",
+    "RGB_CODE": "rgb(238, 220, 130)"
+  },
+  {
+    "COLOR_NAME": "Gamboge",
+    "HEX_CODE": "#E49B0F",
+    "RGB_CODE": "rgb(228, 155, 15)"
+  },
+  {
+    "COLOR_NAME": "Gold",
+    "HEX_CODE": "#FFD700",
+    "RGB_CODE": "rgb(255, 215, 0)"
+  },
+  {
+    "COLOR_NAME": "Golden Yellow",
+    "HEX_CODE": "#FFC000",
+    "RGB_CODE": "rgb(255, 192, 0)"
+  },
+  {
+    "COLOR_NAME": "Goldenrod",
+    "HEX_CODE": "#DAA520",
+    "RGB_CODE": "rgb(218, 165, 32)"
+  },
+  {
+    "COLOR_NAME": "Icterine",
+    "HEX_CODE": "#FCF55F",
+    "RGB_CODE": "rgb(252, 245, 95)"
+  },
+  {
+    "COLOR_NAME": "Ivory",
+    "HEX_CODE": "#FFFFF0",
+    "RGB_CODE": "rgb(255, 255, 240)"
+  },
+  {
+    "COLOR_NAME": "Jasmine",
+    "HEX_CODE": "#F8DE7E",
+    "RGB_CODE": "rgb(248, 222, 126)"
+  },
+  {
+    "COLOR_NAME": "Khaki",
+    "HEX_CODE": "#F0E68C",
+    "RGB_CODE": "rgb(240, 230, 140)"
+  },
+  {
+    "COLOR_NAME": "Lemon Yellow",
+    "HEX_CODE": "#FAFA33",
+    "RGB_CODE": "rgb(250, 250, 51)"
+  },
+  {
+    "COLOR_NAME": "Maize",
+    "HEX_CODE": "#FBEC5D",
+    "RGB_CODE": "rgb(251, 236, 93)"
+  },
+  {
+    "COLOR_NAME": "Mango",
+    "HEX_CODE": "#F4BB44",
+    "RGB_CODE": "rgb(244, 187, 68)"
+  },
+  {
+    "COLOR_NAME": "Mustard Yellow",
+    "HEX_CODE": "#FFDB58",
+    "RGB_CODE": "rgb(255, 219, 88)"
+  },
+  {
+    "COLOR_NAME": "Naples Yellow",
+    "HEX_CODE": "#FADA5E",
+    "RGB_CODE": "rgb(250, 218, 94)"
+  },
+  {
+    "COLOR_NAME": "Navajo White",
+    "HEX_CODE": "#FFDEAD",
+    "RGB_CODE": "rgb(255, 222, 173)"
+  },
+  {
+    "COLOR_NAME": "Nyanza",
+    "HEX_CODE": "#ECFFDC",
+    "RGB_CODE": "rgb(236, 255, 220)"
+  },
+  {
+    "COLOR_NAME": "Pastel Yellow",
+    "HEX_CODE": "#FFFAA0",
+    "RGB_CODE": "rgb(255, 250, 160)"
+  },
+  {
+    "COLOR_NAME": "Peach",
+    "HEX_CODE": "#FFE5B4",
+    "RGB_CODE": "rgb(255, 229, 180)"
+  },
+  {
+    "COLOR_NAME": "Pear",
+    "HEX_CODE": "#C9CC3F",
+    "RGB_CODE": "rgb(201, 204, 63)"
+  },
+  {
+    "COLOR_NAME": "Peridot",
+    "HEX_CODE": "#B4C424",
+    "RGB_CODE": "rgb(180, 196, 36)"
+  },
+  {
+    "COLOR_NAME": "Pistachio",
+    "HEX_CODE": "#93C572",
+    "RGB_CODE": "rgb(147, 197, 114)"
+  },
+  {
+    "COLOR_NAME": "Saffron",
+    "HEX_CODE": "#F4C430",
+    "RGB_CODE": "rgb(244, 196, 48)"
+  },
+  {
+    "COLOR_NAME": "Vanilla",
+    "HEX_CODE": "#F3E5AB",
+    "RGB_CODE": "rgb(243, 229, 171)"
+  },
+  {
+    "COLOR_NAME": "Vegas Gold",
+    "HEX_CODE": "#C4B454",
+    "RGB_CODE": "rgb(196, 180, 84)"
+  },
+  {
+    "COLOR_NAME": "Wheat",
+    "HEX_CODE": "#F5DEB3",
+    "RGB_CODE": "rgb(245, 222, 179)"
+  },
+  {
+    "COLOR_NAME": "Yellow",
+    "HEX_CODE": "#FFFF00",
+    "RGB_CODE": "rgb(255, 255, 0)"
+  },
+  {
+    "COLOR_NAME": "Yellow Orange",
+    "HEX_CODE": "#FFAA33",
+    "RGB_CODE": "rgb(255, 170, 51)"
+  }
+]

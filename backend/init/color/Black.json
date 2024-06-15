@@ -1,0 +1,47 @@
+[
+  {
+    "COLOR_NAME": "Black",
+    "HEX_CODE": "#000000",
+    "RGB_CODE": "rgb(0, 0, 0)"
+  },
+  {
+    "COLOR_NAME": "Charcoal",
+    "HEX_CODE": "#36454F",
+    "RGB_CODE": "rgb(54, 69, 79)"
+  },
+  {
+    "COLOR_NAME": "Dark Green",
+    "HEX_CODE": "#023020",
+    "RGB_CODE": "rgb(2, 48, 32)"
+  },
+  {
+    "COLOR_NAME": "Dark Purple",
+    "HEX_CODE": "#301934",
+    "RGB_CODE": "rgb(48, 25, 52)"
+  },
+  {
+    "COLOR_NAME": "Jet Black",
+    "HEX_CODE": "#343434",
+    "RGB_CODE": "rgb(52, 52, 52)"
+  },
+  {
+    "COLOR_NAME": "Licorice",
+    "HEX_CODE": "#1B1212",
+    "RGB_CODE": "rgb(27, 18, 18)"
+  },
+  {
+    "COLOR_NAME": "Matte Black",
+    "HEX_CODE": "#28282B",
+    "RGB_CODE": "rgb(40, 40, 43)"
+  },
+  {
+    "COLOR_NAME": "Midnight Blue",
+    "HEX_CODE": "#191970",
+    "RGB_CODE": "rgb(25, 25, 112)"
+  },
+  {
+    "COLOR_NAME": "Onyx",
+    "HEX_CODE": "#353935",
+    "RGB_CODE": "rgb(53, 57, 53)"
+  }
+]

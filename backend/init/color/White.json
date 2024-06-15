@@ -1,0 +1,82 @@
+[
+  {
+    "COLOR_NAME": "Alabaster",
+    "HEX_CODE": "#EDEADE",
+    "RGB_CODE": "rgb(237, 234, 222)"
+  },
+  {
+    "COLOR_NAME": "Beige",
+    "HEX_CODE": "#F5F5DC",
+    "RGB_CODE": "rgb(245, 245, 220)"
+  },
+  {
+    "COLOR_NAME": "Bone White",
+    "HEX_CODE": "#F9F6EE",
+    "RGB_CODE": "rgb(249, 246, 238)"
+  },
+  {
+    "COLOR_NAME": "Cornsilk",
+    "HEX_CODE": "#FFF8DC",
+    "RGB_CODE": "rgb(255, 248, 220)"
+  },
+  {
+    "COLOR_NAME": "Cream",
+    "HEX_CODE": "#FFFDD0",
+    "RGB_CODE": "rgb(255, 253, 208)"
+  },
+  {
+    "COLOR_NAME": "Eggshell",
+    "HEX_CODE": "#F0EAD6",
+    "RGB_CODE": "rgb(240, 234, 214)"
+  },
+  {
+    "COLOR_NAME": "Ivory",
+    "HEX_CODE": "#FFFFF0",
+    "RGB_CODE": "rgb(255, 255, 240)"
+  },
+  {
+    "COLOR_NAME": "Linen",
+    "HEX_CODE": "#E9DCC9",
+    "RGB_CODE": "rgb(233, 220, 201)"
+  },
+  {
+    "COLOR_NAME": "Navajo White",
+    "HEX_CODE": "#FFDEAD",
+    "RGB_CODE": "rgb(255, 222, 173)"
+  },
+  {
+    "COLOR_NAME": "Off White",
+    "HEX_CODE": "#FAF9F6",
+    "RGB_CODE": "rgb(250, 249, 246)"
+  },
+  {
+    "COLOR_NAME": "Parchment",
+    "HEX_CODE": "#FCF5E5",
+    "RGB_CODE": "rgb(252, 245, 229)"
+  },
+  {
+    "COLOR_NAME": "Peach",
+    "HEX_CODE": "#FFE5B4",
+    "RGB_CODE": "rgb(255, 229, 180)"
+  },
+  {
+    "COLOR_NAME": "Pearl",
+    "HEX_CODE": "#E2DFD2",
+    "RGB_CODE": "rgb(226, 223, 210)"
+  },
+  {
+    "COLOR_NAME": "Seashell",
+    "HEX_CODE": "#FFF5EE",
+    "RGB_CODE": "rgb(255, 245, 238)"
+  },
+  {
+    "COLOR_NAME": "Vanilla",
+    "HEX_CODE": "#F3E5AB",
+    "RGB_CODE": "rgb(243, 229, 171)"
+  },
+  {
+    "COLOR_NAME": "White",
+    "HEX_CODE": "#FFFFFF",
+    "RGB_CODE": "rgb(255, 255, 255)"
+  }
+]
