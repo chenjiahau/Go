@@ -12,8 +12,8 @@ const resource = {
   EDIT_CATEGORY: "/category/:id",
   // Subcategory
   SUBCATEGORIES: "/category/:id/subcategories",
-  NUMBER_OF_SUBCATEGORIES: "/category/:id/subcategory/total",
-  SUBCATEGORIES_BY_PAGE: "/category/:id/subcategory/page/:page/size/:size",
+  NUMBER_OF_SUBCATEGORIES: "/category/:id/subcategories/total",
+  SUBCATEGORIES_BY_PAGE: "/category/:id/subcategories/page/:page/size/:size",
   ADD_SUBCATEGORY: "/category/:id/subcategory",
   EDIT_SUBCATEGORY: "/category/:id/subcategory/:subId",
 }
