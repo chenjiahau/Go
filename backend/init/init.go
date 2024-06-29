@@ -77,12 +77,12 @@ func HandleColor(PgConn *driver.DBConn, ) {
 			}
 
 			for _, color := range colorList {
-				id, err := c.Create(id, color.ColorName, color.HexCode, color.RGBCode)
+				id, err := c.Create(id, color.Name, color.HexCode, color.RGBCode)
 				if err != nil {
 					util.WriteErrorLog(err.Error())
 				}
 
-				util.WriteInfoLog(fmt.Sprintf("Color %s created with id %d", color.ColorName, id))
+				util.WriteInfoLog(fmt.Sprintf("Color %s created with id %d", color.Name, id))
 			}	
 
    }

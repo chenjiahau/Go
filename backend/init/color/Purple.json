@@ -1,142 +1,142 @@
 [
   {
-    "COLOR_NAME": "Amaranth",
-    "HEX_CODE": "#9F2B68",
-    "RGB_CODE": "rgb(159, 43, 104)"
+    "name": "Amaranth",
+    "hexCode": "#9F2B68",
+    "rgbCode": "rgb(159, 43, 104)"
   },
   {
-    "COLOR_NAME": "Bright Purple",
-    "HEX_CODE": "#BF40BF",
-    "RGB_CODE": "rgb(191, 64, 191)"
+    "name": "Bright Purple",
+    "hexCode": "#BF40BF",
+    "rgbCode": "rgb(191, 64, 191)"
   },
   {
-    "COLOR_NAME": "Burgundy",
-    "HEX_CODE": "#800020",
-    "RGB_CODE": "rgb(128, 0, 32)"
+    "name": "Burgundy",
+    "hexCode": "#800020",
+    "rgbCode": "rgb(128, 0, 32)"
   },
   {
-    "COLOR_NAME": "Byzantium",
-    "HEX_CODE": "#702963",
-    "RGB_CODE": "rgb(112, 41, 99)"
+    "name": "Byzantium",
+    "hexCode": "#702963",
+    "rgbCode": "rgb(112, 41, 99)"
   },
   {
-    "COLOR_NAME": "Dark Pink",
-    "HEX_CODE": "#AA336A",
-    "RGB_CODE": "rgb(170, 51, 106)"
+    "name": "Dark Pink",
+    "hexCode": "#AA336A",
+    "rgbCode": "rgb(170, 51, 106)"
   },
   {
-    "COLOR_NAME": "Dark Purple",
-    "HEX_CODE": "#301934",
-    "RGB_CODE": "rgb(48, 25, 52)"
+    "name": "Dark Purple",
+    "hexCode": "#301934",
+    "rgbCode": "rgb(48, 25, 52)"
   },
   {
-    "COLOR_NAME": "Eggplant",
-    "HEX_CODE": "#483248",
-    "RGB_CODE": "rgb(72, 50, 72)"
+    "name": "Eggplant",
+    "hexCode": "#483248",
+    "rgbCode": "rgb(72, 50, 72)"
   },
   {
-    "COLOR_NAME": "Iris",
-    "HEX_CODE": "#5D3FD3",
-    "RGB_CODE": "rgb(93, 63, 211)"
+    "name": "Iris",
+    "hexCode": "#5D3FD3",
+    "rgbCode": "rgb(93, 63, 211)"
   },
   {
-    "COLOR_NAME": "Lavender",
-    "HEX_CODE": "#E6E6FA",
-    "RGB_CODE": "rgb(230, 230, 250)"
+    "name": "Lavender",
+    "hexCode": "#E6E6FA",
+    "rgbCode": "rgb(230, 230, 250)"
   },
   {
-    "COLOR_NAME": "Light Purple",
-    "HEX_CODE": "#CBC3E3",
-    "RGB_CODE": "rgb(203, 195, 227)"
+    "name": "Light Purple",
+    "hexCode": "#CBC3E3",
+    "rgbCode": "rgb(203, 195, 227)"
   },
   {
-    "COLOR_NAME": "Light Violet",
-    "HEX_CODE": "#CF9FFF",
-    "RGB_CODE": "rgb(207, 159, 255)"
+    "name": "Light Violet",
+    "hexCode": "#CF9FFF",
+    "rgbCode": "rgb(207, 159, 255)"
   },
   {
-    "COLOR_NAME": "Lilac",
-    "HEX_CODE": "#AA98A9",
-    "RGB_CODE": "rgb(170, 152, 169)"
+    "name": "Lilac",
+    "hexCode": "#AA98A9",
+    "rgbCode": "rgb(170, 152, 169)"
   },
   {
-    "COLOR_NAME": "Mauve",
-    "HEX_CODE": "#E0B0FF",
-    "RGB_CODE": "rgb(224, 176, 255)"
+    "name": "Mauve",
+    "hexCode": "#E0B0FF",
+    "rgbCode": "rgb(224, 176, 255)"
   },
   {
-    "COLOR_NAME": "Mauve Taupe",
-    "HEX_CODE": "#915F6D",
-    "RGB_CODE": "rgb(145, 95, 109)"
+    "name": "Mauve Taupe",
+    "hexCode": "#915F6D",
+    "rgbCode": "rgb(145, 95, 109)"
   },
   {
-    "COLOR_NAME": "Mulberry",
-    "HEX_CODE": "#770737",
-    "RGB_CODE": "rgb(119, 7, 55)"
+    "name": "Mulberry",
+    "hexCode": "#770737",
+    "rgbCode": "rgb(119, 7, 55)"
   },
   {
-    "COLOR_NAME": "Orchid",
-    "HEX_CODE": "#DA70D6",
-    "RGB_CODE": "rgb(218, 112, 214)"
+    "name": "Orchid",
+    "hexCode": "#DA70D6",
+    "rgbCode": "rgb(218, 112, 214)"
   },
   {
-    "COLOR_NAME": "Pastel Purple",
-    "HEX_CODE": "#C3B1E1",
-    "RGB_CODE": "rgb(195, 177, 225)"
+    "name": "Pastel Purple",
+    "hexCode": "#C3B1E1",
+    "rgbCode": "rgb(195, 177, 225)"
   },
   {
-    "COLOR_NAME": "Periwinkle",
-    "HEX_CODE": "#CCCCFF",
-    "RGB_CODE": "rgb(204, 204, 255)"
+    "name": "Periwinkle",
+    "hexCode": "#CCCCFF",
+    "rgbCode": "rgb(204, 204, 255)"
   },
   {
-    "COLOR_NAME": "Plum",
-    "HEX_CODE": "#673147",
-    "RGB_CODE": "rgb(103, 49, 71)"
+    "name": "Plum",
+    "hexCode": "#673147",
+    "rgbCode": "rgb(103, 49, 71)"
   },
   {
-    "COLOR_NAME": "Puce",
-    "HEX_CODE": "#A95C68",
-    "RGB_CODE": "rgb(169, 92, 104)"
+    "name": "Puce",
+    "hexCode": "#A95C68",
+    "rgbCode": "rgb(169, 92, 104)"
   },
   {
-    "COLOR_NAME": "Purple",
-    "HEX_CODE": "#800080",
-    "RGB_CODE": "rgb(128, 0, 128)"
+    "name": "Purple",
+    "hexCode": "#800080",
+    "rgbCode": "rgb(128, 0, 128)"
   },
   {
-    "COLOR_NAME": "Quartz",
-    "HEX_CODE": "#51414F",
-    "RGB_CODE": "rgb(81, 65, 79)"
+    "name": "Quartz",
+    "hexCode": "#51414F",
+    "rgbCode": "rgb(81, 65, 79)"
   },
   {
-    "COLOR_NAME": "Red Purple",
-    "HEX_CODE": "#953553",
-    "RGB_CODE": "rgb(149, 53, 83)"
+    "name": "Red Purple",
+    "hexCode": "#953553",
+    "rgbCode": "rgb(149, 53, 83)"
   },
   {
-    "COLOR_NAME": "Thistle",
-    "HEX_CODE": "#D8BFD8",
-    "RGB_CODE": "rgb(216, 191, 216)"
+    "name": "Thistle",
+    "hexCode": "#D8BFD8",
+    "rgbCode": "rgb(216, 191, 216)"
   },
   {
-    "COLOR_NAME": "Tyrian Purple",
-    "HEX_CODE": "#630330",
-    "RGB_CODE": "rgb(99, 3, 48)"
+    "name": "Tyrian Purple",
+    "hexCode": "#630330",
+    "rgbCode": "rgb(99, 3, 48)"
   },
   {
-    "COLOR_NAME": "Violet",
-    "HEX_CODE": "#7F00FF",
-    "RGB_CODE": "rgb(127, 0, 255)"
+    "name": "Violet",
+    "hexCode": "#7F00FF",
+    "rgbCode": "rgb(127, 0, 255)"
   },
   {
-    "COLOR_NAME": "Wine",
-    "HEX_CODE": "#722F37",
-    "RGB_CODE": "rgb(114, 47, 55)"
+    "name": "Wine",
+    "hexCode": "#722F37",
+    "rgbCode": "rgb(114, 47, 55)"
   },
   {
-    "COLOR_NAME": "Wisteria",
-    "HEX_CODE": "#BDB5D5",
-    "RGB_CODE": "rgb(189, 181, 213)"
+    "name": "Wisteria",
+    "hexCode": "#BDB5D5",
+    "rgbCode": "rgb(189, 181, 213)"
   }
 ]

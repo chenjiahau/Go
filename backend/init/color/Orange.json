@@ -1,207 +1,207 @@
 [
   {
-    "COLOR_NAME": "Amber",
-    "HEX_CODE": "#FFBF00",
-    "RGB_CODE": "rgb(255, 191, 0)"
+    "name": "Amber",
+    "hexCode": "#FFBF00",
+    "rgbCode": "rgb(255, 191, 0)"
   },
   {
-    "COLOR_NAME": "Apricot",
-    "HEX_CODE": "#FBCEB1",
-    "RGB_CODE": "rgb(251, 206, 177)"
+    "name": "Apricot",
+    "hexCode": "#FBCEB1",
+    "rgbCode": "rgb(251, 206, 177)"
   },
   {
-    "COLOR_NAME": "Bisque",
-    "HEX_CODE": "#F2D2BD",
-    "RGB_CODE": "rgb(242, 210, 189)"
+    "name": "Bisque",
+    "hexCode": "#F2D2BD",
+    "rgbCode": "rgb(242, 210, 189)"
   },
   {
-    "COLOR_NAME": "Bright Orange",
-    "HEX_CODE": "#FFAC1C",
-    "RGB_CODE": "rgb(255, 172, 28)"
+    "name": "Bright Orange",
+    "hexCode": "#FFAC1C",
+    "rgbCode": "rgb(255, 172, 28)"
   },
   {
-    "COLOR_NAME": "Bronze",
-    "HEX_CODE": "#CD7F32",
-    "RGB_CODE": "rgb(205, 127, 50)"
+    "name": "Bronze",
+    "hexCode": "#CD7F32",
+    "rgbCode": "rgb(205, 127, 50)"
   },
   {
-    "COLOR_NAME": "Buff",
-    "HEX_CODE": "#DAA06D",
-    "RGB_CODE": "rgb(218, 160, 109)"
+    "name": "Buff",
+    "hexCode": "#DAA06D",
+    "rgbCode": "rgb(218, 160, 109)"
   },
   {
-    "COLOR_NAME": "Burnt Orange",
-    "HEX_CODE": "#CC5500",
-    "RGB_CODE": "rgb(204, 85, 0)"
+    "name": "Burnt Orange",
+    "hexCode": "#CC5500",
+    "rgbCode": "rgb(204, 85, 0)"
   },
   {
-    "COLOR_NAME": "Burnt Sienna",
-    "HEX_CODE": "#E97451",
-    "RGB_CODE": "rgb(233, 116, 81)"
+    "name": "Burnt Sienna",
+    "hexCode": "#E97451",
+    "rgbCode": "rgb(233, 116, 81)"
   },
   {
-    "COLOR_NAME": "Butterscotch",
-    "HEX_CODE": "#E3963E",
-    "RGB_CODE": "rgb(227, 150, 62)"
+    "name": "Butterscotch",
+    "hexCode": "#E3963E",
+    "rgbCode": "rgb(227, 150, 62)"
   },
   {
-    "COLOR_NAME": "Cadmium Orange",
-    "HEX_CODE": "#F28C28",
-    "RGB_CODE": "rgb(242, 140, 40)"
+    "name": "Cadmium Orange",
+    "hexCode": "#F28C28",
+    "rgbCode": "rgb(242, 140, 40)"
   },
   {
-    "COLOR_NAME": "Cinnamon",
-    "HEX_CODE": "#D27D2D",
-    "RGB_CODE": "rgb(210, 125, 45)"
+    "name": "Cinnamon",
+    "hexCode": "#D27D2D",
+    "rgbCode": "rgb(210, 125, 45)"
   },
   {
-    "COLOR_NAME": "Copper",
-    "HEX_CODE": "#B87333",
-    "RGB_CODE": "rgb(184, 115, 51)"
+    "name": "Copper",
+    "hexCode": "#B87333",
+    "rgbCode": "rgb(184, 115, 51)"
   },
   {
-    "COLOR_NAME": "Coral",
-    "HEX_CODE": "#FF7F50",
-    "RGB_CODE": "rgb(255, 127, 80)"
+    "name": "Coral",
+    "hexCode": "#FF7F50",
+    "rgbCode": "rgb(255, 127, 80)"
   },
   {
-    "COLOR_NAME": "Coral Pink",
-    "HEX_CODE": "#F88379",
-    "RGB_CODE": "rgb(248, 131, 121)"
+    "name": "Coral Pink",
+    "hexCode": "#F88379",
+    "rgbCode": "rgb(248, 131, 121)"
   },
   {
-    "COLOR_NAME": "Dark Orange",
-    "HEX_CODE": "#8B4000",
-    "RGB_CODE": "rgb(139, 64, 0)"
+    "name": "Dark Orange",
+    "hexCode": "#8B4000",
+    "rgbCode": "rgb(139, 64, 0)"
   },
   {
-    "COLOR_NAME": "Desert",
-    "HEX_CODE": "#FAD5A5",
-    "RGB_CODE": "rgb(250, 213, 165)"
+    "name": "Desert",
+    "hexCode": "#FAD5A5",
+    "rgbCode": "rgb(250, 213, 165)"
   },
   {
-    "COLOR_NAME": "Gamboge",
-    "HEX_CODE": "#E49B0F",
-    "RGB_CODE": "rgb(228, 155, 15)"
+    "name": "Gamboge",
+    "hexCode": "#E49B0F",
+    "rgbCode": "rgb(228, 155, 15)"
   },
   {
-    "COLOR_NAME": "Golden Yellow",
-    "HEX_CODE": "#FFC000",
-    "RGB_CODE": "rgb(255, 192, 0)"
+    "name": "Golden Yellow",
+    "hexCode": "#FFC000",
+    "rgbCode": "rgb(255, 192, 0)"
   },
   {
-    "COLOR_NAME": "Goldenrod",
-    "HEX_CODE": "#DAA520",
-    "RGB_CODE": "rgb(218, 165, 32)"
+    "name": "Goldenrod",
+    "hexCode": "#DAA520",
+    "rgbCode": "rgb(218, 165, 32)"
   },
   {
-    "COLOR_NAME": "Light Orange",
-    "HEX_CODE": "#FFD580",
-    "RGB_CODE": "rgb(255, 213, 128)"
+    "name": "Light Orange",
+    "hexCode": "#FFD580",
+    "rgbCode": "rgb(255, 213, 128)"
   },
   {
-    "COLOR_NAME": "Mahogany",
-    "HEX_CODE": "#C04000",
-    "RGB_CODE": "rgb(192, 64, 0)"
+    "name": "Mahogany",
+    "hexCode": "#C04000",
+    "rgbCode": "rgb(192, 64, 0)"
   },
   {
-    "COLOR_NAME": "Mango",
-    "HEX_CODE": "#F4BB44",
-    "RGB_CODE": "rgb(244, 187, 68)"
+    "name": "Mango",
+    "hexCode": "#F4BB44",
+    "rgbCode": "rgb(244, 187, 68)"
   },
   {
-    "COLOR_NAME": "Navajo White",
-    "HEX_CODE": "#FFDEAD",
-    "RGB_CODE": "rgb(255, 222, 173)"
+    "name": "Navajo White",
+    "hexCode": "#FFDEAD",
+    "rgbCode": "rgb(255, 222, 173)"
   },
   {
-    "COLOR_NAME": "Neon Orange",
-    "HEX_CODE": "#FF5F1F",
-    "RGB_CODE": "rgb(255, 95, 31)"
+    "name": "Neon Orange",
+    "hexCode": "#FF5F1F",
+    "rgbCode": "rgb(255, 95, 31)"
   },
   {
-    "COLOR_NAME": "Ochre",
-    "HEX_CODE": "#CC7722",
-    "RGB_CODE": "rgb(204, 119, 34)"
+    "name": "Ochre",
+    "hexCode": "#CC7722",
+    "rgbCode": "rgb(204, 119, 34)"
   },
   {
-    "COLOR_NAME": "Orange",
-    "HEX_CODE": "#FFA500",
-    "RGB_CODE": "rgb(255, 165, 0)"
+    "name": "Orange",
+    "hexCode": "#FFA500",
+    "rgbCode": "rgb(255, 165, 0)"
   },
   {
-    "COLOR_NAME": "Pastel Orange",
-    "HEX_CODE": "#FAC898",
-    "RGB_CODE": "rgb(250, 200, 152)"
+    "name": "Pastel Orange",
+    "hexCode": "#FAC898",
+    "rgbCode": "rgb(250, 200, 152)"
   },
   {
-    "COLOR_NAME": "Peach",
-    "HEX_CODE": "#FFE5B4",
-    "RGB_CODE": "rgb(255, 229, 180)"
+    "name": "Peach",
+    "hexCode": "#FFE5B4",
+    "rgbCode": "rgb(255, 229, 180)"
   },
   {
-    "COLOR_NAME": "Persimmon",
-    "HEX_CODE": "#EC5800",
-    "RGB_CODE": "rgb(236, 88, 0)"
+    "name": "Persimmon",
+    "hexCode": "#EC5800",
+    "rgbCode": "rgb(236, 88, 0)"
   },
   {
-    "COLOR_NAME": "Pink Orange",
-    "HEX_CODE": "#F89880",
-    "RGB_CODE": "rgb(248, 152, 128)"
+    "name": "Pink Orange",
+    "hexCode": "#F89880",
+    "rgbCode": "rgb(248, 152, 128)"
   },
   {
-    "COLOR_NAME": "Poppy",
-    "HEX_CODE": "#E35335",
-    "RGB_CODE": "rgb(227, 83, 53)"
+    "name": "Poppy",
+    "hexCode": "#E35335",
+    "rgbCode": "rgb(227, 83, 53)"
   },
   {
-    "COLOR_NAME": "Pumpkin Orange",
-    "HEX_CODE": "#FF7518",
-    "RGB_CODE": "rgb(255, 117, 24)"
+    "name": "Pumpkin Orange",
+    "hexCode": "#FF7518",
+    "rgbCode": "rgb(255, 117, 24)"
   },
   {
-    "COLOR_NAME": "Red Orange",
-    "HEX_CODE": "#FF4433",
-    "RGB_CODE": "rgb(255, 68, 51)"
+    "name": "Red Orange",
+    "hexCode": "#FF4433",
+    "rgbCode": "rgb(255, 68, 51)"
   },
   {
-    "COLOR_NAME": "Safety Orange",
-    "HEX_CODE": "#FF5F15",
-    "RGB_CODE": "rgb(255, 95, 21)"
+    "name": "Safety Orange",
+    "hexCode": "#FF5F15",
+    "rgbCode": "rgb(255, 95, 21)"
   },
   {
-    "COLOR_NAME": "Salmon",
-    "HEX_CODE": "#FA8072",
-    "RGB_CODE": "rgb(250, 128, 114)"
+    "name": "Salmon",
+    "hexCode": "#FA8072",
+    "rgbCode": "rgb(250, 128, 114)"
   },
   {
-    "COLOR_NAME": "Seashell",
-    "HEX_CODE": "#FFF5EE",
-    "RGB_CODE": "rgb(255, 245, 238)"
+    "name": "Seashell",
+    "hexCode": "#FFF5EE",
+    "rgbCode": "rgb(255, 245, 238)"
   },
   {
-    "COLOR_NAME": "Sienna",
-    "HEX_CODE": "#A0522D",
-    "RGB_CODE": "rgb(160, 82, 45)"
+    "name": "Sienna",
+    "hexCode": "#A0522D",
+    "rgbCode": "rgb(160, 82, 45)"
   },
   {
-    "COLOR_NAME": "Sunset Orange",
-    "HEX_CODE": "#FA5F55",
-    "RGB_CODE": "rgb(250, 95, 85)"
+    "name": "Sunset Orange",
+    "hexCode": "#FA5F55",
+    "rgbCode": "rgb(250, 95, 85)"
   },
   {
-    "COLOR_NAME": "Tangerine",
-    "HEX_CODE": "#F08000",
-    "RGB_CODE": "rgb(240, 128, 0)"
+    "name": "Tangerine",
+    "hexCode": "#F08000",
+    "rgbCode": "rgb(240, 128, 0)"
   },
   {
-    "COLOR_NAME": "Terra Cotta",
-    "HEX_CODE": "#E3735E",
-    "RGB_CODE": "rgb(227, 115, 94)"
+    "name": "Terra Cotta",
+    "hexCode": "#E3735E",
+    "rgbCode": "rgb(227, 115, 94)"
   },
   {
-    "COLOR_NAME": "Yellow Orange",
-    "HEX_CODE": "#FFAA33",
-    "RGB_CODE": "rgb(255, 170, 51)"
+    "name": "Yellow Orange",
+    "hexCode": "#FFAA33",
+    "rgbCode": "rgb(255, 170, 51)"
   }
 ]

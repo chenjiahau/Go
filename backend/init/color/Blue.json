@@ -1,187 +1,187 @@
 [
   {
-    "COLOR_NAME": "Aqua",
-    "HEX_CODE": "#00FFFF",
-    "RGB_CODE": "rgb(0, 255, 255)"
+    "name": "Aqua",
+    "hexCode": "#00FFFF",
+    "rgbCode": "rgb(0, 255, 255)"
   },
   {
-    "COLOR_NAME": "Azure",
-    "HEX_CODE": "#F0FFFF",
-    "RGB_CODE": "rgb(240, 255, 255)"
+    "name": "Azure",
+    "hexCode": "#F0FFFF",
+    "rgbCode": "rgb(240, 255, 255)"
   },
   {
-    "COLOR_NAME": "Baby Blue",
-    "HEX_CODE": "#89CFF0",
-    "RGB_CODE": "rgb(137, 207, 240)"
+    "name": "Baby Blue",
+    "hexCode": "#89CFF0",
+    "rgbCode": "rgb(137, 207, 240)"
   },
   {
-    "COLOR_NAME": "Blue",
-    "HEX_CODE": "#0000FF",
-    "RGB_CODE": "rgb(0, 0, 255)"
+    "name": "Blue",
+    "hexCode": "#0000FF",
+    "rgbCode": "rgb(0, 0, 255)"
   },
   {
-    "COLOR_NAME": "Blue Gray",
-    "HEX_CODE": "#7393B3",
-    "RGB_CODE": "rgb(115, 147, 179)"
+    "name": "Blue Gray",
+    "hexCode": "#7393B3",
+    "rgbCode": "rgb(115, 147, 179)"
   },
   {
-    "COLOR_NAME": "Blue Green",
-    "HEX_CODE": "#088F8F",
-    "RGB_CODE": "rgb(8, 143, 143)"
+    "name": "Blue Green",
+    "hexCode": "#088F8F",
+    "rgbCode": "rgb(8, 143, 143)"
   },
   {
-    "COLOR_NAME": "Bright Blue",
-    "HEX_CODE": "#0096FF",
-    "RGB_CODE": "rgb(0, 150, 255)"
+    "name": "Bright Blue",
+    "hexCode": "#0096FF",
+    "rgbCode": "rgb(0, 150, 255)"
   },
   {
-    "COLOR_NAME": "Cadet Blue",
-    "HEX_CODE": "#5F9EA0",
-    "RGB_CODE": "rgb(95, 158, 160)"
+    "name": "Cadet Blue",
+    "hexCode": "#5F9EA0",
+    "rgbCode": "rgb(95, 158, 160)"
   },
   {
-    "COLOR_NAME": "Cobalt Blue",
-    "HEX_CODE": "#0047AB",
-    "RGB_CODE": "rgb(0, 71, 171)"
+    "name": "Cobalt Blue",
+    "hexCode": "#0047AB",
+    "rgbCode": "rgb(0, 71, 171)"
   },
   {
-    "COLOR_NAME": "Cornflower Blue",
-    "HEX_CODE": "#6495ED",
-    "RGB_CODE": "rgb(100, 149, 237)"
+    "name": "Cornflower Blue",
+    "hexCode": "#6495ED",
+    "rgbCode": "rgb(100, 149, 237)"
   },
   {
-    "COLOR_NAME": "Cyan",
-    "HEX_CODE": "#00FFFF",
-    "RGB_CODE": "rgb(0, 255, 255)"
+    "name": "Cyan",
+    "hexCode": "#00FFFF",
+    "rgbCode": "rgb(0, 255, 255)"
   },
   {
-    "COLOR_NAME": "Dark Blue",
-    "HEX_CODE": "#00008B",
-    "RGB_CODE": "rgb(0, 0, 139)"
+    "name": "Dark Blue",
+    "hexCode": "#00008B",
+    "rgbCode": "rgb(0, 0, 139)"
   },
   {
-    "COLOR_NAME": "Denim",
-    "HEX_CODE": "#6F8FAF",
-    "RGB_CODE": "rgb(111, 143, 175)"
+    "name": "Denim",
+    "hexCode": "#6F8FAF",
+    "rgbCode": "rgb(111, 143, 175)"
   },
   {
-    "COLOR_NAME": "Egyptian Blue",
-    "HEX_CODE": "#1434A4",
-    "RGB_CODE": "rgb(20, 52, 164)"
+    "name": "Egyptian Blue",
+    "hexCode": "#1434A4",
+    "rgbCode": "rgb(20, 52, 164)"
   },
   {
-    "COLOR_NAME": "Electric Blue",
-    "HEX_CODE": "#7DF9FF",
-    "RGB_CODE": "rgb(125, 249, 255)"
+    "name": "Electric Blue",
+    "hexCode": "#7DF9FF",
+    "rgbCode": "rgb(125, 249, 255)"
   },
   {
-    "COLOR_NAME": "Glaucous",
-    "HEX_CODE": "#6082B6",
-    "RGB_CODE": "rgb(96, 130, 182)"
+    "name": "Glaucous",
+    "hexCode": "#6082B6",
+    "rgbCode": "rgb(96, 130, 182)"
   },
   {
-    "COLOR_NAME": "Jade",
-    "HEX_CODE": "#00A36C",
-    "RGB_CODE": "rgb(0, 163, 108)"
+    "name": "Jade",
+    "hexCode": "#00A36C",
+    "rgbCode": "rgb(0, 163, 108)"
   },
   {
-    "COLOR_NAME": "Indigo",
-    "HEX_CODE": "#3F00FF",
-    "RGB_CODE": "rgb(63, 0, 255)"
+    "name": "Indigo",
+    "hexCode": "#3F00FF",
+    "rgbCode": "rgb(63, 0, 255)"
   },
   {
-    "COLOR_NAME": "Iris",
-    "HEX_CODE": "#5D3FD3",
-    "RGB_CODE": "rgb(93, 63, 211)"
+    "name": "Iris",
+    "hexCode": "#5D3FD3",
+    "rgbCode": "rgb(93, 63, 211)"
   },
   {
-    "COLOR_NAME": "Light Blue",
-    "HEX_CODE": "#ADD8E6",
-    "RGB_CODE": "rgb(173, 216, 230)"
+    "name": "Light Blue",
+    "hexCode": "#ADD8E6",
+    "rgbCode": "rgb(173, 216, 230)"
   },
   {
-    "COLOR_NAME": "Midnight Blue",
-    "HEX_CODE": "#191970",
-    "RGB_CODE": "rgb(25, 25, 112)"
+    "name": "Midnight Blue",
+    "hexCode": "#191970",
+    "rgbCode": "rgb(25, 25, 112)"
   },
   {
-    "COLOR_NAME": "Navy Blue",
-    "HEX_CODE": "#000080",
-    "RGB_CODE": "rgb(0, 0, 128)"
+    "name": "Navy Blue",
+    "hexCode": "#000080",
+    "rgbCode": "rgb(0, 0, 128)"
   },
   {
-    "COLOR_NAME": "Neon Blue",
-    "HEX_CODE": "#1F51FF",
-    "RGB_CODE": "rgb(31, 81, 255)"
+    "name": "Neon Blue",
+    "hexCode": "#1F51FF",
+    "rgbCode": "rgb(31, 81, 255)"
   },
   {
-    "COLOR_NAME": "Pastel Blue",
-    "HEX_CODE": "#A7C7E7",
-    "RGB_CODE": "rgb(167, 199, 231)"
+    "name": "Pastel Blue",
+    "hexCode": "#A7C7E7",
+    "rgbCode": "rgb(167, 199, 231)"
   },
   {
-    "COLOR_NAME": "Periwinkle",
-    "HEX_CODE": "#CCCCFF",
-    "RGB_CODE": "rgb(204, 204, 255)"
+    "name": "Periwinkle",
+    "hexCode": "#CCCCFF",
+    "rgbCode": "rgb(204, 204, 255)"
   },
   {
-    "COLOR_NAME": "Powder Blue",
-    "HEX_CODE": "#B6D0E2",
-    "RGB_CODE": "rgb(182, 208, 226)"
+    "name": "Powder Blue",
+    "hexCode": "#B6D0E2",
+    "rgbCode": "rgb(182, 208, 226)"
   },
   {
-    "COLOR_NAME": "Robin Egg Blue",
-    "HEX_CODE": "#96DED1",
-    "RGB_CODE": "rgb(150, 222, 209)"
+    "name": "Robin Egg Blue",
+    "hexCode": "#96DED1",
+    "rgbCode": "rgb(150, 222, 209)"
   },
   {
-    "COLOR_NAME": "Royal Blue",
-    "HEX_CODE": "#4169E1",
-    "RGB_CODE": "rgb(65, 105, 225)"
+    "name": "Royal Blue",
+    "hexCode": "#4169E1",
+    "rgbCode": "rgb(65, 105, 225)"
   },
   {
-    "COLOR_NAME": "Sapphire Blue",
-    "HEX_CODE": "#0F52BA",
-    "RGB_CODE": "rgb(15, 82, 186)"
+    "name": "Sapphire Blue",
+    "hexCode": "#0F52BA",
+    "rgbCode": "rgb(15, 82, 186)"
   },
   {
-    "COLOR_NAME": "Seafoam Green",
-    "HEX_CODE": "#9FE2BF",
-    "RGB_CODE": "rgb(159, 226, 191)"
+    "name": "Seafoam Green",
+    "hexCode": "#9FE2BF",
+    "rgbCode": "rgb(159, 226, 191)"
   },
   {
-    "COLOR_NAME": "Sky Blue",
-    "HEX_CODE": "#87CEEB",
-    "RGB_CODE": "rgb(135, 206, 235)"
+    "name": "Sky Blue",
+    "hexCode": "#87CEEB",
+    "rgbCode": "rgb(135, 206, 235)"
   },
   {
-    "COLOR_NAME": "Steel Blue",
-    "HEX_CODE": "#4682B4",
-    "RGB_CODE": "rgb(70, 130, 180)"
+    "name": "Steel Blue",
+    "hexCode": "#4682B4",
+    "rgbCode": "rgb(70, 130, 180)"
   },
   {
-    "COLOR_NAME": "Teal",
-    "HEX_CODE": "#008080",
-    "RGB_CODE": "rgb(0, 128, 128)"
+    "name": "Teal",
+    "hexCode": "#008080",
+    "rgbCode": "rgb(0, 128, 128)"
   },
   {
-    "COLOR_NAME": "Turquoise",
-    "HEX_CODE": "#40E0D0",
-    "RGB_CODE": "rgb(64, 224, 208)"
+    "name": "Turquoise",
+    "hexCode": "#40E0D0",
+    "rgbCode": "rgb(64, 224, 208)"
   },
   {
-    "COLOR_NAME": "Ultramarine",
-    "HEX_CODE": "#0437F2",
-    "RGB_CODE": "rgb(4, 55, 242)"
+    "name": "Ultramarine",
+    "hexCode": "#0437F2",
+    "rgbCode": "rgb(4, 55, 242)"
   },
   {
-    "COLOR_NAME": "Verdigris",
-    "HEX_CODE": "#40B5AD",
-    "RGB_CODE": "rgb(64, 181, 173)"
+    "name": "Verdigris",
+    "hexCode": "#40B5AD",
+    "rgbCode": "rgb(64, 181, 173)"
   },
   {
-    "COLOR_NAME": "Zaffre",
-    "HEX_CODE": "#0818A8",
-    "RGB_CODE": "rgb(8, 24, 168)"
+    "name": "Zaffre",
+    "hexCode": "#0818A8",
+    "rgbCode": "rgb(8, 24, 168)"
   }
 ]

@@ -47,6 +47,10 @@ func GetRoutes() http.Handler {
 	mux.Put("/api/category/{id}/subcategory/{subId}", handler.Ctrl.UpdateSubCategory)
 	mux.Delete("/api/category/{id}/subcategory/{subId}", handler.Ctrl.DeleteSubCategory)
 
+	// Color routes
+	mux.Get("/api/color-categories", handler.Ctrl.GetAllColorCategory)
+	mux.Get("/api/colors", handler.Ctrl.GetAllColor)
+
 	// Tag routes
 	mux.Get("/api/tags", handler.Ctrl.GetAllTag)
 	mux.Get("/api/tags/total", handler.Ctrl.GetTotalTagNumber)

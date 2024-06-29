@@ -1,77 +1,77 @@
 [
   {
-    "COLOR_NAME": "Ash Gray",
-    "HEX_CODE": "#B2BEB5",
-    "RGB_CODE": "rgb(178, 190, 181)"
+    "name": "Ash Gray",
+    "hexCode": "#B2BEB5",
+    "rgbCode": "rgb(178, 190, 181)"
   },
   {
-    "COLOR_NAME": "Blue Gray",
-    "HEX_CODE": "#7393B3",
-    "RGB_CODE": "rgb(115, 147, 179)"
+    "name": "Blue Gray",
+    "hexCode": "#7393B3",
+    "rgbCode": "rgb(115, 147, 179)"
   },
   {
-    "COLOR_NAME": "Charcoal",
-    "HEX_CODE": "#36454F",
-    "RGB_CODE": "rgb(54, 69, 79)"
+    "name": "Charcoal",
+    "hexCode": "#36454F",
+    "rgbCode": "rgb(54, 69, 79)"
   },
   {
-    "COLOR_NAME": "Dark Gray",
-    "HEX_CODE": "#A9A9A9",
-    "RGB_CODE": "rgb(169, 169, 169)"
+    "name": "Dark Gray",
+    "hexCode": "#A9A9A9",
+    "rgbCode": "rgb(169, 169, 169)"
   },
   {
-    "COLOR_NAME": "Glaucous",
-    "HEX_CODE": "#6082B6",
-    "RGB_CODE": "rgb(96, 130, 182)"
+    "name": "Glaucous",
+    "hexCode": "#6082B6",
+    "rgbCode": "rgb(96, 130, 182)"
   },
   {
-    "COLOR_NAME": "Gray",
-    "HEX_CODE": "#808080",
-    "RGB_CODE": "rgb(128, 128, 128)"
+    "name": "Gray",
+    "hexCode": "#808080",
+    "rgbCode": "rgb(128, 128, 128)"
   },
   {
-    "COLOR_NAME": "Gunmetal Gray",
-    "HEX_CODE": "#818589",
-    "RGB_CODE": "rgb(129, 133, 137)"
+    "name": "Gunmetal Gray",
+    "hexCode": "#818589",
+    "rgbCode": "rgb(129, 133, 137)"
   },
   {
-    "COLOR_NAME": "Light Gray",
-    "HEX_CODE": "#D3D3D3",
-    "RGB_CODE": "rgb(211, 211, 211)"
+    "name": "Light Gray",
+    "hexCode": "#D3D3D3",
+    "rgbCode": "rgb(211, 211, 211)"
   },
   {
-    "COLOR_NAME": "Pewter",
-    "HEX_CODE": "#899499",
-    "RGB_CODE": "rgb(137, 148, 153)"
+    "name": "Pewter",
+    "hexCode": "#899499",
+    "rgbCode": "rgb(137, 148, 153)"
   },
   {
-    "COLOR_NAME": "Platinum",
-    "HEX_CODE": "#E5E4E2",
-    "RGB_CODE": "rgb(229, 228, 226)"
+    "name": "Platinum",
+    "hexCode": "#E5E4E2",
+    "rgbCode": "rgb(229, 228, 226)"
   },
   {
-    "COLOR_NAME": "Sage Green",
-    "HEX_CODE": "#8A9A5B",
-    "RGB_CODE": "rgb(138, 154, 91)"
+    "name": "Sage Green",
+    "hexCode": "#8A9A5B",
+    "rgbCode": "rgb(138, 154, 91)"
   },
   {
-    "COLOR_NAME": "Silver",
-    "HEX_CODE": "#C0C0C0",
-    "RGB_CODE": "rgb(192, 192, 192)"
+    "name": "Silver",
+    "hexCode": "#C0C0C0",
+    "rgbCode": "rgb(192, 192, 192)"
   },
   {
-    "COLOR_NAME": "Slate Gray",
-    "HEX_CODE": "#708090",
-    "RGB_CODE": "rgb(112, 128, 144)"
+    "name": "Slate Gray",
+    "hexCode": "#708090",
+    "rgbCode": "rgb(112, 128, 144)"
   },
   {
-    "COLOR_NAME": "Smoke",
-    "HEX_CODE": "#848884",
-    "RGB_CODE": "rgb(132, 136, 132)"
+    "name": "Smoke",
+    "hexCode": "#848884",
+    "rgbCode": "rgb(132, 136, 132)"
   },
   {
-    "COLOR_NAME": "Steel Gray",
-    "HEX_CODE": "#71797E",
-    "RGB_CODE": "rgb(113, 121, 126)"
+    "name": "Steel Gray",
+    "hexCode": "#71797E",
+    "rgbCode": "rgb(113, 121, 126)"
   }
 ]

@@ -28,25 +28,25 @@ type UpdateTagParams struct {
 // Database model
 type Tag struct {
 	Id			int64		`json:"id"`
-	ColorId	int64		`json:"color_id"`
+	ColorId	int64		`json:"colorId"`
 	Name		string	`json:"name"`
 }
 
 type TagDetail struct {
 	Id								int64		`json:"id"`
-	ColorCategoryId		int64		`json:"color_category_id"`
-	ColorCategoryName string	`json:"color_category_name"`
-	ColorId						int64		`json:"color_id"`
-	ColorName 				string	`json:"color_name"`
-	ColorHexCode			string	`json:"color_hex_code"`
-	ColorRGBCode			string	`json:"color_rgb_code"`
+	ColorCategoryId		int64		`json:"colorCategoryId"`
+	ColorCategoryName string	`json:"colorCategoryName"`
+	ColorId						int64		`json:"colorId"`
+	ColorName 				string	`json:"colorName"`
+	ColorHexCode			string	`json:"colorHexCode"`
+	ColorRGBCode			string	`json:"colorRgbCode"`
 	Name							string	`json:"name"`
 }
 
 // Method
 func (C *Tag) GetById(id int64) (TagDetail, error) {
 	sqlStatement := `
-		SELECT t.id, cc.id, cc.name, c.id, c.color_name, c.hex_code, c.rgb_code, t.name 
+		SELECT t.id, cc.id, cc.name, c.id, c.name, c.hex_code, c.rgb_code, t.name
 		FROM tags t
 		INNER JOIN colors c
 		ON t.color_id = c.id
@@ -89,7 +89,7 @@ func (C *Tag) Create(colorId int64, name string) (int64, error) {
 
 func (C *Tag) QueryAll() ([]TagDetail, error) {
 	sqlStatement := `
-		SELECT t.id, cc.id, cc.name, c.id, c.color_name, c.hex_code, c.rgb_code, t.name 
+		SELECT t.id, cc.id, cc.name, c.id, c.name, c.hex_code, c.rgb_code, t.name
 		FROM tags t
 		INNER JOIN colors c
 		ON t.color_id = c.id
@@ -136,7 +136,7 @@ func (C *Tag) QueryByPage(number, size int, orderBy, order string) ([]TagDetail,
 	case "colorCategory":
 		orderBy = "cc.id"
 	case "color":
-		orderBy = "c.hex_code"
+		orderBy = "c.name"
 	case "name":
 		orderBy = "t.name"
 	default:
@@ -144,7 +144,7 @@ func (C *Tag) QueryByPage(number, size int, orderBy, order string) ([]TagDetail,
 	}
 
 	sqlStatement := fmt.Sprintf(`
-	  SELECT t.id, cc.id, cc.name, c.id, c.color_name, c.hex_code, c.rgb_code, t.name
+	  SELECT t.id, cc.id, cc.name, c.id, c.name, c.hex_code, c.rgb_code, t.name
 		FROM tags t
 		INNER JOIN colors c
 		ON t.color_id = c.id

@@ -1,172 +1,172 @@
 [
   {
-    "COLOR_NAME": "Amaranth",
-    "HEX_CODE": "#9F2B68",
-    "RGB_CODE": "rgb(159, 43, 104)"
+    "name": "Amaranth",
+    "hexCode": "#9F2B68",
+    "rgbCode": "rgb(159, 43, 104)"
   },
   {
-    "COLOR_NAME": "Bisque",
-    "HEX_CODE": "#F2D2BD",
-    "RGB_CODE": "rgb(242, 210, 189)"
+    "name": "Bisque",
+    "hexCode": "#F2D2BD",
+    "rgbCode": "rgb(242, 210, 189)"
   },
   {
-    "COLOR_NAME": "Cerise",
-    "HEX_CODE": "#DE3163",
-    "RGB_CODE": "rgb(222, 49, 99)"
+    "name": "Cerise",
+    "hexCode": "#DE3163",
+    "rgbCode": "rgb(222, 49, 99)"
   },
   {
-    "COLOR_NAME": "Claret",
-    "HEX_CODE": "#811331",
-    "RGB_CODE": "rgb(129, 19, 49)"
+    "name": "Claret",
+    "hexCode": "#811331",
+    "rgbCode": "rgb(129, 19, 49)"
   },
   {
-    "COLOR_NAME": "Coral",
-    "HEX_CODE": "#FF7F50",
-    "RGB_CODE": "rgb(255, 127, 80)"
+    "name": "Coral",
+    "hexCode": "#FF7F50",
+    "rgbCode": "rgb(255, 127, 80)"
   },
   {
-    "COLOR_NAME": "Coral Pink",
-    "HEX_CODE": "#F88379",
-    "RGB_CODE": "rgb(248, 131, 121)"
+    "name": "Coral Pink",
+    "hexCode": "#F88379",
+    "rgbCode": "rgb(248, 131, 121)"
   },
   {
-    "COLOR_NAME": "Crimson",
-    "HEX_CODE": "#DC143C",
-    "RGB_CODE": "rgb(220, 20, 60)"
+    "name": "Crimson",
+    "hexCode": "#DC143C",
+    "rgbCode": "rgb(220, 20, 60)"
   },
   {
-    "COLOR_NAME": "Dark Pink",
-    "HEX_CODE": "#AA336A",
-    "RGB_CODE": "rgb(170, 51, 106)"
+    "name": "Dark Pink",
+    "hexCode": "#AA336A",
+    "rgbCode": "rgb(170, 51, 106)"
   },
   {
-    "COLOR_NAME": "Dusty Rose",
-    "HEX_CODE": "#C9A9A6",
-    "RGB_CODE": "rgb(201, 169, 166)"
+    "name": "Dusty Rose",
+    "hexCode": "#C9A9A6",
+    "rgbCode": "rgb(201, 169, 166)"
   },
   {
-    "COLOR_NAME": "Fuchsia",
-    "HEX_CODE": "#FF00FF",
-    "RGB_CODE": "rgb(255, 0, 255)"
+    "name": "Fuchsia",
+    "hexCode": "#FF00FF",
+    "rgbCode": "rgb(255, 0, 255)"
   },
   {
-    "COLOR_NAME": "Hot Pink",
-    "HEX_CODE": "#FF69B4",
-    "RGB_CODE": "rgb(255, 105, 180)"
+    "name": "Hot Pink",
+    "hexCode": "#FF69B4",
+    "rgbCode": "rgb(255, 105, 180)"
   },
   {
-    "COLOR_NAME": "Light Pink",
-    "HEX_CODE": "#FFB6C1",
-    "RGB_CODE": "rgb(255, 182, 193)"
+    "name": "Light Pink",
+    "hexCode": "#FFB6C1",
+    "rgbCode": "rgb(255, 182, 193)"
   },
   {
-    "COLOR_NAME": "Magenta",
-    "HEX_CODE": "#FF00FF",
-    "RGB_CODE": "rgb(255, 0, 255)"
+    "name": "Magenta",
+    "hexCode": "#FF00FF",
+    "rgbCode": "rgb(255, 0, 255)"
   },
   {
-    "COLOR_NAME": "Millennial Pink",
-    "HEX_CODE": "#F3CFC6",
-    "RGB_CODE": "rgb(243, 207, 198)"
+    "name": "Millennial Pink",
+    "hexCode": "#F3CFC6",
+    "rgbCode": "rgb(243, 207, 198)"
   },
   {
-    "COLOR_NAME": "Mulberry",
-    "HEX_CODE": "#770737",
-    "RGB_CODE": "rgb(119, 7, 55)"
+    "name": "Mulberry",
+    "hexCode": "#770737",
+    "rgbCode": "rgb(119, 7, 55)"
   },
   {
-    "COLOR_NAME": "Neon Pink",
-    "HEX_CODE": "#FF10F0",
-    "RGB_CODE": "rgb(255, 16, 240)"
+    "name": "Neon Pink",
+    "hexCode": "#FF10F0",
+    "rgbCode": "rgb(255, 16, 240)"
   },
   {
-    "COLOR_NAME": "Orchid",
-    "HEX_CODE": "#DA70D6",
-    "RGB_CODE": "rgb(218, 112, 214)"
+    "name": "Orchid",
+    "hexCode": "#DA70D6",
+    "rgbCode": "rgb(218, 112, 214)"
   },
   {
-    "COLOR_NAME": "Pastel Pink",
-    "HEX_CODE": "#F8C8DC",
-    "RGB_CODE": "rgb(248, 200, 220)"
+    "name": "Pastel Pink",
+    "hexCode": "#F8C8DC",
+    "rgbCode": "rgb(248, 200, 220)"
   },
   {
-    "COLOR_NAME": "Pastel Red",
-    "HEX_CODE": "#FAA0A0",
-    "RGB_CODE": "rgb(250, 160, 160)"
+    "name": "Pastel Red",
+    "hexCode": "#FAA0A0",
+    "rgbCode": "rgb(250, 160, 160)"
   },
   {
-    "COLOR_NAME": "Pink",
-    "HEX_CODE": "#FFC0CB",
-    "RGB_CODE": "rgb(255, 192, 203)"
+    "name": "Pink",
+    "hexCode": "#FFC0CB",
+    "rgbCode": "rgb(255, 192, 203)"
   },
   {
-    "COLOR_NAME": "Pink Orange",
-    "HEX_CODE": "#F89880",
-    "RGB_CODE": "rgb(248, 152, 128)"
+    "name": "Pink Orange",
+    "hexCode": "#F89880",
+    "rgbCode": "rgb(248, 152, 128)"
   },
   {
-    "COLOR_NAME": "Plum",
-    "HEX_CODE": "#673147",
-    "RGB_CODE": "rgb(103, 49, 71)"
+    "name": "Plum",
+    "hexCode": "#673147",
+    "rgbCode": "rgb(103, 49, 71)"
   },
   {
-    "COLOR_NAME": "Puce",
-    "HEX_CODE": "#A95C68",
-    "RGB_CODE": "rgb(169, 92, 104)"
+    "name": "Puce",
+    "hexCode": "#A95C68",
+    "rgbCode": "rgb(169, 92, 104)"
   },
   {
-    "COLOR_NAME": "Purple",
-    "HEX_CODE": "#800080",
-    "RGB_CODE": "rgb(128, 0, 128)"
+    "name": "Purple",
+    "hexCode": "#800080",
+    "rgbCode": "rgb(128, 0, 128)"
   },
   {
-    "COLOR_NAME": "Raspberry",
-    "HEX_CODE": "#E30B5C",
-    "RGB_CODE": "rgb(227, 11, 92)"
+    "name": "Raspberry",
+    "hexCode": "#E30B5C",
+    "rgbCode": "rgb(227, 11, 92)"
   },
   {
-    "COLOR_NAME": "Red Purple",
-    "HEX_CODE": "#953553",
-    "RGB_CODE": "rgb(149, 53, 83)"
+    "name": "Red Purple",
+    "hexCode": "#953553",
+    "rgbCode": "rgb(149, 53, 83)"
   },
   {
-    "COLOR_NAME": "Rose",
-    "HEX_CODE": "#F33A6A",
-    "RGB_CODE": "rgb(243, 58, 106)"
+    "name": "Rose",
+    "hexCode": "#F33A6A",
+    "rgbCode": "rgb(243, 58, 106)"
   },
   {
-    "COLOR_NAME": "Rose Gold",
-    "HEX_CODE": "#E0BFB8",
-    "RGB_CODE": "rgb(224, 191, 184)"
+    "name": "Rose Gold",
+    "hexCode": "#E0BFB8",
+    "rgbCode": "rgb(224, 191, 184)"
   },
   {
-    "COLOR_NAME": "Rose Red",
-    "HEX_CODE": "#C21E56",
-    "RGB_CODE": "rgb(194, 30, 86)"
+    "name": "Rose Red",
+    "hexCode": "#C21E56",
+    "rgbCode": "rgb(194, 30, 86)"
   },
   {
-    "COLOR_NAME": "Ruby Red",
-    "HEX_CODE": "#E0115F",
-    "RGB_CODE": "rgb(224, 17, 95)"
+    "name": "Ruby Red",
+    "hexCode": "#E0115F",
+    "rgbCode": "rgb(224, 17, 95)"
   },
   {
-    "COLOR_NAME": "Salmon",
-    "HEX_CODE": "#FA8072",
-    "RGB_CODE": "rgb(250, 128, 114)"
+    "name": "Salmon",
+    "hexCode": "#FA8072",
+    "rgbCode": "rgb(250, 128, 114)"
   },
   {
-    "COLOR_NAME": "Seashell",
-    "HEX_CODE": "#FFF5EE",
-    "RGB_CODE": "rgb(255, 245, 238)"
+    "name": "Seashell",
+    "hexCode": "#FFF5EE",
+    "rgbCode": "rgb(255, 245, 238)"
   },
   {
-    "COLOR_NAME": "Thistle",
-    "HEX_CODE": "#D8BFD8",
-    "RGB_CODE": "rgb(216, 191, 216)"
+    "name": "Thistle",
+    "hexCode": "#D8BFD8",
+    "rgbCode": "rgb(216, 191, 216)"
   },
   {
-    "COLOR_NAME": "Watermelon Pink",
-    "HEX_CODE": "#E37383",
-    "RGB_CODE": "rgb(227, 115, 131)"
+    "name": "Watermelon Pink",
+    "hexCode": "#E37383",
+    "rgbCode": "rgb(227, 115, 131)"
   }
 ]
