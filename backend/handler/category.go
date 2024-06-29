@@ -334,6 +334,17 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	existCategory, _ := c.GetByName(ucp.Name)
+	if existCategory.Id > 0 && existCategory.Id != categoryId {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Category name already exists",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
 	category.Name = ucp.Name
 	category.IsAlive = ucp.IsAlive
 	err = c.Update(categoryId, ucp.Name, ucp.IsAlive)

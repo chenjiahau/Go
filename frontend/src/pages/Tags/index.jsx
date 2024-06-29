@@ -134,7 +134,7 @@ const Category = () => {
       updatedTags[tagIndex].isEditing = false;
       setTags(updatedTags);
     } catch (error) {
-      messageUtil.showErrorMessage(commonMessage.error);
+      messageUtil.showErrorMessage(error.response.data.error.message);
     }
   };
 
@@ -164,7 +164,7 @@ const Category = () => {
   return (
     <>
       <div className='breadcrumb-container'>
-        <Link to={routerConfig.routes.CATEGORIES} className='breadcrumb--item'>
+        <Link to={routerConfig.routes.TAGS} className='breadcrumb--item'>
           <span className='breadcrumb--item--inner'>
             <span className='breadcrumb--item-title'>Tags</span>
           </span>
