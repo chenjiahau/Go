@@ -189,6 +189,9 @@ const Category = () => {
         selectedTag={selectedTag}
         onShowConfirmationModal={showConfirmationModal}
         saveTag={saveTag}
+        onInitialization={handleInitialization}
+        colorCategories={colorCategories}
+        colors={colors}
       />
 
       <Page

@@ -334,7 +334,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	existTag, _ := t.GetByName(utp.Name)
-	if existTag.Id > 0{
+	if tag.Name != utp.Name && existTag.Id > 0{
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Tag name already exists",
