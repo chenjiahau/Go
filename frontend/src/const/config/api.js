@@ -16,6 +16,15 @@ const resource = {
   SUBCATEGORIES_BY_PAGE: "/category/:id/subcategories/page/:page/size/:size",
   ADD_SUBCATEGORY: "/category/:id/subcategory",
   EDIT_SUBCATEGORY: "/category/:id/subcategory/:subId",
+  // Color
+  COLOR_CATEGORIES: "/color-categories",
+  COLORS: "/colors",
+  // Tag
+  TAGS: "/tags",
+  NUMBER_OF_TAGS: "/tags/total",
+  TAGS_BY_PAGE: "/tags/page/:page/size/:size",
+  ADD_TAG: "/tag",
+  EDIT_TAG: "/tag/:id",
 }
 
 export default {

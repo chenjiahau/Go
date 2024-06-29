@@ -12,6 +12,10 @@ const Navigation = () => {
         <i className='fa-solid fa-list'></i>
         <span>Categories</span>
       </Link>
+      <Link className='button nav_link' to={routerConfig.routes.TAGS}>
+        <i className='fa-solid fa-tag'></i>
+        <span>Tags</span>
+      </Link>
       <Link className='button nav_link'>
         <i className='fa-solid fa-record-vinyl'></i>
         <span>Records</span>

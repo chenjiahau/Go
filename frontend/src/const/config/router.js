@@ -4,6 +4,8 @@ const routes = {
   DASHBOARD: '/dashboard',
   CATEGORIES: '/categories',
   CATEGORY: '/category/:id',
+  TAGS: '/tags',
+  TAG: '/tag/:id',
 };
 
 export default {

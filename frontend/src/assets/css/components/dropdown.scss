@@ -12,7 +12,7 @@
     justify-items: center;
     align-items: center;
     width: 64px;
-    height: var(--small-height);
+    height: var(--general-height);
     border: 1px solid var(--primary-color);
     border-radius: 4px;
     padding: 4px 8px;
@@ -86,6 +86,7 @@
     justify-content: center;
     align-items: center;
     background: #fff;
+    height: var(--general-height);
 
     &:hover {
       background-color: var(--third-color);

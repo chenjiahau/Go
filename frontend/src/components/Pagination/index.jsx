@@ -73,7 +73,7 @@ const Pagination = (props) => {
         <span>Next</span>
         <i className='fa-solid fa-caret-right'></i>
       </div>
-      <div className='space-t-1'>
+      <div>
         <PaginationDropdown
           pageSizeDefinition={pageSizeDefinition}
           pageSize={pageSize}

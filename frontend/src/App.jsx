@@ -12,6 +12,7 @@ import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Categories from "@/pages/Categories";
 import Category from "@/pages/Category";
+import Tags from "@/pages/Tags";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             element={<Categories />}
           />
           <Route path={routerConfig.routes.CATEGORY} element={<Category />} />
+          <Route path={routerConfig.routes.TAGS} element={<Tags />} />
         </Route>
       </Routes>
       <ToastContainer />
