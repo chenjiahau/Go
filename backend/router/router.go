@@ -61,5 +61,12 @@ func GetRoutes() http.Handler {
 	mux.Put("/api/tag/{id}", handler.Ctrl.UpdateTag)
 	mux.Delete("/api/tag/{id}", handler.Ctrl.DeleteTag)
 
+	// Record
+	mux.Post("/api/record/upload-image", handler.Ctrl.UploadRecordImage)
+
+	// File server
+	fileServer := http.FileServer(http.Dir("./public"))
+	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
+
 	return cors(mux)
 }

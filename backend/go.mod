@@ -23,4 +23,7 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
 
-require github.com/golang-jwt/jwt v3.2.2+incompatible
+require (
+	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/google/uuid v1.6.0
+)
