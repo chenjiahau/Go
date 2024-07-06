@@ -28,6 +28,17 @@ func GetRoutes() http.Handler {
 	mux.Get("/api/auth/verify-token", handler.Ctrl.VerifyToken)
 	mux.Get("/api/auth/sign-out", handler.Ctrl.SignOut)
 
+	// Member routes
+	mux.Get("/api/memberroles", handler.Ctrl.GetAllMemberRole)
+	mux.Get("/api/members", handler.Ctrl.GetAllMember)
+	mux.Get("/api/members/total", handler.Ctrl.GetTotalMemberNumber)
+	mux.Get("/api/members/page/{size}", handler.Ctrl.GetTotalMemberPageNumber)
+	mux.Get("/api/members/page/{number}/size/{size}", handler.Ctrl.GetMemberByPage)
+	mux.Post("/api/member", handler.Ctrl.AddMember)
+	mux.Get("/api/member/{id}", handler.Ctrl.GetMemberById)
+	mux.Put("/api/member/{id}", handler.Ctrl.UpdateMember)
+	mux.Delete("/api/member/{id}", handler.Ctrl.DeleteMember)
+
 	// Category routes
 	mux.Get("/api/categories", handler.Ctrl.GetAllCategory)
 	mux.Get("/api/categories/total", handler.Ctrl.GetTotalCategoryNumber)

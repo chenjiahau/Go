@@ -13,10 +13,18 @@ import (
 )
 
 func main() {
+	target := os.Args[1]
+
 	pgConn := ConnectDB()
 	defer pgConn.SQL.Close()
 	
-	HandleColor(pgConn)
+	if target == "color" {
+		HandleColor(pgConn)
+	}
+
+	if target == "memberrole" {
+		HandleMemberRole(pgConn)
+	}
 }
 
 func ConnectDB() *driver.DBConn {
@@ -86,4 +94,36 @@ func HandleColor(PgConn *driver.DBConn, ) {
 			}	
 
    }
+}
+
+func HandleMemberRole(PgConn *driver.DBConn) {
+	var mr model.MemberRoleInterface = &model.MemberRole{}
+
+	// Delete all member roles
+	err := mr.DeleteAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Read and insert member roles
+	filePath := "./init/member/Role.json"
+	memberRoles, err := os.ReadFile(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var memberRoleList []model.MemberRole
+	err = json.Unmarshal(memberRoles, &memberRoleList)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, memberRole := range memberRoleList {
+		id, err := mr.Create(memberRole.Title, memberRole.Abbr)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("Member role %s created with id %d\n", memberRole.Title, id)
+	}
 }

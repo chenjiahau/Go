@@ -1,0 +1,42 @@
+[
+  {
+    "title": "Manager",
+    "abbr": "MGR"
+  },
+  {
+    "title": "Project Manager",
+    "abbr": "PM"
+  },
+  {
+    "title": "Product Planning",
+    "abbr": "PP"
+  },
+  {
+    "title": "Research and Design",
+    "abbr": "RD"
+  },
+  {
+    "title": "Quality Assurance",
+    "abbr": "QA"
+  },
+  {
+    "title": "Human Resources",
+    "abbr": "HR"
+  },
+  {
+    "title": "Marketing",
+    "abbr": "MKT"
+  },
+  {
+    "title": "Sales",
+    "abbr": "SLS"
+  },
+  {
+    "title": "Field Application Engineer",
+    "abbr": "FAE"
+  },
+  {
+    "title": "Information Technology",
+    "abbr": "IT"
+  }
+]
