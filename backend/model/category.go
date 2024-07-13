@@ -7,14 +7,14 @@ import (
 
 // Interface
 type CategoryInterface interface {
-	GetById(int64)												(CategorySimply, error)
-	GetByName(string)											(CategorySimply, error)
-	Create(string, time.Time, bool)				(int64, error)
-	QueryAll()														([]Category, error)
-	QueryTotalCount()											(int64, error)
-	QueryByPage(int, int, string, string)	([]CategorySimply, error)
-	Update(int64, string, bool)						(error)
-	DeleteById(int64)											(Category, error)
+	GetById(int64, int64)																(CategorySimply, error)
+	GetByName(int64, string)															(CategorySimply, error)
+	Create(string, time.Time, bool)								(int64, error)
+	QueryAll()																		([]Category, error)
+	QueryTotalCount(int64)												(int64, error)
+	QueryByPage(int64, int, int, string, string)	([]CategorySimply, error)
+	Update(int64, string, bool)										(error)
+	DeleteById(int64)															(Category, error)
 }
 
 // Request model
@@ -46,13 +46,13 @@ type CategorySimply struct {
 }
 
 // Method
-func (C *Category) GetById(id int64) (CategorySimply, error) {
+func (C *Category) GetById(userId, id int64) (CategorySimply, error) {
 	sqlStatement := `
 		SELECT c.id, c.name, c.created_at, c.is_alive,
 		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
-		FROM categories c WHERE c.id = $1;`
+		FROM categories c WHERE c.id = $1 AND c.id IN (SELECT category_id FROM user_categories WHERE user_id = $2);`
 
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, id)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, id, userId)
 	var category CategorySimply
 	err := row.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
 	if err != nil {
@@ -62,15 +62,17 @@ func (C *Category) GetById(id int64) (CategorySimply, error) {
 	return category, nil
 }
 
-func (C *Category) GetByName(name string) (CategorySimply, error) {
+func (C *Category) GetByName(userId int64, name string) (CategorySimply, error) {
 	sqlStatement := `
 		SELECT c.id, c.name, c.created_at, c.is_alive,
 		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
 		FROM categories c
-		WHERE c.name = $1;`
+		WHERE c.name = $1
+		AND c.id IN (SELECT category_id FROM user_categories WHERE user_id = $2)
+		`
 
 	var category CategorySimply
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name).Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId).Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
 	if err != nil {
 		return CategorySimply{}, err
 	}
@@ -121,11 +123,13 @@ func (C *Category) QueryAll() ([]Category, error) {
 	return categories, nil
 }
 
-func (C *Category) QueryTotalCount() (int64, error) {
-	sqlStatement := `SELECT COUNT(*) FROM categories;`
+func (C *Category) QueryTotalCount(userId int64) (int64, error) {
+	sqlStatement := `
+		SELECT COUNT(*) FROM categories
+		WHERE id in (SELECT category_id FROM user_categories WHERE user_id=$1);`
 
 	var count int64
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement).Scan(&count)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, userId).Scan(&count)
 	if err != nil {
 		return 0, err
 	}
@@ -133,7 +137,7 @@ func (C *Category) QueryTotalCount() (int64, error) {
 	return count, nil
 }
 
-func (C *Category) QueryByPage(number, size int, orderBy, order string) ([]CategorySimply, error) {
+func (C *Category) QueryByPage(userId int64, number, size int, orderBy, order string) ([]CategorySimply, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "id"
@@ -153,8 +157,10 @@ func (C *Category) QueryByPage(number, size int, orderBy, order string) ([]Categ
 	  SELECT
 		c.id, c.name, c.created_at, c.is_alive,
 		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
-		FROM categories c ORDER BY %s %s LIMIT $1 OFFSET $2;`,
-		orderBy, order)
+		FROM categories c
+		WHERE id IN (SELECT category_id FROM user_categories WHERE user_id=%d)
+		ORDER BY %s %s LIMIT $1 OFFSET $2;`,
+		userId, orderBy, order)
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, size, (number - 1) * size)
 	if err != nil {

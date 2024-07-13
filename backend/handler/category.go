@@ -38,7 +38,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existCategory, _ := c.GetByName(acp.Name)
+	existCategory, _ := c.GetByName(Ctrl.User.Id, acp.Name)
 	if existCategory.Id > 0{
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -55,6 +55,18 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Failed to create category",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	var uc model.UserCategoryInterface = &model.UserCategory{}
+	_, err = uc.Create(Ctrl.User.Id, id)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to create user category",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -95,7 +107,7 @@ func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Re
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	var c model.CategoryInterface = &model.Category{}
-	count, err := c.QueryTotalCount()
+	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -116,7 +128,7 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	var c model.CategoryInterface = &model.Category{}
-	count, err := c.QueryTotalCount()
+	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -176,7 +188,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	count, err := c.QueryTotalCount()
+	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -226,7 +238,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 		order = "asc"
 	}
 
-	categories, err := c.QueryByPage(number, size, orderBy, order)
+	categories, err := c.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -263,7 +275,7 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	category, err := c.GetById(categoryId)
+	category, err := c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -323,7 +335,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	category, err := c.GetById(categoryId)
+	category, err := c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -334,7 +346,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existCategory, _ := c.GetByName(ucp.Name)
+	existCategory, _ := c.GetByName(Ctrl.User.Id, ucp.Name)
 	if existCategory.Id > 0 && existCategory.Id != categoryId {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -382,6 +394,18 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var uc model.UserCategoryInterface = &model.UserCategory{}
+	_, err = uc.DeleteById(categoryId)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to delete user category",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
 	category, err := c.DeleteById(categoryId)
 	if err != nil || category.Id == 0 {
 		resErr := map[string]interface{}{
@@ -414,7 +438,7 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var c model.CategoryInterface = &model.Category{}
-	_, err = c.GetById(categoryId)
+	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
@@ -498,7 +522,7 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 	}
 
 	var c model.CategoryInterface = &model.Category{}
-	_, err = c.GetById(categoryId)
+	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -734,7 +758,7 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	_, err = c.GetById(categoryId)
+	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -816,7 +840,7 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	_, err = c.GetById(categoryId)
+	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,

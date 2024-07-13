@@ -5,11 +5,11 @@ import "fmt"
 // Interface
 type TagInterface interface {
 	GetById(int64)												(TagDetail, error)
-	GetByName(string)											(Tag, error)
+	GetByName(int64, string)											(Tag, error)
 	Create(int64, string)									(int64, error)
 	QueryAll()														([]TagDetail, error)
-	QueryTotalCount()											(int64, error)
-	QueryByPage(int, int, string, string)	([]TagDetail, error)
+	QueryTotalCount(int64)								(int64, error)
+	QueryByPage(int64, int, int, string, string)	([]TagDetail, error)
 	Update(int64, int64, string)					(error)
 	DeleteById(int64)											(Tag, error)
 }
@@ -63,11 +63,14 @@ func (C *Tag) GetById(id int64) (TagDetail, error) {
 	return tag, nil
 }
 
-func (C *Tag) GetByName(name string) (Tag, error) {
-	sqlStatement := `SELECT id FROM tags WHERE name = $1;`
+func (C *Tag) GetByName(userId int64, name string) (Tag, error) {
+	sqlStatement := `
+	  SELECT id FROM tags WHERE name = $1
+		WHERE id IN (SELECT tag_id FROM user_tags WHERE user_id = $2)
+		;`
 	
 	var tag Tag
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name).Scan(&tag.Id)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId).Scan(&tag.Id)
 	if err != nil {
 		return Tag{}, err
 	}
@@ -117,11 +120,13 @@ func (C *Tag) QueryAll() ([]TagDetail, error) {
 	return tags, nil
 }
 
-func (C *Tag) QueryTotalCount() (int64, error) {
-	sqlStatement := `SELECT COUNT(*) FROM tags;`
+func (C *Tag) QueryTotalCount(userId int64) (int64, error) {
+	sqlStatement := `
+	  SELECT COUNT(*) FROM tags
+		WHERE id IN (SELECT tag_id FROM user_tags WHERE user_id = $1);`
 
 	var count int64
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement).Scan(&count)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, userId).Scan(&count)
 	if err != nil {
 		return 0, err
 	}
@@ -129,7 +134,7 @@ func (C *Tag) QueryTotalCount() (int64, error) {
 	return count, nil
 }
 
-func (C *Tag) QueryByPage(number, size int, orderBy, order string) ([]TagDetail, error) {
+func (C *Tag) QueryByPage(userId int64, number, size int, orderBy, order string) ([]TagDetail, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "t.id"
@@ -150,8 +155,9 @@ func (C *Tag) QueryByPage(number, size int, orderBy, order string) ([]TagDetail,
 		ON t.color_id = c.id
 		INNER JOIN color_categories cc 
 		ON c.category_id = cc.id
+		WHERE t.id IN (SELECT tag_id FROM user_tags WHERE user_id = %d)
 		ORDER BY %s %s LIMIT $1 OFFSET $2;`,
-		orderBy, order)
+		userId, orderBy, order)
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, size, (number - 1) * size)
 	if err != nil {

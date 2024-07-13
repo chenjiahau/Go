@@ -38,7 +38,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existTag, _ := t.GetByName(atp.Name)
+	existTag, _ := t.GetByName(Ctrl.User.Id, atp.Name)
 	if existTag.Id > 0{
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -54,6 +54,18 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Failed to create tag",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	var ut model.UserTagInterface = &model.UserTag{}
+	_, err = ut.Create(Ctrl.User.Id, id)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to create user tag",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -93,7 +105,7 @@ func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	var t model.TagInterface = &model.Tag{}
-	count, err := t.QueryTotalCount()
+	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -114,7 +126,7 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	var t model.TagInterface = &model.Tag{}
-	count, err := t.QueryTotalCount()
+	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -174,7 +186,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	count, err := t.QueryTotalCount()
+	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -224,7 +236,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 		order = "asc"
 	}
 
-	tags, err := t.QueryByPage(number, size, orderBy, order)
+	tags, err := t.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -333,7 +345,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existTag, _ := t.GetByName(utp.Name)
+	existTag, _ := t.GetByName(Ctrl.User.Id, utp.Name)
 	if tag.Name != utp.Name && existTag.Id > 0{
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -378,6 +390,18 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 		}
 
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	var ut model.UserTagInterface = &model.UserTag{}
+	_, err = ut.DeleteById(tagId)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to delete user tag",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
