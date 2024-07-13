@@ -29,7 +29,7 @@ func GetRoutes() http.Handler {
 	mux.Get("/api/auth/sign-out", handler.Ctrl.SignOut)
 
 	// Member routes
-	mux.Get("/api/memberroles", handler.Ctrl.GetAllMemberRole)
+	mux.Get("/api/member-roles", handler.Ctrl.GetAllMemberRole)
 	mux.Get("/api/members", handler.Ctrl.GetAllMember)
 	mux.Get("/api/members/total", handler.Ctrl.GetTotalMemberNumber)
 	mux.Get("/api/members/page/{size}", handler.Ctrl.GetTotalMemberPageNumber)

@@ -8,6 +8,10 @@ const Navigation = () => {
         <i className='fa-solid fa-chart-simple'></i>
         <span>Dashboard</span>
       </Link>
+      <Link className='button nav_link' to={routerConfig.routes.MEMBERS}>
+        <i className='fa-solid fa-user'></i>
+        <span>Members</span>
+      </Link>
       <Link className='button nav_link' to={routerConfig.routes.CATEGORIES}>
         <i className='fa-solid fa-list'></i>
         <span>Categories</span>

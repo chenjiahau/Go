@@ -4,6 +4,14 @@ const resource = {
   SIGNIN: "/sign-in",
   SIGNUP: "/sign-up",
   VERIFY_TOKEN: "/auth/verify-token",
+  // Member role
+  MEMBER_ROLES: "/member-roles",
+  // Member
+  MEMBERS: "/members",
+  NUMBER_OF_MEMBERS: "/members/total",
+  MEMBERS_BY_PAGE: "/members/page/:page/size/:size",
+  ADD_MEMBER: "/member",
+  EDIT_MEMBER: "/member/:id",
   // Category
   CATEGORIES: "/categories",
   NUMBER_OF_CATEGORIES: "/categories/total",

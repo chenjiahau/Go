@@ -4,14 +4,14 @@ import "fmt"
 
 // Interface
 type MemberInterface interface {
-	GetById(int64)												(MemberDetail, error)
-	GetByName(string)											(Member, error)
-	Create(int64, string, bool)						(int64, error)
-	QueryAll()														([]Member, error)
-	QueryTotalCount()											(int64, error)
-	QueryByPage(int, int, string, string)	([]MemberDetail, error)
-	Update(int64, int64, string, bool)		(error)
-	DeleteById(int64)											(Member, error)
+	GetById(int64)																(MemberDetail, error)
+	GetByName(int64, string)											(Member, error)
+	Create(int64, string, bool)										(int64, error)
+	QueryAll()																		([]Member, error)
+	QueryTotalCount(int64)							  				(int64, error)
+	QueryByPage(int64, int, int, string, string)	([]MemberDetail, error)
+	Update(int64, int64, string, bool)						(error)
+	DeleteById(int64)															(Member, error)
 }
 
 // Request model
@@ -62,11 +62,13 @@ func (M *Member) GetById(id int64) (MemberDetail, error) {
 	return member, nil
 }
 
-func (M *Member) GetByName(name string) (Member, error) {
-	sqlStatement := `SELECT id, member_role_id, name, is_alive FROM members WHERE name = $1;`
+func (M *Member) GetByName(userId int64, name string) (Member, error) {
+	sqlStatement := `
+	  SELECT id, member_role_id, name, is_alive FROM members
+		WHERE name = $1 AND id in (SELECT member_id FROM user_members WHERE user_id = $2);`
 
 	var member Member
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name).Scan(&member.Id, &member.MemberRoleId, &member.Name, &member.IsAlive)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId).Scan(&member.Id, &member.MemberRoleId, &member.Name, &member.IsAlive)
 	if err != nil {
 		return Member{}, err
 	}
@@ -115,11 +117,13 @@ func (M *Member) QueryAll() ([]Member, error) {
 	return members, nil
 }
 
-func (C *Member) QueryTotalCount() (int64, error) {
-	sqlStatement := `SELECT COUNT(*) FROM members;`
+func (C *Member) QueryTotalCount(userId int64) (int64, error) {
+	sqlStatement := `
+	  SELECT COUNT(*) FROM members
+		WHERE id in (SELECT member_id FROM user_members WHERE user_id=$1);`
 
 	var count int64
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement).Scan(&count)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, userId).Scan(&count)
 	if err != nil {
 		return 0, err
 	}
@@ -127,31 +131,26 @@ func (C *Member) QueryTotalCount() (int64, error) {
 	return count, nil
 }
 
-func (C *Member) QueryByPage(number, size int, orderBy, order string) ([]MemberDetail, error) {
+func (C *Member) QueryByPage(userId int64, number, size int, orderBy, order string) ([]MemberDetail, error) {
 	switch orderBy {
 	case "id":
-		orderBy = "t.id"
-	case "mrId":
+		orderBy = "m.id"
+	case "memberRole":
 		orderBy = "mr.id"
-	case "mrTitle":
-		orderBy = "mr.title"
-	case "mrAbbr":
-		orderBy = "mr.abbr"
-	case "name":
-		orderBy = "t.name"
-	case "isAlive":
-		orderBy = "t.is_alive"
+	case "status":
+		orderBy = "m.is_alive"
 	default:
-		orderBy = "id"
+		orderBy = "m.id"
 	}
 
 	sqlStatement := fmt.Sprintf(`
-	  SELECT mr.id, mr.title, mr.abbr, t.id, t.name, t.is_alive
-		FROM members t
+	  SELECT mr.id, mr.title, mr.abbr, m.id, m.name, m.is_alive
+		FROM members m
 		INNER JOIN member_roles mr
-		ON t.member_role_id = mr.id
+		ON m.member_role_id = mr.id
+		WHERE m.id IN (SELECT member_id FROM user_members WHERE user_id=%d)
 		ORDER BY %s %s LIMIT $1 OFFSET $2;`,
-		orderBy, order)
+		userId, orderBy, order)
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, size, (number - 1) * size)
 	if err != nil {
