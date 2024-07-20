@@ -13,8 +13,8 @@ type SubCategoryInterface interface {
 	QueryAll(int64)																([]SubCategory, error)
 	QueryTotalCount(int64)												(int64, error)
 	QueryByPage(int64, int, int, string, string)	([]SubCategory, error)
-	Update(int64, string, bool)										(error)
-	DeleteById(int64)															(SubCategory, error)
+	Update()																			(error)
+	Delete()																			(SubCategory, error)
 }
 
 // Request model
@@ -38,7 +38,7 @@ type SubCategory struct {
 }
 
 // Method
-func (C *SubCategory) GetById(id , subId int64) (SubCategory, error) {
+func (SC *SubCategory) GetById(id , subId int64) (SubCategory, error) {
 	sqlStatement := `SELECT * FROM subcategories WHERE id = $2 and category_id = $1;`
 
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, id, subId)
@@ -51,7 +51,7 @@ func (C *SubCategory) GetById(id , subId int64) (SubCategory, error) {
 	return subCategory, nil
 }
 
-func (C *SubCategory) GetByName(categoryId int64, name string) (SubCategory, error) {
+func (SC *SubCategory) GetByName(categoryId int64, name string) (SubCategory, error) {
 	sqlStatement := `SELECT * FROM subcategories WHERE category_id = $1 AND name = $2;`
 
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, categoryId, name)
@@ -64,7 +64,7 @@ func (C *SubCategory) GetByName(categoryId int64, name string) (SubCategory, err
 	return subCategory, nil
 }
 
-func (C *SubCategory) Create(categoryId int64, name string, createdAt time.Time, isAlive bool) (int64, error) {
+func (SC *SubCategory) Create(categoryId int64, name string, createdAt time.Time, isAlive bool) (int64, error) {
 	sqlStatement := `INSERT INTO subcategories (category_id, name, created_at, is_alive) VALUES ($1, $2, $3, $4) RETURNING id;`
 
 	var id int64
@@ -110,7 +110,7 @@ func (C *SubCategory) QueryTotalCount(id int64) (int64, error) {
 	return count, nil
 }
 
-func (C *SubCategory) QueryByPage(id int64, number, size int, orderBy, order string) ([]SubCategory, error) {
+func (SC *SubCategory) QueryByPage(id int64, number, size int, orderBy, order string) ([]SubCategory, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "id"
@@ -150,10 +150,10 @@ func (C *SubCategory) QueryByPage(id int64, number, size int, orderBy, order str
 	return subCategories, nil
 }
 
-func (C *SubCategory) Update(id int64, name string, isAlive bool) error {
+func (SC *SubCategory) Update() error {
 	sqlStatement := `UPDATE subcategories SET name = $2, is_alive = $3 WHERE id = $1;`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, id, name, isAlive)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, SC.Id, SC.Name, SC.IsAlive)
 	if err != nil {
 		return err
 	}
@@ -161,11 +161,11 @@ func (C *SubCategory) Update(id int64, name string, isAlive bool) error {
 	return nil
 }
 
-func (C *SubCategory) DeleteById(id int64) (SubCategory, error) {
+func (SC *SubCategory) Delete() (SubCategory, error) {
 	sqlStatement := `DELETE FROM subcategories WHERE id = $1 RETURNING id;`
 
 	var subCategory SubCategory
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, id).Scan(&subCategory.Id)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, SC.Id).Scan(&subCategory.Id)
 	if err != nil {
 		return SubCategory{}, err
 	}

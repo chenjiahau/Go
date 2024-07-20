@@ -7,14 +7,14 @@ import (
 
 // Interface
 type CategoryInterface interface {
-	GetById(int64, int64)																(CategorySimply, error)
-	GetByName(int64, string)															(CategorySimply, error)
+	GetById(int64, int64)													(Category, error)
+	GetByName(int64, string)											(Category, error)
 	Create(string, time.Time, bool)								(int64, error)
 	QueryAll()																		([]Category, error)
 	QueryTotalCount(int64)												(int64, error)
-	QueryByPage(int64, int, int, string, string)	([]CategorySimply, error)
-	Update(int64, string, bool)										(error)
-	DeleteById(int64)															(Category, error)
+	QueryByPage(int64, int, int, string, string)	([]Category, error)
+	Update()																			(error)
+	Delete()																			(Category, error)
 }
 
 // Request model
@@ -30,51 +30,43 @@ type UpdateCategoryParams struct {
 
 // Database model
 type Category struct {
-	Id					int64					`json:"id"`
-	Name				string				`json:"name"`
-	CreatedAt		time.Time			`json:"createdAt"`
-	IsAlive			bool					`json:"isAlive"`
-	SubCategory	[]SubCategory `json:"subcategories"`
-}
-
-type CategorySimply struct {
-	Id								int64					`json:"id"`
-	Name							string				`json:"name"`
-	CreatedAt					time.Time			`json:"createdAt"`
-	IsAlive						bool					`json:"isAlive"`
-	SubCategoryCount	int64					`json:"subcategoryCount"`
+	Id								int64			`json:"id"`
+	Name							string		`json:"name"`
+	CreatedAt					time.Time	`json:"createdAt"`
+	IsAlive						bool			`json:"isAlive"`
+	SubCategoryCount	int64			`json:"subcategoryCount"`
 }
 
 // Method
-func (C *Category) GetById(userId, id int64) (CategorySimply, error) {
+func (C *Category) GetById(userId, id int64) (Category, error) {
 	sqlStatement := `
 		SELECT c.id, c.name, c.created_at, c.is_alive,
 		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
-		FROM categories c WHERE c.id = $1 AND c.id IN (SELECT category_id FROM user_categories WHERE user_id = $2);`
+		FROM categories c
+		WHERE c.id = $1 AND c.id IN (SELECT category_id FROM user_categories WHERE user_id = $2);`
 
+	var category Category
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, id, userId)
-	var category CategorySimply
 	err := row.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
 	if err != nil {
-		return CategorySimply{}, err
+		return Category{}, err
 	}
 
 	return category, nil
 }
 
-func (C *Category) GetByName(userId int64, name string) (CategorySimply, error) {
+func (C *Category) GetByName(userId int64, name string) (Category, error) {
 	sqlStatement := `
 		SELECT c.id, c.name, c.created_at, c.is_alive,
 		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
 		FROM categories c
-		WHERE c.name = $1
-		AND c.id IN (SELECT category_id FROM user_categories WHERE user_id = $2)
-		`
+		WHERE c.name = $1 AND c.id IN (SELECT category_id FROM user_categories WHERE user_id = $2);`
 
-	var category CategorySimply
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId).Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
+	var category Category
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId)
+	err := row.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
 	if err != nil {
-		return CategorySimply{}, err
+		return Category{}, err
 	}
 
 	return category, nil
@@ -116,7 +108,7 @@ func (C *Category) QueryAll() ([]Category, error) {
 			return nil, err
 		}
 
-		category.SubCategory = subCategories
+		category.SubCategoryCount = int64(len(subCategories))
 		categories = append(categories, category)
 	}
 
@@ -137,7 +129,7 @@ func (C *Category) QueryTotalCount(userId int64) (int64, error) {
 	return count, nil
 }
 
-func (C *Category) QueryByPage(userId int64, number, size int, orderBy, order string) ([]CategorySimply, error) {
+func (C *Category) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Category, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "id"
@@ -168,9 +160,9 @@ func (C *Category) QueryByPage(userId int64, number, size int, orderBy, order st
 	}
 	defer rows.Close()
 
-	var categories []CategorySimply
+	var categories []Category
 	for rows.Next() {
-		var category CategorySimply
+		var category Category
 		err := rows.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
 
 		if err != nil {
@@ -183,10 +175,10 @@ func (C *Category) QueryByPage(userId int64, number, size int, orderBy, order st
 	return categories, nil
 }
 
-func (C *Category) Update(id int64, name string, isAlive bool) (error) {
+func (C *Category) Update() (error) {
 	sqlStatement := `UPDATE categories SET name = $1, is_alive = $2 WHERE id = $3;`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, name, isAlive, id)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, C.Name, C.IsAlive, C.Id)
 	if err != nil {
 		return err
 	}
@@ -194,11 +186,11 @@ func (C *Category) Update(id int64, name string, isAlive bool) (error) {
 	return nil
 }
 
-func (C *Category) DeleteById(id int64) (Category, error) {
+func (C *Category) Delete() (Category, error) {
 	sqlStatement := `DELETE FROM categories WHERE id = $1 RETURNING id;`
 
 	var category Category
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, id).Scan(&category.Id)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, C.Id).Scan(&category.Id)
 	if err != nil {
 		return Category{}, err
 	}

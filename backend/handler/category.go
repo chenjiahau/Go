@@ -335,17 +335,6 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	category, err := c.GetById(Ctrl.User.Id, categoryId)
-	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get category",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-		return
-	}
-
 	existCategory, _ := c.GetByName(Ctrl.User.Id, ucp.Name)
 	if existCategory.Id > 0 && existCategory.Id != categoryId {
 		resErr := map[string]interface{}{
@@ -357,9 +346,9 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	category.Name = ucp.Name
-	category.IsAlive = ucp.IsAlive
-	err = c.Update(categoryId, ucp.Name, ucp.IsAlive)
+	existCategory.Name = ucp.Name
+	existCategory.IsAlive = ucp.IsAlive
+	err = existCategory.Update()
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -382,7 +371,6 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var c model.CategoryInterface = &model.Category{}
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -394,20 +382,20 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var uc model.UserCategoryInterface = &model.UserCategory{}
-	_, err = uc.DeleteById(categoryId)
+	var c model.CategoryInterface = &model.Category{}
+	existingCategory, err := c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to delete user category",
+			"message": "Failed to get category",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	category, err := c.DeleteById(categoryId)
-	if err != nil || category.Id == 0 {
+	existingCategory, err = existingCategory.Delete()
+	if existingCategory.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Failed to delete category",
@@ -416,6 +404,9 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
+
+	var uc model.UserCategoryInterface = &model.UserCategory{}
+	uc.DeleteById(categoryId)
 
 	resData := map[string]interface{}{
 		"id": categoryId,
@@ -885,9 +876,9 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	subCategory.Name = uscp.Name
-	subCategory.IsAlive = uscp.IsAlive
-	err = sc.Update(subCategoryId, uscp.Name, uscp.IsAlive)
+	existSubCategory.Name = uscp.Name
+	existSubCategory.IsAlive = uscp.IsAlive
+	err = existSubCategory.Update()
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -912,7 +903,17 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid category id",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
 	subCategoryId, err := strconv.ParseInt(chi.URLParam(r, "subId"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -924,9 +925,20 @@ func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	var sc model.SubCategoryInterface = &model.SubCategory{}
+	existingSubCategory, err := sc.GetById(categoryId, subCategoryId)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get subcategory",
+		}
 
-	subCategory, err := sc.DeleteById(subCategoryId)
-	if err != nil || subCategory.Id == 0 {
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	existingSubCategory, err = existingSubCategory.Delete()
+	if existingSubCategory.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Failed to delete subcategory",
