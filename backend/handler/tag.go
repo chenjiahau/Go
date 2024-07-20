@@ -38,7 +38,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existTag, _ := t.GetByName(Ctrl.User.Id, atp.Name)
+	existTag, _ := t.GetByName(atp.Name)
 	if existTag.Id > 0{
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -163,7 +163,6 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var t model.TagInterface = &model.Tag{}
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
 		resErr := map[string]interface{}{
@@ -186,6 +185,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var t model.TagInterface = &model.Tag{}
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -199,7 +199,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 
 	if count == 0 {
 		resData := map[string]interface{}{
-			"tags": []model.TagDetail{},
+			"tags": []model.Tag{},
 			"totalPageNumber": 0,
 			"number": number,
 			"size": size,
@@ -261,7 +261,6 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var t model.TagInterface = &model.Tag{}
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -273,6 +272,7 @@ func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var t model.TagInterface = &model.Tag{}
 	tag, err := t.GetById(tagId)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -309,7 +309,6 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var t model.TagInterface = &model.Tag{}
 	var utp model.UpdateTagParams
 	err = util.DecodeJSONBody(r, &utp)
 	if err != nil {
@@ -334,19 +333,20 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tag, err := t.GetById(tagId)
-	if err != nil {
+	var t model.TagInterface = &model.Tag{}
+	existingTag, err := t.GetById(tagId)
+	if existingTag.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get tag",
+			"code": http.StatusBadRequest,
+			"message": "Invalid tag id",
 		}
 
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	existTag, _ := t.GetByName(Ctrl.User.Id, utp.Name)
-	if tag.Name != utp.Name && existTag.Id > 0{
+	duplicatedTag, err := t.GetByName(utp.Name)
+	if duplicatedTag.Id > 0 && duplicatedTag.Id != tagId {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Tag name already exists",
@@ -356,9 +356,9 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tag.ColorId = utp.ColorId
-	tag.Name = utp.Name
-	err = t.Update(tagId, utp.ColorId, utp.Name)
+	existingTag.ColorId = utp.ColorId
+	existingTag.Name = utp.Name
+	err = existingTag.Update()
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -381,7 +381,6 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var t model.TagInterface = &model.Tag{}
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -393,20 +392,20 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var ut model.UserTagInterface = &model.UserTag{}
-	_, err = ut.DeleteById(tagId)
-	if err != nil {
+	var t model.TagInterface = &model.Tag{}
+	existingTag, err := t.GetById(tagId)
+	if existingTag.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to delete user tag",
+			"code": http.StatusBadRequest,
+			"message": "Invalid tag id",
 		}
 
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	tag, err := t.DeleteById(tagId)
-	if err != nil || tag.Id == 0 {
+	_, err = existingTag.Delete()
+	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Failed to delete tag",
@@ -415,6 +414,9 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
+
+	var ut model.UserTagInterface = &model.UserTag{}
+	ut.DeleteById(tagId)
 
 	resData := map[string]interface{}{
 		"id": tagId,

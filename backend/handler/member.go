@@ -342,6 +342,17 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	duplicatedMember, _ := m.GetByName(ump.Name)
+	if duplicatedMember.Id > 0 && duplicatedMember.Id != memberId {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Member name already exists",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
 	existingMember.MemberRoleId = ump.MemberRoleId
 	existingMember.Name = ump.Name
 	existingMember.IsAlive = ump.IsAlive

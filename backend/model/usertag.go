@@ -3,7 +3,7 @@ package model
 // Interface
 type UserTagInterface interface {
 	Create(int64, int64)	(int64, error)
-	DeleteById(int64)			(UserTag, error)
+	DeleteById(int64)			()
 }
 
 // Request model
@@ -16,7 +16,7 @@ type UserTag struct {
 }
 
 // Method
-func (C *UserTag) Create(userId, tagId int64) (int64, error) {
+func (UT *UserTag) Create(userId, tagId int64) (int64, error) {
 	sqlStatement := `INSERT INTO user_tags (user_id, tag_id) VALUES ($1, $2) RETURNING id;`
 
 	var id int64
@@ -28,15 +28,7 @@ func (C *UserTag) Create(userId, tagId int64) (int64, error) {
 	return id, nil
 }
 
-func (C *UserTag) DeleteById(tagId int64) (UserTag, error) {
-	sqlStatement := `DELETE FROM user_tags WHERE tag_id = $1 RETURNING id;`
-
-	var userTag UserTag
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, tagId).Scan(&userTag.Id)
-
-	if err != nil {
-		return UserTag{}, err
-	}
-
-	return userTag, nil
+func (UT *UserTag) DeleteById(tagId int64) () {
+	sqlStatement := `DELETE FROM user_tags WHERE tag_id = $1;`
+	DbConf.PgConn.SQL.QueryRow(sqlStatement, tagId)
 }

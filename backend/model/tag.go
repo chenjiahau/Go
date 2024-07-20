@@ -4,14 +4,14 @@ import "fmt"
 
 // Interface
 type TagInterface interface {
-	GetById(int64)												(TagDetail, error)
-	GetByName(int64, string)											(Tag, error)
-	Create(int64, string)									(int64, error)
-	QueryAll()														([]TagDetail, error)
-	QueryTotalCount(int64)								(int64, error)
-	QueryByPage(int64, int, int, string, string)	([]TagDetail, error)
-	Update(int64, int64, string)					(error)
-	DeleteById(int64)											(Tag, error)
+	GetById(int64)																(Tag, error)
+	GetByName(string)															(Tag, error)
+	Create(int64, string)													(int64, error)
+	QueryAll()																		([]Tag, error)
+	QueryTotalCount(int64)												(int64, error)
+	QueryByPage(int64, int, int, string, string)	([]Tag, error)
+	Update()																			(error)
+	Delete()																			(Tag, error)
 }
 
 // Request model
@@ -27,12 +27,6 @@ type UpdateTagParams struct {
 
 // Database model
 type Tag struct {
-	Id			int64		`json:"id"`
-	ColorId	int64		`json:"colorId"`
-	Name		string	`json:"name"`
-}
-
-type TagDetail struct {
 	Id								int64		`json:"id"`
 	ColorCategoryId		int64		`json:"colorCategoryId"`
 	ColorCategoryName string	`json:"colorCategoryName"`
@@ -44,7 +38,7 @@ type TagDetail struct {
 }
 
 // Method
-func (C *Tag) GetById(id int64) (TagDetail, error) {
+func (T *Tag) GetById(id int64) (Tag, error) {
 	sqlStatement := `
 		SELECT t.id, cc.id, cc.name, c.id, c.name, c.hex_code, c.rgb_code, t.name
 		FROM tags t
@@ -54,23 +48,9 @@ func (C *Tag) GetById(id int64) (TagDetail, error) {
 		ON c.category_id = cc.id
 		WHERE t.id = $1;`
 	
-	var tag TagDetail
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, id).Scan(&tag.Id, &tag.ColorCategoryId, &tag.ColorCategoryName, &tag.ColorId, &tag.ColorName, &tag.ColorHexCode, &tag.ColorRGBCode, &tag.Name)	
-	if err != nil {
-		return TagDetail{}, err
-	}
-
-	return tag, nil
-}
-
-func (C *Tag) GetByName(userId int64, name string) (Tag, error) {
-	sqlStatement := `
-	  SELECT id FROM tags WHERE name = $1
-		WHERE id IN (SELECT tag_id FROM user_tags WHERE user_id = $2)
-		;`
-	
 	var tag Tag
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId).Scan(&tag.Id)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, id)
+	err := row.Scan(&tag.Id, &tag.ColorCategoryId, &tag.ColorCategoryName, &tag.ColorId, &tag.ColorName, &tag.ColorHexCode, &tag.ColorRGBCode, &tag.Name)
 	if err != nil {
 		return Tag{}, err
 	}
@@ -78,7 +58,22 @@ func (C *Tag) GetByName(userId int64, name string) (Tag, error) {
 	return tag, nil
 }
 
-func (C *Tag) Create(colorId int64, name string) (int64, error) {
+func (T *Tag) GetByName(name string) (Tag, error) {
+	sqlStatement := `
+	  SELECT id FROM tags WHERE name = $1
+		WHERE id IN (SELECT tag_id FROM user_tags WHERE user_id = $2);`
+	
+	var tag Tag
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, name)
+	err := row.Scan(&tag.Id, &tag.ColorCategoryId, &tag.ColorCategoryName, &tag.ColorId, &tag.ColorName, &tag.ColorHexCode, &tag.ColorRGBCode, &tag.Name)
+	if err != nil {
+		return Tag{}, err
+	}
+
+	return tag, nil
+}
+
+func (T *Tag) Create(colorId int64, name string) (int64, error) {
 	sqlStatement := `INSERT INTO tags (color_id, name) VALUES ($1, $2) RETURNING id;`
 	
 	var id int64
@@ -90,7 +85,7 @@ func (C *Tag) Create(colorId int64, name string) (int64, error) {
 	return id, nil
 }
 
-func (C *Tag) QueryAll() ([]TagDetail, error) {
+func (T *Tag) QueryAll() ([]Tag, error) {
 	sqlStatement := `
 		SELECT t.id, cc.id, cc.name, c.id, c.name, c.hex_code, c.rgb_code, t.name
 		FROM tags t
@@ -105,9 +100,9 @@ func (C *Tag) QueryAll() ([]TagDetail, error) {
 	}
 	defer rows.Close()
 
-	var tags []TagDetail
+	var tags []Tag
 	for rows.Next() {
-		var tag TagDetail
+		var tag Tag
 
 		err := rows.Scan(&tag.Id, &tag.ColorCategoryId, &tag.ColorCategoryName, &tag.ColorId, &tag.ColorName, &tag.ColorHexCode, &tag.ColorRGBCode, &tag.Name)
 		if err != nil {
@@ -120,7 +115,7 @@ func (C *Tag) QueryAll() ([]TagDetail, error) {
 	return tags, nil
 }
 
-func (C *Tag) QueryTotalCount(userId int64) (int64, error) {
+func (T *Tag) QueryTotalCount(userId int64) (int64, error) {
 	sqlStatement := `
 	  SELECT COUNT(*) FROM tags
 		WHERE id IN (SELECT tag_id FROM user_tags WHERE user_id = $1);`
@@ -134,7 +129,7 @@ func (C *Tag) QueryTotalCount(userId int64) (int64, error) {
 	return count, nil
 }
 
-func (C *Tag) QueryByPage(userId int64, number, size int, orderBy, order string) ([]TagDetail, error) {
+func (T *Tag) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Tag, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "t.id"
@@ -165,9 +160,9 @@ func (C *Tag) QueryByPage(userId int64, number, size int, orderBy, order string)
 	}
 	defer rows.Close()
 
-	var tags []TagDetail
+	var tags []Tag
 	for rows.Next() {
-		var tag TagDetail
+		var tag Tag
 		err := rows.Scan(&tag.Id, &tag.ColorCategoryId, &tag.ColorCategoryName, &tag.ColorId, &tag.ColorName, &tag.ColorHexCode, &tag.ColorRGBCode, &tag.Name)
 
 		if err != nil {
@@ -180,10 +175,10 @@ func (C *Tag) QueryByPage(userId int64, number, size int, orderBy, order string)
 	return tags, nil
 }
 
-func (C *Tag) Update(id, colorId int64, name string) (error) {
+func (T *Tag) Update() (error) {
 	sqlStatement := `UPDATE tags SET color_id = $1, name = $2 WHERE id = $3;`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, colorId, name, id)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, T.ColorId, T.Name, T.Id)
 	if err != nil {
 		return err
 	}
@@ -191,7 +186,7 @@ func (C *Tag) Update(id, colorId int64, name string) (error) {
 	return nil
 }
 
-func (C *Tag) DeleteAll() (error) {
+func (T *Tag) DeleteAll() (error) {
 	sqlStatement := `DELETE FROM tags;`
 	_, err := DbConf.PgConn.SQL.Exec(sqlStatement)
 	if err != nil {
@@ -201,11 +196,11 @@ func (C *Tag) DeleteAll() (error) {
 	return nil
 }
 
-func (C *Tag) DeleteById(id int64) (Tag, error) {
+func (T *Tag) Delete() (Tag, error) {
 	sqlStatement := `DELETE FROM tags WHERE id = $1 RETURNING id;`
 
 	var tag Tag
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, id).Scan(&tag.Id)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, T.Id).Scan(&tag.Id)
 	if err != nil {
 		return Tag{}, err
 	}
