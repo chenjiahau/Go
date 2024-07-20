@@ -4,14 +4,14 @@ import "fmt"
 
 // Interface
 type MemberInterface interface {
-	GetById(int64)																(MemberDetail, error)
-	GetByName(int64, string)											(Member, error)
+	GetById(int64)																(Member, error)
+	GetByName(string)															(Member, error)
 	Create(int64, string, bool)										(int64, error)
 	QueryAll()																		([]Member, error)
 	QueryTotalCount(int64)							  				(int64, error)
-	QueryByPage(int64, int, int, string, string)	([]MemberDetail, error)
-	Update(int64, int64, string, bool)						(error)
-	DeleteById(int64)															(Member, error)
+	QueryByPage(int64, int, int, string, string)	([]Member, error)
+	Update()																			(error)
+	Delete()																			(Member, error)
 }
 
 // Request model
@@ -29,13 +29,6 @@ type UpdateMemberParams struct {
 
 // Database model
 type Member struct {
-	Id						int64		`json:"id"`
-	MemberRoleId	int64		`json:"memberRoleId"`
-	Name					string	`json:"name"`
-	IsAlive				bool		`json:"isAlive"`
-}
-
-type MemberDetail struct {
 	Id							int64		`json:"id"`
 	MemberRoleId		int64		`json:"memberRoleId"`
 	MemberRoleTitle string	`json:"memberRoleTitle"`
@@ -45,30 +38,35 @@ type MemberDetail struct {
 }
 
 // Method
-func (M *Member) GetById(id int64) (MemberDetail, error) {
+func (M *Member) GetById(id int64) (Member, error) {
 	sqlStatement := `
-		SELECT mr.id, mr.title, mr.abbr, t.id, t.name, t.is_alive
-		FROM members t
+		SELECT mr.id, mr.title, mr.abbr, m.id, m.name, m.is_alive
+		FROM members m
 		INNER JOIN member_roles mr
-		ON t.member_role_id = mr.id
-		WHERE t.id = $1;`
+		ON m.member_role_id = mr.id
+		WHERE m.id = $1;`
 
-	var member MemberDetail
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, id).Scan(&member.MemberRoleId, &member.MemberRoleTitle, &member.MemberRoleAbbr, &member.Id, &member.Name, &member.IsAlive)
+	var member Member
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, id)
+	err := row.Scan(&member.MemberRoleId, &member.MemberRoleTitle, &member.MemberRoleAbbr, &member.Id, &member.Name, &member.IsAlive)
 	if err != nil {
-		return MemberDetail{}, err
+		return Member{}, err
 	}
 
 	return member, nil
 }
 
-func (M *Member) GetByName(userId int64, name string) (Member, error) {
+func (M *Member) GetByName(name string) (Member, error) {
 	sqlStatement := `
-	  SELECT id, member_role_id, name, is_alive FROM members
-		WHERE name = $1 AND id in (SELECT member_id FROM user_members WHERE user_id = $2);`
+		SELECT mr.id, mr.title, mr.abbr, m.id, m.name, m.is_alive
+		FROM members m
+		INNER JOIN member_roles mr
+		ON m.member_role_id = mr.id
+		WHERE m.name = $1;`
 
 	var member Member
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId).Scan(&member.Id, &member.MemberRoleId, &member.Name, &member.IsAlive)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, name)
+	err := row.Scan(&member.MemberRoleId, &member.MemberRoleTitle, &member.MemberRoleAbbr, &member.Id, &member.Name, &member.IsAlive)
 	if err != nil {
 		return Member{}, err
 	}
@@ -78,10 +76,10 @@ func (M *Member) GetByName(userId int64, name string) (Member, error) {
 
 func (M *Member) Create(memberRoleId int64, name string, isAlive bool) (int64, error) {
 	sqlStatement := `INSERT INTO members (member_role_id, name, is_alive) VALUES ($1, $2, $3) RETURNING id;`
-
 	
 	var id int64
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, memberRoleId, name, isAlive).Scan(&id)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, memberRoleId, name, isAlive)
+	err := row.Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -91,10 +89,10 @@ func (M *Member) Create(memberRoleId int64, name string, isAlive bool) (int64, e
 
 func (M *Member) QueryAll() ([]Member, error) {
 	sqlStatement := `
-		SELECT cc.id, m.id, m.name , m.is_alive
+		SELECT mr.id, m.id, m.name , m.is_alive
 		FROM members m
-		INNER JOIN member_roles cc
-		ON m.member_role_id = cc.id;`
+		INNER JOIN member_roles mr
+		ON m.member_role_id = mr.id;`
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement)
 	if err != nil {
@@ -117,13 +115,14 @@ func (M *Member) QueryAll() ([]Member, error) {
 	return members, nil
 }
 
-func (C *Member) QueryTotalCount(userId int64) (int64, error) {
+func (M *Member) QueryTotalCount(userId int64) (int64, error) {
 	sqlStatement := `
 	  SELECT COUNT(*) FROM members
-		WHERE id in (SELECT member_id FROM user_members WHERE user_id=$1);`
+		WHERE id in (SELECT member_id FROM user_members WHERE user_id = $1);`
 
 	var count int64
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, userId).Scan(&count)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, userId)
+	err := row.Scan(&count)
 	if err != nil {
 		return 0, err
 	}
@@ -131,7 +130,7 @@ func (C *Member) QueryTotalCount(userId int64) (int64, error) {
 	return count, nil
 }
 
-func (C *Member) QueryByPage(userId int64, number, size int, orderBy, order string) ([]MemberDetail, error) {
+func (M *Member) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Member, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "m.id"
@@ -148,7 +147,7 @@ func (C *Member) QueryByPage(userId int64, number, size int, orderBy, order stri
 		FROM members m
 		INNER JOIN member_roles mr
 		ON m.member_role_id = mr.id
-		WHERE m.id IN (SELECT member_id FROM user_members WHERE user_id=%d)
+		WHERE m.id IN (SELECT member_id FROM user_members WHERE user_id = %d)
 		ORDER BY %s %s LIMIT $1 OFFSET $2;`,
 		userId, orderBy, order)
 
@@ -158,9 +157,9 @@ func (C *Member) QueryByPage(userId int64, number, size int, orderBy, order stri
 	}
 	defer rows.Close()
 
-	var members []MemberDetail
+	var members []Member
 	for rows.Next() {
-		var member MemberDetail
+		var member Member
 
 		err := rows.Scan(&member.MemberRoleId, &member.MemberRoleTitle, &member.MemberRoleAbbr, &member.Id, &member.Name, &member.IsAlive)
 		if err != nil {
@@ -173,10 +172,10 @@ func (C *Member) QueryByPage(userId int64, number, size int, orderBy, order stri
 	return members, nil
 }
 
-func (C *Member) Update(id, memberRoleId int64, name string, isAlive bool) (error) {
+func (M *Member) Update() (error) {
 	sqlStatement := `UPDATE members SET member_role_id = $1, name = $2, is_alive = $3 WHERE id = $4;`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, memberRoleId, name, isAlive, id)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, M.MemberRoleId, M.Name, M.IsAlive, M.Id)
 	if err != nil {
 		return err
 	}
@@ -184,11 +183,12 @@ func (C *Member) Update(id, memberRoleId int64, name string, isAlive bool) (erro
 	return nil
 }
 
-func (M *Member) DeleteById(id int64) (Member, error) {
+func (M *Member) Delete() (Member, error) {
 	sqlStatement := `DELETE FROM members WHERE id = $1 RETURNING id;`
 
 	var member Member
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, id).Scan(&member.Id)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, M.Id)
+	err := row.Scan(&member.Id)
 	if err != nil {
 		return Member{}, err
 	}
