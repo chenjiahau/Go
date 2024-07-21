@@ -13,7 +13,7 @@ import (
 func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var t model.TagInterface = &model.Tag{}
+	// Validate request
 	var atp model.AddTagParams
 	err := util.DecodeJSONBody(r, &atp)
 	if err != nil {
@@ -38,8 +38,10 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	duplicatedTagId, _ := t.GetByName(Ctrl.User.Id, atp.Name)
-	if duplicatedTagId > 0{
+	// Check if tag name already exists
+	var t model.TagInterface = &model.Tag{}
+	duplicatedTagId := t.GetByName(Ctrl.User.Id, atp.Name)
+	if duplicatedTagId > 0 {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Tag name already exists",
@@ -49,6 +51,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create tag
 	id, err := t.Create(atp.ColorId, atp.Name)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -60,6 +63,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create user tag
 	var ut model.UserTagInterface = &model.UserTag{}
 	_, err = ut.Create(Ctrl.User.Id, id)
 	if err != nil {
@@ -83,6 +87,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Query all tags
 	var t model.TagInterface = &model.Tag{}
 	tags, err := t.QueryAll()
 	if err != nil {
@@ -104,6 +109,7 @@ func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Query total tag number
 	var t model.TagInterface = &model.Tag{}
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
@@ -125,6 +131,7 @@ func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request
 func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Query total tag page number
 	var t model.TagInterface = &model.Tag{}
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
@@ -137,6 +144,7 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	// Validate request
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
 		resErr := map[string]interface{}{
@@ -148,6 +156,7 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	// Calculate total page number
 	totalPageNumber := count / int64(size)
 	restCount := count % int64(size)
 	if restCount > 0 {
@@ -163,6 +172,7 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
 		resErr := map[string]interface{}{
@@ -185,6 +195,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Query tags by page
 	var t model.TagInterface = &model.Tag{}
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
@@ -261,6 +272,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -272,6 +284,7 @@ func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Query tag by id
 	var t model.TagInterface = &model.Tag{}
 	tag, err := t.GetById(tagId)
 	if err != nil {
@@ -298,6 +311,7 @@ func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -333,6 +347,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if tag name already exists
 	var t model.TagInterface = &model.Tag{}
 	existingTag, err := t.GetById(tagId)
 	if existingTag.Id == 0 || err != nil {
@@ -345,8 +360,8 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	duplicatedTagId, err := t.GetByName(Ctrl.User.Id, utp.Name)
-	if duplicatedTagId > 0 || err != nil {
+	duplicatedTagId := t.GetByName(Ctrl.User.Id, utp.Name)
+	if duplicatedTagId > 0 {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Tag name already exists",
@@ -381,6 +396,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -392,6 +408,7 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if tag exists
 	var t model.TagInterface = &model.Tag{}
 	existingTag, err := t.GetById(tagId)
 	if existingTag.Id == 0 || err != nil {
@@ -404,6 +421,7 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Delete tag
 	_, err = existingTag.Delete()
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -415,6 +433,7 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Delete user tag
 	var ut model.UserTagInterface = &model.UserTag{}
 	ut.DeleteById(tagId)
 

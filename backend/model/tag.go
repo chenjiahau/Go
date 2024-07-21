@@ -5,7 +5,7 @@ import "fmt"
 // Interface
 type TagInterface interface {
 	GetById(int64)																(Tag, error)
-	GetByName(int64, string)											(int64, error)
+	GetByName(int64, string)											(int64)
 	Create(int64, string)													(int64, error)
 	QueryAll()																		([]Tag, error)
 	QueryTotalCount(int64)												(int64, error)
@@ -58,9 +58,7 @@ func (T *Tag) GetById(id int64) (Tag, error) {
 	return tag, nil
 }
 
-func (T *Tag) GetByName(userId int64, name string) (int64, error) {
-	fmt.Println("userId: ", userId)
-	fmt.Println("name: ", name)
+func (T *Tag) GetByName(userId int64, name string) (int64) {
 	sqlStatement := `
 	  SELECT id FROM tags
 		WHERE name = $1 and id in (SELECT id FROM user_tags where user_id = $2);`
@@ -69,10 +67,10 @@ func (T *Tag) GetByName(userId int64, name string) (int64, error) {
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId)
 	err := row.Scan(&tag.Id)
 	if err != nil {
-		return 0, err
+		return 0
 	}
 
-	return tag.Id, nil
+	return tag.Id
 }
 
 func (T *Tag) Create(colorId int64, name string) (int64, error) {
