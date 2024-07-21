@@ -13,7 +13,7 @@ import (
 func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var c model.CategoryInterface = &model.Category{}
+	// Validate request
 	var acp model.AddCategoryParams
 	err := util.DecodeJSONBody(r, &acp)
 	if err != nil {
@@ -38,6 +38,8 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if category name already exists
+	var c model.CategoryInterface = &model.Category{}
 	existCategory, _ := c.GetByName(Ctrl.User.Id, acp.Name)
 	if existCategory.Id > 0{
 		resErr := map[string]interface{}{
@@ -49,6 +51,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create category
 	now := util.GetNow()
 	id, err := c.Create(acp.Name, now, acp.IsAlive)
 	if err != nil {
@@ -61,6 +64,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create user category
 	var uc model.UserCategoryInterface = &model.UserCategory{}
 	_, err = uc.Create(Ctrl.User.Id, id)
 	if err != nil {
@@ -85,6 +89,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Query all categories
 	var c model.CategoryInterface = &model.Category{}
 	categories, err := c.QueryAll()
 	if err != nil {
@@ -106,6 +111,7 @@ func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Query total category number
 	var c model.CategoryInterface = &model.Category{}
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
@@ -127,6 +133,7 @@ func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Re
 func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Query total category page number
 	var c model.CategoryInterface = &model.Category{}
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
@@ -139,6 +146,7 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 		return
 	}
 
+	// Validate request
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
 		resErr := map[string]interface{}{
@@ -150,6 +158,7 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 		return
 	}
 
+	// Calculate total page number
 	totalPageNumber := count / int64(size)
 	restCount := count % int64(size)
 	if restCount > 0 {
@@ -165,7 +174,7 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var c model.CategoryInterface = &model.Category{}
+	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
 		resErr := map[string]interface{}{
@@ -188,6 +197,8 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Query total category number
+	var c model.CategoryInterface = &model.Category{}
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -263,7 +274,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var c model.CategoryInterface = &model.Category{}
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -275,6 +286,8 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// Query category by id
+	var c model.CategoryInterface = &model.Category{}
 	category, err := c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -299,6 +312,7 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -310,7 +324,6 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var c model.CategoryInterface = &model.Category{}
 	var ucp model.UpdateCategoryParams
 	err = util.DecodeJSONBody(r, &ucp)
 	if err != nil {
@@ -335,6 +348,8 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if category name already exists
+	var c model.CategoryInterface = &model.Category{}
 	existCategory, _ := c.GetByName(Ctrl.User.Id, ucp.Name)
 	if existCategory.Id > 0 && existCategory.Id != categoryId {
 		resErr := map[string]interface{}{
@@ -371,6 +386,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -382,6 +398,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if category exists
 	var c model.CategoryInterface = &model.Category{}
 	existingCategory, err := c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
@@ -394,6 +411,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Delete category
 	existingCategory, err = existingCategory.Delete()
 	if existingCategory.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
@@ -417,6 +435,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -428,6 +447,7 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if category exists
 	var c model.CategoryInterface = &model.Category{}
 	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
@@ -440,7 +460,7 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	// Validate request
 	var ascp model.AddSubCategoryParams
 	err = util.DecodeJSONBody(r, &ascp)
 	if err != nil {
@@ -465,6 +485,8 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if subcategory name already exists
+	var sc model.SubCategoryInterface = &model.SubCategory{}
 	existSubCategory, _ := sc.GetByName(categoryId, ascp.Name)
 	if existSubCategory.Id > 0 {
 		resErr := map[string]interface{}{
@@ -476,6 +498,7 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create subcategory
 	now := util.GetNow()
 	subCategoryId, err := sc.Create(categoryId, ascp.Name, now, ascp.IsAlive)
 	if err != nil {
@@ -501,6 +524,7 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -524,6 +548,7 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Query all subcategories
 	var sc model.SubCategoryInterface = &model.SubCategory{}
 	subCategories, err := sc.QueryAll(categoryId)
 	if err != nil {
@@ -545,6 +570,7 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 func (Ctrl *Controller) GetTotalSubCategoryNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -556,6 +582,7 @@ func (Ctrl *Controller) GetTotalSubCategoryNumber(w http.ResponseWriter, r *http
 		return
 	}
 
+	// Query total subcategory number
 	var sc model.SubCategoryInterface = &model.SubCategory{}
 	count, err := sc.QueryTotalCount(categoryId)
 	if err != nil {
@@ -577,6 +604,7 @@ func (Ctrl *Controller) GetTotalSubCategoryNumber(w http.ResponseWriter, r *http
 func (Ctrl *Controller) GetTotalSubCategoryPageNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -588,6 +616,7 @@ func (Ctrl *Controller) GetTotalSubCategoryPageNumber(w http.ResponseWriter, r *
 		return
 	}
 
+	// Query total subcategory page number
 	var sc model.SubCategoryInterface = &model.SubCategory{}
 	count, err := sc.QueryTotalCount(categoryId)
 	if err != nil {
@@ -626,6 +655,7 @@ func (Ctrl *Controller) GetTotalSubCategoryPageNumber(w http.ResponseWriter, r *
 func (Ctrl *Controller) GetSubCategoryByPage(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -637,7 +667,6 @@ func (Ctrl *Controller) GetSubCategoryByPage(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	var sc model.SubCategoryInterface = &model.SubCategory{}
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
 		resErr := map[string]interface{}{
@@ -660,6 +689,8 @@ func (Ctrl *Controller) GetSubCategoryByPage(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	// Query total subcategory number
+	var sc model.SubCategoryInterface = &model.SubCategory{}
 	count, err := sc.QueryTotalCount(categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -736,8 +767,7 @@ func (Ctrl *Controller) GetSubCategoryByPage(w http.ResponseWriter, r *http.Requ
 func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var c model.CategoryInterface = &model.Category{}
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -749,6 +779,8 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+  // Check if category exists
+	var c model.CategoryInterface = &model.Category{}
 	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -760,6 +792,7 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// Validate request
 	subCategoryId, err := strconv.ParseInt(chi.URLParam(r, "subId"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -771,6 +804,8 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// Check if subcategory exists
+	var sc model.SubCategoryInterface = &model.SubCategory{}
 	subCategory, err := sc.GetById(categoryId, subCategoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -795,6 +830,7 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -817,8 +853,6 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var c = model.Category{}
-	var sc model.SubCategoryInterface = &model.SubCategory{}
 	var uscp model.UpdateSubCategoryParams
 	err = util.DecodeJSONBody(r, &uscp)
 	if err != nil {
@@ -831,6 +865,8 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Check if category exists
+	var c = model.Category{}
 	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -854,6 +890,8 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Check if subcategory exists
+	var sc model.SubCategoryInterface = &model.SubCategory{}
 	subCategory, _ := sc.GetById(categoryId, subCategoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -865,6 +903,7 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Check if subcategory name already exists
 	existSubCategory, _ := sc.GetByName(categoryId, uscp.Name)
 	if existSubCategory.Id > 0 && existSubCategory.Id != subCategoryId {
 		resErr := map[string]interface{}{
@@ -876,6 +915,7 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Update subcategory
 	existSubCategory.Name = uscp.Name
 	existSubCategory.IsAlive = uscp.IsAlive
 	err = existSubCategory.Update()
@@ -903,6 +943,7 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -925,6 +966,7 @@ func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Check if category exists
 	var sc model.SubCategoryInterface = &model.SubCategory{}
 	existingSubCategory, err := sc.GetById(categoryId, subCategoryId)
 	if err != nil {
@@ -937,6 +979,7 @@ func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Delete subcategory
 	existingSubCategory, err = existingSubCategory.Delete()
 	if existingSubCategory.Id == 0 || err != nil {
 		resErr := map[string]interface{}{

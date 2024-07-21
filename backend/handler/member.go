@@ -88,6 +88,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Query all members
 	var m model.MemberInterface = &model.Member{}
 	members, err := m.QueryAll()
 	if err != nil {
@@ -109,6 +110,7 @@ func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Query total member number
 	var m model.MemberInterface = &model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
@@ -130,6 +132,7 @@ func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Requ
 func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Query total member number
 	var m model.MemberInterface = &model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
@@ -142,6 +145,7 @@ func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.
 		return
 	}
 
+	// Validate request
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
 		resErr := map[string]interface{}{
@@ -153,6 +157,7 @@ func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.
 		return
 	}
 
+	// Calculate total page number
 	totalPageNumber := count / int64(size)
 	restCount := count % int64(size)
 	if restCount > 0 {
@@ -168,6 +173,7 @@ func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.
 func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
 		resErr := map[string]interface{}{
@@ -190,6 +196,7 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// Query members by page
 	var m model.MemberInterface = &model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
@@ -264,6 +271,7 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -275,6 +283,7 @@ func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get member by id
 	var m model.MemberInterface = &model.Member{}
 	member, err := m.GetById(memberId)
 	if err != nil {
