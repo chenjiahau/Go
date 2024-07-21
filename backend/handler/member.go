@@ -13,6 +13,7 @@ import (
 func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	var amp model.AddMemberParams
 	err := util.DecodeJSONBody(r, &amp)
 	if err != nil {
@@ -37,9 +38,10 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if member name already exists
 	var m model.MemberInterface = &model.Member{}
-	existMember, _ := m.GetByName(amp.Name)
-	if existMember.Id > 0{
+	duplicatedMemberId := m.GetByName(Ctrl.User.Id, amp.Name)
+	if duplicatedMemberId > 0 {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Member name already exists",
@@ -49,6 +51,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create member
 	id, err := m.Create(amp.MemberRoleId, amp.Name, amp.IsAlive)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -60,6 +63,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create user member
 	var um model.UserMemberInterface = &model.UserMember{}
 	_, err = um.Create(Ctrl.User.Id, id)
 	if err != nil {
@@ -72,6 +76,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Response
 	resData := map[string]interface{}{
 		"id": id,
 		"MemberRoleId": amp.MemberRoleId,
@@ -295,6 +300,7 @@ func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -330,9 +336,10 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if member exists
 	var m model.MemberInterface = &model.Member{}
 	existingMember, err := m.GetById(memberId)
-	if existingMember.Id == 0 && err != nil {
+	if existingMember.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Failed to get member",
@@ -342,8 +349,9 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	duplicatedMember, _ := m.GetByName(ump.Name)
-	if duplicatedMember.Id > 0 && duplicatedMember.Id != memberId {
+	// Check if member name already exists
+	duplicatedMemberId := m.GetByName(Ctrl.User.Id, ump.Name)
+	if duplicatedMemberId > 0 && duplicatedMemberId != memberId {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Member name already exists",
@@ -353,6 +361,7 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update member
 	existingMember.MemberRoleId = ump.MemberRoleId
 	existingMember.Name = ump.Name
 	existingMember.IsAlive = ump.IsAlive
@@ -380,6 +389,7 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
+	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -391,9 +401,10 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if member exists
 	var m model.MemberInterface = &model.Member{}
 	existingMember, err := m.GetById(memberId)
-	if existingMember.Id == 0 && err != nil {
+	if existingMember.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Failed to get member",
@@ -403,6 +414,7 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Delete member
 	_, err = existingMember.Delete()
 	if err != nil {
 		resErr := map[string]interface{}{
@@ -414,6 +426,7 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Delete user member
 	var um model.UserMemberInterface = &model.UserMember{}
 	um.DeleteById(memberId)
 

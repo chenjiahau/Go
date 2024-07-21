@@ -5,7 +5,7 @@ import "fmt"
 // Interface
 type MemberInterface interface {
 	GetById(int64)																(Member, error)
-	GetByName(string)															(Member, error)
+	GetByName(int64, string)											(int64)
 	Create(int64, string, bool)										(int64, error)
 	QueryAll()																		([]Member, error)
 	QueryTotalCount(int64)							  				(int64, error)
@@ -56,22 +56,22 @@ func (M *Member) GetById(id int64) (Member, error) {
 	return member, nil
 }
 
-func (M *Member) GetByName(name string) (Member, error) {
+func (M *Member) GetByName(userId int64, name string) (int64) {
 	sqlStatement := `
-		SELECT mr.id, mr.title, mr.abbr, m.id, m.name, m.is_alive
+		SELECT m.id
 		FROM members m
 		INNER JOIN member_roles mr
 		ON m.member_role_id = mr.id
-		WHERE m.name = $1;`
+		WHERE m.name = $1 and m.id in (SELECT id FROM user_members where user_id = $2);`
 
 	var member Member
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, name)
-	err := row.Scan(&member.MemberRoleId, &member.MemberRoleTitle, &member.MemberRoleAbbr, &member.Id, &member.Name, &member.IsAlive)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId)
+	err := row.Scan(&member.Id)
 	if err != nil {
-		return Member{}, err
+		return 0
 	}
 
-	return member, nil
+	return member.Id
 }
 
 func (M *Member) Create(memberRoleId int64, name string, isAlive bool) (int64, error) {
