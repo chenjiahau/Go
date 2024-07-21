@@ -5,7 +5,7 @@ import "fmt"
 // Interface
 type TagInterface interface {
 	GetById(int64)																(Tag, error)
-	GetByName(string)															(Tag, error)
+	GetByName(int64, string)											(int64, error)
 	Create(int64, string)													(int64, error)
 	QueryAll()																		([]Tag, error)
 	QueryTotalCount(int64)												(int64, error)
@@ -58,19 +58,21 @@ func (T *Tag) GetById(id int64) (Tag, error) {
 	return tag, nil
 }
 
-func (T *Tag) GetByName(name string) (Tag, error) {
+func (T *Tag) GetByName(userId int64, name string) (int64, error) {
+	fmt.Println("userId: ", userId)
+	fmt.Println("name: ", name)
 	sqlStatement := `
-	  SELECT id FROM tags WHERE name = $1
-		WHERE id IN (SELECT tag_id FROM user_tags WHERE user_id = $2);`
-	
+	  SELECT id FROM tags
+		WHERE name = $1 and id in (SELECT id FROM user_tags where user_id = $2);`
+
 	var tag Tag
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, name)
-	err := row.Scan(&tag.Id, &tag.ColorCategoryId, &tag.ColorCategoryName, &tag.ColorId, &tag.ColorName, &tag.ColorHexCode, &tag.ColorRGBCode, &tag.Name)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, name, userId)
+	err := row.Scan(&tag.Id)
 	if err != nil {
-		return Tag{}, err
+		return 0, err
 	}
 
-	return tag, nil
+	return tag.Id, nil
 }
 
 func (T *Tag) Create(colorId int64, name string) (int64, error) {

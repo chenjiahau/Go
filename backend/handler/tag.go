@@ -38,8 +38,8 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existTag, _ := t.GetByName(atp.Name)
-	if existTag.Id > 0{
+	duplicatedTagId, _ := t.GetByName(Ctrl.User.Id, atp.Name)
+	if duplicatedTagId > 0{
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Tag name already exists",
@@ -345,8 +345,8 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	duplicatedTag, err := t.GetByName(utp.Name)
-	if duplicatedTag.Id > 0 && duplicatedTag.Id != tagId {
+	duplicatedTagId, err := t.GetByName(Ctrl.User.Id, utp.Name)
+	if duplicatedTagId > 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Tag name already exists",
