@@ -8,6 +8,7 @@ import (
 type DocumentCommentInterface interface {
 	GetById(int64, int64)										(DocumentComment, error)
 	Create(int64, int64, string, time.Time)	(int64, error)
+	QueryAll(userId, documentId int64)      ([]DocumentComment, error)
 	Update()																(error)
 	Delete()																(int64, error)
 	DeleteById(int64)												(int64, error)
@@ -71,6 +72,40 @@ func (DC *DocumentComment) Create(documentId, postMemberId int64, content string
 	}
 
 	return id, nil
+}
+
+func (DC *DocumentComment) QueryAll(userId, documentId int64) ([]DocumentComment, error) {
+	sqlStatement := `
+		SELECT
+		dc.id, dc.post_member_id, dc.content, dc.created_at,
+		d.id as d_id, d.name as d_name,
+		m.id as m_id, m.name as m_name
+		FROM document_comments dc
+		INNER JOIN documents d
+		ON d.id = dc.document_id
+		INNER JOIN members  m
+		ON m.id = dc.post_member_id
+		WHERE dc.document_id = $1
+		ORDER BY dc.id DESC;`
+
+	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, documentId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var documentComments []DocumentComment
+	for rows.Next() {
+		var documentComment DocumentComment
+		err := rows.Scan(&documentComment.Id, &documentComment.PostMemberId, &documentComment.Content, &documentComment.CreatedAt, &documentComment.DocumentId, &documentComment.DocumentName, &documentComment.PostMemberId, &documentComment.PostMemberName)
+		if err != nil {
+			return nil, err
+		}
+
+		documentComments = append(documentComments, documentComment)
+	}
+
+	return documentComments, nil
 }
 
 func (DC *DocumentComment) Update() (error) {

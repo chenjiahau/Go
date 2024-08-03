@@ -55,6 +55,40 @@ func (Ctrl *Controller) GetDocumentCommentById(w http.ResponseWriter, r *http.Re
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
+func (Ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Request) {
+	if ok := CheckToken(w, r) ; !ok { return }
+
+	// Validate request
+	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid document id",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Get all document comments
+	var dc model.DocumentCommentInterface = &model.DocumentComment{}
+	documentComments, err := dc.QueryAll(Ctrl.User.Id, documentId)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get document comments",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	resData := map[string]interface{}{
+		"documentComments": documentComments,
+	}
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
 func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 

@@ -44,6 +44,188 @@ func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
+func (Ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
+	if ok := CheckToken(w, r) ; !ok { return }
+
+	// Get all documents
+	var d model.DocumentInterface = &model.Document{}
+	documents, err := d.QueryAll(Ctrl.User.Id)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get documents",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	resData := map[string]interface{}{
+		"documents": documents,
+	}
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Request) {
+	if ok := CheckToken(w, r) ; !ok { return }
+
+	// Get total document number
+	var d model.DocumentInterface = &model.Document{}
+	total, err := d.QueryTotalCount(Ctrl.User.Id)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get total document number",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	resData := map[string]interface{}{
+		"total": total,
+	}
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (Ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *http.Request) {
+	if ok := CheckToken(w, r) ; !ok { return }
+
+	// Query total category page number
+	var d model.DocumentInterface = &model.Document{}
+	count, err := d.QueryTotalCount(Ctrl.User.Id)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get total document number",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Validate request
+	size, err := strconv.Atoi(chi.URLParam(r, "size"))
+	if err != nil || size < 1 {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid page size",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Calculate total page number
+	totalPageNumber := count / int64(size)
+	restCount := count % int64(size)
+	if restCount > 0 {
+		totalPageNumber++
+	}
+
+	resData := map[string]interface{}{
+		"totalPageNumber": totalPageNumber,
+	}
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request) {
+	if ok := CheckToken(w, r) ; !ok { return }
+
+	// Validate request
+	number, err := strconv.Atoi(chi.URLParam(r, "number"))
+	if err != nil || number < 1 {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid page number",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	size, err := strconv.Atoi(chi.URLParam(r, "size"))
+	if err != nil || size < 1 {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid page size",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Query total document number
+	var d model.DocumentInterface = &model.Document{}
+	count, err := d.QueryTotalCount(Ctrl.User.Id)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get total document number",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	if count == 0 {
+		resData := map[string]interface{}{
+			"documents": []model.Document{},
+		}
+		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+		return
+	}
+
+	totalPageNumber := count / int64(size)
+	restCount := count %  int64(size)
+	if restCount > 0 {
+		totalPageNumber++
+	}
+
+	if int64(number) > totalPageNumber {
+		resErr := map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"message": "Invalid page number",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// orderBy: id, name, created_at
+	orderBy := r.URL.Query().Get("orderBy")
+	if orderBy == "" {
+		orderBy = "id"
+	}
+
+	// order: asc, desc
+	order := r.URL.Query().Get("order")
+	if order == "" {
+		order = "asc"
+	}
+
+	documents, err := d.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	if err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get documents",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	resData := map[string]interface{}{
+		"documents": documents,
+		"totalPageNumber": totalPageNumber,
+		"number": number,
+		"size": size,
+		"order": order,
+		"orderBy": orderBy,
+	}
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
 func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 

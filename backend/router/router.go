@@ -80,11 +80,16 @@ func GetRoutes() http.Handler {
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
 	// Document routes
+	mux.Get("/api/documents", handler.Ctrl.GetAllDocument)
+	mux.Get("/api/documents/total", handler.Ctrl.GetTotalDocumentNumber)
+	mux.Get("/api/documents/page/{size}", handler.Ctrl.GetTotalDocumentPageNumber)
+	mux.Get("/api/documents/page/{number}/size/{size}", handler.Ctrl.GetDocumentByPage)
 	mux.Post("/api/document", handler.Ctrl.AddDocument)
 	mux.Get("/api/document/{id}", handler.Ctrl.GetDocumentById)
 	mux.Put("/api/document/{id}", handler.Ctrl.UpdateDocument)
 	mux.Delete("/api/document/{id}", handler.Ctrl.DeleteDocument)
 
+	mux.Get("/api/document/{id}/comments", handler.Ctrl.GetAllDocumentComment)
 	mux.Post("/api/document/{id}/comment", handler.Ctrl.AddDocumentComment)
 	mux.Get("/api/document/{id}/comment/{commentId}", handler.Ctrl.GetDocumentCommentById)
 	mux.Put("/api/document/{id}/comment/{commentId}", handler.Ctrl.UpdateDocumentComment)
