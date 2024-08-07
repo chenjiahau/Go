@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"ivanfun.com/mis/util"
+	"ivanfun.com/mis/internal/util"
 )
 
 type IndexResponse struct {

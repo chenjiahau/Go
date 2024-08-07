@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
-	"ivanfun.com/mis/handler"
+	"ivanfun.com/mis/internal/handler"
 )
 
 func GetRoutes() http.Handler {

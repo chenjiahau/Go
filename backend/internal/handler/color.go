@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"ivanfun.com/mis/model"
-	"ivanfun.com/mis/util"
+	"ivanfun.com/mis/internal/model"
+	"ivanfun.com/mis/internal/util"
 )
 
 func (Ctrl *Controller) GetAllColorCategory(w http.ResponseWriter, r *http.Request) {

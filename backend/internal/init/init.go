@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"ivanfun.com/mis/db/driver"
-	"ivanfun.com/mis/model"
-	"ivanfun.com/mis/util"
+	"ivanfun.com/mis/internal/model"
+	"ivanfun.com/mis/internal/util"
 )
 
 func main() {
@@ -54,7 +54,7 @@ func HandleColor(PgConn *driver.DBConn, ) {
 	}
 
 	// Read and insert color categories and colors
-	filePath := "./init/color"
+	filePath := "./internal/init/color"
 	files, err := os.ReadDir(filePath)
    if err != nil {
 			util.WriteErrorLog(err.Error())
@@ -106,7 +106,7 @@ func HandleMemberRole(PgConn *driver.DBConn) {
 	}
 
 	// Read and insert member roles
-	filePath := "./init/member/Role.json"
+	filePath := "./internal/init/member/Role.json"
 	memberRoles, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)

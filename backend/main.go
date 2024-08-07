@@ -6,12 +6,12 @@ import (
 	"log"
 	"net/http"
 
-	"ivanfun.com/mis/config"
 	"ivanfun.com/mis/db/driver"
-	"ivanfun.com/mis/handler"
-	"ivanfun.com/mis/model"
-	"ivanfun.com/mis/router"
-	"ivanfun.com/mis/util"
+	"ivanfun.com/mis/internal/config"
+	"ivanfun.com/mis/internal/handler"
+	"ivanfun.com/mis/internal/model"
+	"ivanfun.com/mis/internal/router"
+	"ivanfun.com/mis/internal/util"
 )
 
 var (

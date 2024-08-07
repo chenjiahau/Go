@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"ivanfun.com/mis/handler"
-	"ivanfun.com/mis/model"
-	"ivanfun.com/mis/util"
+	"ivanfun.com/mis/internal/handler"
+	"ivanfun.com/mis/internal/model"
+	"ivanfun.com/mis/internal/util"
 )
 
 func WriteToConsole(next http.Handler) http.Handler {

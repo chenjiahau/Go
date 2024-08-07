@@ -1,7 +1,7 @@
 package model
 
 import (
-	"ivanfun.com/mis/util"
+	"ivanfun.com/mis/internal/util"
 )
 
 // Interface

@@ -1,1 +1,1 @@
-go run ./cmd/server.go MIS 0.0.1
+go run ./main.go MIS 0.0.1

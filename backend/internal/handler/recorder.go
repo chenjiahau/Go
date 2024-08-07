@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/google/uuid"
-	"ivanfun.com/mis/util"
+	"ivanfun.com/mis/internal/util"
 )
 
 const maxUploadSize = 1024 * 1024 // 1MB

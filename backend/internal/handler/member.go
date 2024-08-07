@@ -6,16 +6,16 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-playground/validator"
-	"ivanfun.com/mis/model"
-	"ivanfun.com/mis/util"
+	"ivanfun.com/mis/internal/model"
+	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	// Validate request
-	var acp model.AddCategoryParams
-	err := util.DecodeJSONBody(r, &acp)
+	var amp model.AddMemberParams
+	err := util.DecodeJSONBody(r, &amp)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
@@ -27,75 +27,74 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	validate := validator.New()
-	err = validate.Struct(acp)
-	if err != nil || acp.Name == ""{
+	err = validate.Struct(amp)
+	if err != nil || amp.Name == ""{
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
-			"message": "Invalid category name",
+			"message": "Invalid member name",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	// Check if category name already exists
-	var c model.CategoryInterface = &model.Category{}
-	existCategory, _ := c.GetByName(Ctrl.User.Id, acp.Name)
-	if existCategory.Id > 0{
+	// Check if member name already exists
+	var m model.MemberInterface = &model.Member{}
+	duplicatedMemberId := m.GetByName(Ctrl.User.Id, amp.Name)
+	if duplicatedMemberId > 0 {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Category name already exists",
+			"message": "Member name already exists",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	// Create category
-	now := util.GetNow()
-	id, err := c.Create(acp.Name, now, acp.IsAlive)
+	// Create member
+	id, err := m.Create(amp.MemberRoleId, amp.Name, amp.IsAlive)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to create category",
+			"message": "Failed to create member",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	// Create user category
-	var uc model.UserCategoryInterface = &model.UserCategory{}
-	_, err = uc.Create(Ctrl.User.Id, id)
+	// Create user member
+	var um model.UserMemberInterface = &model.UserMember{}
+	_, err = um.Create(Ctrl.User.Id, id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to create user category",
+			"message": "Failed to create user member",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// Response
 	resData := map[string]interface{}{
 		"id": id,
-		"name": acp.Name,
-		"isAlive": acp.IsAlive,
-		"createdAt": now,
+		"MemberRoleId": amp.MemberRoleId,
+		"name": amp.Name,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	// Query all categories
-	var c model.CategoryInterface = &model.Category{}
-	categories, err := c.QueryAll()
+	// Query all members
+	var m model.MemberInterface = &model.Member{}
+	members, err := m.QueryAll()
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
+			"message": "Failed to query all members",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -103,43 +102,43 @@ func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resData := map[string]interface{}{
-		"categories": categories,
+		"members": members,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	// Query total category number
-	var c model.CategoryInterface = &model.Category{}
-	count, err := c.QueryTotalCount(Ctrl.User.Id)
+	// Query total member number
+	var m model.MemberInterface = &model.Member{}
+	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
+			"message": "Failed to query all members",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"totalCategoryNumber": count,
+	resData := map[string]interface{} {
+		"totalMemberNumber": count,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	// Query total category page number
-	var c model.CategoryInterface = &model.Category{}
-	count, err := c.QueryTotalCount(Ctrl.User.Id)
+	// Query total member number
+	var m model.MemberInterface = &model.Member{}
+	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
+			"message": "Failed to query all members",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -171,7 +170,7 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	// Validate request
@@ -197,13 +196,13 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Query total category number
-	var c model.CategoryInterface = &model.Category{}
-	count, err := c.QueryTotalCount(Ctrl.User.Id)
+	// Query members by page
+	var m model.MemberInterface = &model.Member{}
+	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
+			"message": "Failed to query all members",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -212,7 +211,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 
 	if count == 0 {
 		resData := map[string]interface{}{
-			"categories": []model.Category{},
+			"members": []model.Member{},
 			"totalPageNumber": 0,
 			"number": number,
 			"size": size,
@@ -237,23 +236,21 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// orderBy: id, name, created_at, is_alive
 	orderBy := r.URL.Query().Get("orderBy")
 	if orderBy == "" {
 		orderBy = "id"
 	}
 
-	// order: asc, desc
 	order := r.URL.Query().Get("order")
 	if order == "" {
 		order = "asc"
 	}
 
-	categories, err := c.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	members, err := m.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
+			"message": "Failed to query members by page",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -261,7 +258,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 	}
 
 	resData := map[string]interface{}{
-		"categories": categories,
+		"members": members,
 		"totalPageNumber": totalPageNumber,
 		"number": number,
 		"size": size,
@@ -271,28 +268,28 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	// Validate request
-	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
-			"message": "Invalid category id",
+			"message": "Invalid member id",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	// Query category by id
-	var c model.CategoryInterface = &model.Category{}
-	category, err := c.GetById(Ctrl.User.Id, categoryId)
+	// Get member by id
+	var m model.MemberInterface = &model.Member{}
+	member, err := m.GetById(memberId)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to get category",
+			"message": "Failed to get member",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -300,32 +297,32 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 	}
 
 	resData := map[string]interface{}{
-		"id": category.Id,
-		"name": category.Name,
-		"isAlive": category.IsAlive,
-		"subcategoryCount": category.SubCategoryCount,
-		"createdAt": category.CreatedAt,
+		"id": member.Id,
+		"memberRoleId": member.MemberRoleId,
+		"memberRoleTitle": member.MemberRoleTitle,
+		"name": member.Name,
+		"isAlive": member.IsAlive,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	// Validate request
-	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
-			"message": "Invalid category id",
+			"message": "Invalid member id",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	var ucp model.UpdateCategoryParams
-	err = util.DecodeJSONBody(r, &ucp)
+	var ump model.UpdateMemberParams
+	err = util.DecodeJSONBody(r, &ump)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
@@ -337,37 +334,51 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	validate := validator.New()
-	err = validate.Struct(ucp)
-	if err != nil || ucp.Name == ""{
+	err = validate.Struct(ump)
+	if err != nil || ump.Name == ""{
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
-			"message": "Invalid category name",
+			"message": "Invalid member name",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	// Check if category name already exists
-	var c model.CategoryInterface = &model.Category{}
-	existCategory, _ := c.GetByName(Ctrl.User.Id, ucp.Name)
-	if existCategory.Id > 0 && existCategory.Id != categoryId {
+	// Check if member exists
+	var m model.MemberInterface = &model.Member{}
+	existingMember, err := m.GetById(memberId)
+	if existingMember.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Category name already exists",
+			"message": "Failed to get member",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	existCategory.Name = ucp.Name
-	existCategory.IsAlive = ucp.IsAlive
-	err = existCategory.Update()
+	// Check if member name already exists
+	duplicatedMemberId := m.GetByName(Ctrl.User.Id, ump.Name)
+	if duplicatedMemberId > 0 && duplicatedMemberId != memberId {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Member name already exists",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Update member
+	existingMember.MemberRoleId = ump.MemberRoleId
+	existingMember.Name = ump.Name
+	existingMember.IsAlive = ump.IsAlive
+	err = existingMember.Update()
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to update category",
+			"message": "Failed to update member",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -375,59 +386,61 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resData := map[string]interface{}{
-		"id": categoryId,
-		"name": ucp.Name,
-		"isAlive": ucp.IsAlive,
+		"id": memberId,
+		"memberRoleId": existingMember.MemberRoleId,
+		"name": existingMember.Name,
+		"isAlive": existingMember.IsAlive,
 	}
 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
+func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	// Validate request
-	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusBadRequest,
-			"message": "Invalid category id",
+			"message": "Invalid member id",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	// Check if category exists
-	var c model.CategoryInterface = &model.Category{}
-	existingCategory, err := c.GetById(Ctrl.User.Id, categoryId)
+	// Check if member exists
+	var m model.MemberInterface = &model.Member{}
+	existingMember, err := m.GetById(memberId)
+	if existingMember.Id == 0 || err != nil {
+		resErr := map[string]interface{}{
+			"code": http.StatusInternalServerError,
+			"message": "Failed to get member",
+		}
+
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Delete member
+	_, err = existingMember.Delete()
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to get category",
+			"message": "Failed to delete member",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	// Delete category
-	existingCategory, err = existingCategory.Delete()
-	if existingCategory.Id == 0 || err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to delete category",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-		return
-	}
-
-	var uc model.UserCategoryInterface = &model.UserCategory{}
-	uc.DeleteById(categoryId)
+	// Delete user member
+	var um model.UserMemberInterface = &model.UserMember{}
+	um.DeleteById(memberId)
 
 	resData := map[string]interface{}{
-		"id": categoryId,
+		"id": memberId,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
