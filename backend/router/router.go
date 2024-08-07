@@ -4,21 +4,19 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/gorilla/handlers"
+	"github.com/go-chi/cors"
 	"ivanfun.com/mis/handler"
 )
 
 func GetRoutes() http.Handler {
-	cors := handlers.CORS(
-    handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
-		handlers.AllowedOrigins([]string{"*"}),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
-    handlers.AllowCredentials(),
-	)
-
 	mux := chi.NewRouter()
 	mux.Use(WriteToConsole)
 	mux.Use(ParseAuthorization)
+	mux.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type", "Authorization", "X-Requested-With", "Accept"},
+	}))
 
 	mux.Get("/api", handler.Ctrl.Index)
 	mux.Post("/api/sign-up", handler.Ctrl.SignUp)
@@ -95,5 +93,5 @@ func GetRoutes() http.Handler {
 	mux.Put("/api/document/{id}/comment/{commentId}", handler.Ctrl.UpdateDocumentComment)
 	mux.Delete("/api/document/{id}/comment/{commentId}", handler.Ctrl.DeleteDocumentComment)
 
-	return cors(mux)
+	return mux
 }
