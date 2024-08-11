@@ -361,7 +361,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	duplicatedTagId := t.GetByName(Ctrl.User.Id, utp.Name)
-	if duplicatedTagId > 0 {
+	if tagId != duplicatedTagId && duplicatedTagId > 0 {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
 			"message": "Tag name already exists",
