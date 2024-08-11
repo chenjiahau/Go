@@ -22,6 +22,7 @@ import messageUtil, { commonMessage } from "@/util/message.util";
 const errorMessage = {
   title: "Title is required.",
   author: "Author is required.",
+  category: "Category or sub subcategory required.",
   duplicated: "Document name is duplicated.",
 };
 
@@ -126,46 +127,11 @@ const AddDocument = () => {
 
   const reset = () => {
     setReload(true);
-    setEditorData(getDefaultEditorData());
+    init();
     setTitle("");
-
-    setAuthors(
-      authors.map((author) => ({
-        ...author,
-        selected: false,
-      }))
-    );
-
-    setCategories(
-      categories.map((category, index) => ({
-        ...category,
-        selected: index === 0,
-      }))
-    );
-    if (categories.length > 0) {
-      setSubCategories(
-        subCategories.map((subCategory, index) => ({
-          ...subCategory,
-          selected: index === 0,
-        }))
-      );
-    }
-
-    setTags(
-      tags.map((tag) => ({
-        ...tag,
-        selected: false,
-      }))
-    );
     setSelectedTags([]);
-
-    setRelatedMembers(
-      relatedMembers.map((member) => ({
-        ...member,
-        selected: false,
-      }))
-    );
     setSelectedMembers([]);
+    setEditorData(getDefaultEditorData());
   };
 
   const add = () => async () => {
@@ -187,6 +153,11 @@ const AddDocument = () => {
     const tagIds = selectedTags.map((tag) => tag.id);
     const memberIds = selectedMembers.map((member) => member.id);
     const content = JSON.stringify(editorData);
+
+    if (!category || !subCategory) {
+      messageUtil.showErrorMessage(errorMessage.category);
+      return;
+    }
 
     const payload = {
       name: title,
