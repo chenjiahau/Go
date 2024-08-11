@@ -1,0 +1,19 @@
+#editorjs-container {
+  background-color: var(--white-color);
+  border: 1px solid var(--primary-color);
+  padding: 16px 64px;
+  border-radius: 4px;
+  height: 60vh;
+  overflow-y: auto;
+}
+
+.ce-toolbar__content,
+.ce-block__content {
+  max-width: unset;
+  width: 92% !important;
+}
+
+.editorjs-codeFlask_Wrapper .editorjs-codeFlask_LangDisplay {
+  max-width: unset;
+  height: unset !important;
+}

@@ -1,22 +1,7 @@
 // Modal
-.modal-dialog_600 {
-  max-width: 600px;
-}
-
-.modal-dialog_700 {
-  max-width: 700px;
-}
-
-.modal-dialog_800 {
-  max-width: 800px;
-}
-
-.modal-dialog_900 {
-  max-width: 900px;
-}
-
-.modal-dialog_1000 {
-  max-width: 1000px;
+.modal-max-width {
+  width: 80% !important;
+  left: calc(10%) !important;
 }
 
 .modal {
@@ -60,7 +45,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 12px;
+    padding: 0 12px 12px 12px;
     border-top: 1px solid var(--gray-color);
   }
 }

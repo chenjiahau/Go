@@ -33,6 +33,8 @@ const resource = {
   TAGS_BY_PAGE: "/tags/page/:page/size/:size",
   ADD_TAG: "/tag",
   EDIT_TAG: "/tag/:id",
+  // Document
+  ADD_DOCUMENT: "/document",
 }
 
 export default {

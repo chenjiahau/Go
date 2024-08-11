@@ -10,9 +10,11 @@ const axiosInstance = axios.create({
 class APIHandler {
   constructor() {
     this.axios = axiosInstance;
+    this.token = null;
   }
 
   setToken(token) {
+    this.token = token;
     this.axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
 

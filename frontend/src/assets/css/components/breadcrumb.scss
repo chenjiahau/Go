@@ -9,7 +9,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: var(--general-width);
+  min-width: var(--general-width);
   background-color: var(--primary-color);
   border-radius: 8px;
   letter-spacing: 1px;

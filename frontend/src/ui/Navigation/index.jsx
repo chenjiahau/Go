@@ -20,9 +20,9 @@ const Navigation = () => {
         <i className='fa-solid fa-tag'></i>
         <span>Tags</span>
       </Link>
-      <Link className='button nav_link'>
-        <i className='fa-solid fa-record-vinyl'></i>
-        <span>Records</span>
+      <Link className='button nav_link' to={routerConfig.routes.DOCUMENTS}>
+        <i className='fa-solid fa-file'></i>
+        <span>Documents</span>
       </Link>
       <Link className='button nav_link'>
         <i className='fa-solid fa-bars'></i>

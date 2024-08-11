@@ -14,6 +14,8 @@ import Members from "@/pages/Members";
 import Categories from "@/pages/Categories";
 import Category from "@/pages/Category";
 import Tags from "@/pages/Tags";
+import Documents from "./pages/Documents";
+import AddDocument from "./pages/Documents/components/AddDocument";
 
 function App() {
   return (
@@ -29,6 +31,11 @@ function App() {
           />
           <Route path={routerConfig.routes.CATEGORY} element={<Category />} />
           <Route path={routerConfig.routes.TAGS} element={<Tags />} />
+          <Route path={routerConfig.routes.DOCUMENTS} element={<Documents />} />
+          <Route
+            path={routerConfig.routes.ADD_DOCUMENT}
+            element={<AddDocument />}
+          />
         </Route>
       </Routes>
       <ToastContainer />

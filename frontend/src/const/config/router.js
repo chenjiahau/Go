@@ -7,7 +7,13 @@ const routes = {
   CATEGORY: '/category/:id',
   TAGS: '/tags',
   TAG: '/tag/:id',
+  DOCUMENTS: '/documents',
+  ADD_DOCUMENT: '/document/add',
+  DOCUMENT: '/document/:id',
 };
+
+// Others
+routes['RECORDER_UPLOAD_IMAGE'] = '/record/upload-image';
 
 export default {
   routes,

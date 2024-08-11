@@ -1,0 +1,33 @@
+.author-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  column-gap: 8px;
+}
+
+.tag-container {
+  display: flex;
+  max-height: 84px;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+  overflow-y: auto;
+
+  .tag {
+    display: flex;
+    width: auto !important;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 32px;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+
+    i {
+      cursor: pointer;
+    }
+  }
+}

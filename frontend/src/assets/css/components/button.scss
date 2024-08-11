@@ -93,3 +93,23 @@
     color: var(--black-color);
   }
 }
+
+.floating-button {
+  position: fixed;
+  bottom: 48px;
+  right: 16px;
+  cursor: pointer;
+  text-align: center;
+
+  i {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    padding: 16px;
+    border-radius: 50%;
+
+    &:hover {
+      background-color: var(--third-color);
+      color: var(--black-color);
+    }
+  }
+}
