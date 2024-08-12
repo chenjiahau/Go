@@ -162,7 +162,11 @@ func (SC *SubCategory) Update() error {
 }
 
 func (SC *SubCategory) Delete() (SubCategory, error) {
-	sqlStatement := `DELETE FROM subcategories WHERE id = $1 RETURNING id;`
+	sqlStatement := `
+		DELETE FROM subcategories
+		WHERE id = $1
+		AND id NOT IN (SELECT subcategory_id FROM documents)
+		RETURNING id;`
 
 	var subCategory SubCategory
 	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, SC.Id).Scan(&subCategory.Id)

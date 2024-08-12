@@ -187,7 +187,11 @@ func (C *Category) Update() (error) {
 }
 
 func (C *Category) Delete() (Category, error) {
-	sqlStatement := `DELETE FROM categories WHERE id = $1 RETURNING id;`
+	sqlStatement := `
+		DELETE FROM categories
+		WHERE id = $1
+		AND id NOT IN (SELECT category_id FROM documents)
+		RETURNING id;`
 
 	var category Category
 	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, C.Id).Scan(&category.Id)

@@ -17,6 +17,10 @@ import Page from "./components/Page";
 import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "@/util/message.util";
 
+const errorMessage = {
+  delete: "Member is used or not found.",
+};
+
 const Category = () => {
   // State
   const [memberRoles, setMemberRoles] = useState([]);
@@ -161,7 +165,7 @@ const Category = () => {
       setIsOpenConfirmationModal(false);
       handleInitialization();
     } catch (error) {
-      messageUtil.showErrorMessage(commonMessage.error);
+      messageUtil.showErrorMessage(errorMessage.delete);
     }
   };
 

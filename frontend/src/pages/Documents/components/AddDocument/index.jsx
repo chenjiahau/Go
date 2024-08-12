@@ -49,32 +49,46 @@ const AddDocument = () => {
       members = orderBy(members, "name", "asc");
 
       setAuthors(
-        members.map((member) => ({
-          id: member.id,
-          name: member.name,
-          selected: false,
-        }))
+        members.filter((member) => {
+          if (member.isAlive) {
+            return {
+              id: member.id,
+              name: member.name,
+              selected: false,
+            };
+          }
+        })
       );
       setRelatedMembers(
-        members.map((member) => ({
-          id: member.id,
-          name: member.name,
-          selected: false,
-        }))
+        members.filter((member) => {
+          if (member.isAlive) {
+            return {
+              id: member.id,
+              name: member.name,
+              selected: false,
+            };
+          }
+        })
       );
 
       response = await apiHandler.get(apiConfig.resource.CATEGORIES);
       let categories = response?.data?.data?.categories || [];
+
       categories = orderBy(categories, "name", "asc");
-      setCategories(
-        categories.map((category, index) => ({
-          id: category.id,
-          name: category.name,
-          selected: index === 0,
-        }))
-      );
+      categories = categories.filter((category) => {
+        if (category.isAlive) {
+          return {
+            id: category.id,
+            name: category.name,
+            selected: false,
+          };
+        }
+      });
 
       if (categories.length > 0) {
+        categories[0].selected = true;
+        setCategories(categories);
+
         response = await apiHandler.get(
           apiConfig.resource.SUBCATEGORIES.replace(":id", categories[0].id)
         );

@@ -416,7 +416,7 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	if existingMember.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to get member",
+			"message": "Member is used or not exists",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))

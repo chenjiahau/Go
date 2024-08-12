@@ -416,7 +416,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	if existingCategory.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to delete category",
+			"message": "Category is used or not exists",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))

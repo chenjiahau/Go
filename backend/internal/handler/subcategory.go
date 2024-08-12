@@ -562,7 +562,7 @@ func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request
 	if existingSubCategory.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
-			"message": "Failed to delete subcategory",
+			"message": "Subcategory is used or not found",
 		}
 
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))

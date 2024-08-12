@@ -17,6 +17,10 @@ import Page from "./components/Page";
 import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "@/util/message.util";
 
+const errorMessage = {
+  delete: "Subcategory is used or not found.",
+};
+
 const Category = () => {
   const { id } = useParams();
 
@@ -172,7 +176,7 @@ const Category = () => {
       setIsOpenConfirmationModal(false);
       handleInitialization();
     } catch (error) {
-      messageUtil.showErrorMessage(commonMessage.error);
+      messageUtil.showErrorMessage(errorMessage.delete);
     }
   };
 

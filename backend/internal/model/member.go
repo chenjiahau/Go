@@ -184,7 +184,12 @@ func (M *Member) Update() (error) {
 }
 
 func (M *Member) Delete() (Member, error) {
-	sqlStatement := `DELETE FROM members WHERE id = $1 RETURNING id;`
+	sqlStatement := `
+		DELETE FROM members
+		WHERE id = $1
+		AND id NOT IN (SELECT post_member_id FROM documents)
+		AND id NOT IN (SELECT post_member_id FROM document_comments)
+		RETURNING id;`
 
 	var member Member
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, M.Id)
