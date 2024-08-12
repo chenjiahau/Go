@@ -13,13 +13,13 @@ type DocumentTagInterface interface {
 
 // Database model
 type DocumentTag struct {
-	Id						int64	`json:"id"`
-	DocumentId		int64	`json:"documentId"`
-	TagId					int64	`json:"tagId"`
-	TagName				string	`json:"tagName"`
-	ColorId				int64	`json:"colorId"`
-	ColorName			string	`json:"colorName"`
-	ColorHexCode 	string	`json:"colorHexCode"`
+	Id						int64			`json:"id"`
+	DocumentId		int64			`json:"documentId"`
+	TagId					int64			`json:"tagId"`
+	TagName				string		`json:"tagName"`
+	ColorId				int64			`json:"colorId"`
+	ColorName			string		`json:"colorName"`
+	ColorHexCode 	string		`json:"colorHexCode"`
 	CreatedAt			time.Time	`json:"createdAt"`
 }
 

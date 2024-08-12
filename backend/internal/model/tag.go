@@ -44,7 +44,7 @@ func (T *Tag) GetById(id int64) (Tag, error) {
 		FROM tags t
 		INNER JOIN colors c
 		ON t.color_id = c.id
-		INNER JOIN color_categories cc 
+		INNER JOIN color_categories cc
 		ON c.category_id = cc.id
 		WHERE t.id = $1;`
 	
@@ -91,7 +91,7 @@ func (T *Tag) QueryAll() ([]Tag, error) {
 		FROM tags t
 		INNER JOIN colors c
 		ON t.color_id = c.id
-		INNER JOIN color_categories cc 
+		INNER JOIN color_categories cc
 		ON c.category_id = cc.id;`
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement)
@@ -148,7 +148,7 @@ func (T *Tag) QueryByPage(userId int64, number, size int, orderBy, order string)
 		FROM tags t
 		INNER JOIN colors c
 		ON t.color_id = c.id
-		INNER JOIN color_categories cc 
+		INNER JOIN color_categories cc
 		ON c.category_id = cc.id
 		WHERE t.id IN (SELECT tag_id FROM user_tags WHERE user_id = %d)
 		ORDER BY %s %s LIMIT $1 OFFSET $2;`,

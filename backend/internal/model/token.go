@@ -8,7 +8,7 @@ import (
 // For the methods that have to be implemented by the User struct
 type TokenInterface interface {
 	GetByUserId(int64) 													([]Token, error)
-	Create(int64, string, time.Time, time.Time) error
+	Create(int64, string, time.Time, time.Time)	error
 	Query(string) 															(Token, error)
 	SetIsAlive(string, bool)										error
 }

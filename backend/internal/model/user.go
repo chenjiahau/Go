@@ -18,7 +18,7 @@ type SignUpParams struct {
 	Email						string	`json:"email" validate:"required,email"`
 	Name						string	`json:"username" validate:"required,min=1,max=32"`
 	Password				string	`json:"password" validate:"required,min=8,max=20"`
-	ConfirmPassword	string `json:"confirmPassword" validate:"required,min=8,max=20"`
+	ConfirmPassword	string	`json:"confirmPassword" validate:"required,min=8,max=20"`
 }
 
 // Struct for the parameters of the sign in request

@@ -8,7 +8,7 @@ import (
 type DocumentCommentInterface interface {
 	GetById(int64, int64)										(DocumentComment, error)
 	Create(int64, int64, string, time.Time)	(int64, error)
-	QueryAll(userId, documentId int64)      ([]DocumentComment, error)
+	QueryAll(userId, documentId int64)			([]DocumentComment, error)
 	Update()																(error)
 	Delete()																(int64, error)
 	DeleteById(int64)												(int64, error)
@@ -42,11 +42,11 @@ func (DC *DocumentComment) GetById(documentId, documentCommentId int64) (Documen
 		SELECT 
 		dc.id, dc.post_member_id, dc.content, dc.created_at,
 		d.id as d_id, d.name as d_name,
-		m.id as m_id, m.name as m_name   
+		m.id as m_id, m.name as m_name
 		FROM document_comments dc
-		INNER JOIN documents d 
-		ON d.id = dc.document_id 
-		INNER JOIN members  m
+		INNER JOIN documents d
+		ON d.id = dc.document_id
+		INNER JOIN members m
 		ON m.id = dc.post_member_id 
 		WHERE dc.id = $1 and dc.document_id = $2;`
 

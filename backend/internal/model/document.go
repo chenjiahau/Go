@@ -118,7 +118,7 @@ func (D *Document) GetByName(userId int64, name string) (int64) {
 	sqlStatement := `
 		SELECT d.id
 		FROM documents d
-		WHERE d.name = $1 
+		WHERE d.name = $1
 		AND d.id IN (SELECT document_id FROM user_documents WHERE user_id = $2);`
 
 	var documentId int64
