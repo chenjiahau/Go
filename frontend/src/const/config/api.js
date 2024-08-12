@@ -34,7 +34,11 @@ const resource = {
   ADD_TAG: "/tag",
   EDIT_TAG: "/tag/:id",
   // Document
+  DOCUMENTS: "/documents",
+  NUMBER_OF_DOCUMENTS: "/documents/total",
+  DOCUMENTS_BY_PAGE: "/documents/page/:page/size/:size",
   ADD_DOCUMENT: "/document",
+  EDIT_DOCUMENT: "/document/:id",
 }
 
 export default {

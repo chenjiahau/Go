@@ -253,6 +253,12 @@ func (C *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 		orderBy = "id"
 	case "name":
 		orderBy = "name"
+	case "category":
+		orderBy = "category_name"
+	case "subcategory":
+		orderBy = "subcategory_name"
+	case "post_member":
+		orderBy = "post_member_name"
 	case "created":
 		orderBy = "created_at"
 	default:
@@ -260,7 +266,15 @@ func (C *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 	}
 
 	sqlStatement := fmt.Sprintf(`
-		SELECT d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at
+		SELECT
+		d.id, d.name,
+		d.category_id,
+		(SELECT name FROM categories WHERE id = d.category_id) as category_name,
+		d.subcategory_id,
+		(SELECT name FROM subcategories s WHERE id = d.subcategory_id) as subcategory_name,
+		d.post_member_id,
+		(SELECT name FROM members s WHERE id = d.post_member_id) as post_member_name,
+		d.content, d.created_at
 		FROM documents d
 		WHERE d.id IN (SELECT document_id FROM user_documents WHERE user_id = %d)
 		ORDER BY %s %s LIMIT $1 OFFSET $2;`,
@@ -274,10 +288,15 @@ func (C *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 	var documents []Document
 	for rows.Next() {
 		var id, categoryId, subcategoryId, postMemberId int64
-		var name, content string
+		var name, categoryName, subCategoryName, postMemberName, content string
 		var createdAt time.Time
 
-		err = rows.Scan(&id, &name, &categoryId, &subcategoryId, &postMemberId, &content, &createdAt)
+		err = rows.Scan(
+			&id, &name,
+			&categoryId, &categoryName,
+			&subcategoryId, &subCategoryName,
+			&postMemberId, &postMemberName,
+			&content, &createdAt)
 		if err != nil {
 			return []Document{}, err
 		}

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -83,7 +84,7 @@ func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Re
 	}
 
 	resData := map[string]interface{}{
-		"total": total,
+		"totalDocumentNumber": total,
 	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
@@ -478,6 +479,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check relation members
+	fmt.Println(udp.RelationMemberIds)
 	for _, relationMemberId := range udp.RelationMemberIds {
 		_, err = m.GetById(relationMemberId)
 		if err != nil {
