@@ -8,6 +8,7 @@ import apiConfig from "@/const/config/api";
 
 // Component
 import ContentViewer from "./components/ContentViewer";
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 // Util
 import apiHandler from "@/util/api.util";
@@ -22,6 +23,8 @@ const Document = () => {
   const [showDocument, setShowDocument] = useState(true);
   const [document, setDocument] = useState({});
   const [documentComments, setDocumentComments] = useState([]);
+  const [selectedComment, setSelectedComment] = useState({});
+  const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false);
 
   // Method
   const handleInitialization = useCallback(async () => {
@@ -51,6 +54,8 @@ const Document = () => {
             };
           })
         );
+      } else {
+        setDocumentComments([]);
       }
     } catch (error) {
       messageUtil.showErrorMessage(commonMessage.error);
@@ -81,6 +86,29 @@ const Document = () => {
         </div>
       );
     });
+  };
+
+  const showConfirmationModal = (commentId) => {
+    const comment = documentComments.find(
+      (comment) => comment.id === commentId
+    );
+    setSelectedComment(comment);
+    setIsOpenConfirmationModal(true);
+  };
+
+  const deleteComment = async () => {
+    try {
+      const apiURL = apiConfig.resource.EDIT_DOCUMENT_COMMENT.replace(
+        ":id",
+        id
+      ).replace(":commentId", selectedComment.id);
+      await apiHandler.delete(apiURL);
+      messageUtil.showSuccessMessage(commonMessage.success);
+      setIsOpenConfirmationModal(false);
+      handleInitialization();
+    } catch (error) {
+      messageUtil.showErrorMessage(commonMessage.error);
+    }
   };
 
   // Side effect
@@ -169,54 +197,72 @@ const Document = () => {
         <>
           {documentComments.map((comment, index) => {
             return (
-              <div className='document' key={index}>
-                <div className='box'>
-                  <div key={comment.id} className='box-comment'>
-                    <div className='box-author'>
-                      <div className='left'>{comment.postMemberName}</div>
-                      <div className='right'>
-                        <div className='data'>
-                          {formatDateTime(comment.createdAt)}
-                        </div>
-                        <div className='action'>
-                          <i
-                            className='fa-solid fa-pen'
-                            onClick={() =>
-                              navigate(
-                                routerConfig.routes.EDIT_DOCUMENT_COMMENT.replace(
-                                  ":id",
-                                  id
-                                ).replace(":commentId", comment.id)
-                              )
-                            }
-                          />
-                          <i
-                            className='fa-solid fa-expand'
-                            onClick={() => {
-                              {
-                                const updatedDocumentComments =
-                                  cloneDeep(documentComments);
-                                updatedDocumentComments[index].showComment =
-                                  !comment.showComment;
-                                setDocumentComments(updatedDocumentComments);
+              <>
+                <div className='document' key={index}>
+                  <div className='box'>
+                    <div key={comment.id} className='box-comment'>
+                      <div className='box-author'>
+                        <div className='left'>{comment.postMemberName}</div>
+                        <div className='right'>
+                          <div className='data'>
+                            {formatDateTime(comment.createdAt)}
+                          </div>
+                          <div className='action'>
+                            <i
+                              className='fa-solid fa-pen'
+                              onClick={() =>
+                                navigate(
+                                  routerConfig.routes.EDIT_DOCUMENT_COMMENT.replace(
+                                    ":id",
+                                    id
+                                  ).replace(":commentId", comment.id)
+                                )
                               }
-                            }}
-                          />
+                            />
+                            <i
+                              className='fa-solid fa-trash'
+                              onClick={() => showConfirmationModal(comment.id)}
+                            />
+                            <i
+                              className='fa-solid fa-expand'
+                              onClick={() => {
+                                {
+                                  const updatedDocumentComments =
+                                    cloneDeep(documentComments);
+                                  updatedDocumentComments[index].showComment =
+                                    !comment.showComment;
+                                  setDocumentComments(updatedDocumentComments);
+                                }
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
+                      {comment.showComment && (
+                        <div className='box-content'>
+                          <ContentViewer content={comment.content} />
+                        </div>
+                      )}
                     </div>
-                    {comment.showComment && (
-                      <div className='box-content'>
-                        <ContentViewer content={comment.content} />
-                      </div>
-                    )}
                   </div>
                 </div>
-              </div>
+                {documentComments.length - 1 === index && (
+                  <div className='space-t-4'></div>
+                )}
+              </>
             );
           })}
         </>
       )}
+
+      <ConfirmationModal
+        isOpen={isOpenConfirmationModal}
+        onClose={() => {
+          setSelectedComment(null);
+          setIsOpenConfirmationModal(false);
+        }}
+        onConfirm={deleteComment}
+      />
     </>
   );
 };
