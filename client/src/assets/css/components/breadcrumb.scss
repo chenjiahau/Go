@@ -48,3 +48,19 @@
     }
   }
 }
+
+.breadcrumb--item-active {
+  background-color: var(--third-color);
+  color: var(--white-color);
+  font-weight: bold;
+  font-size: 18px;
+  pointer-events: none;
+  cursor: default;
+
+  &:hover {
+    background-color: var(--third-color);
+    color: var(--white-color);
+    font-weight: bold;
+    font-size: 18px;
+  }
+}

@@ -1,7 +1,7 @@
 import "./module.scss";
 
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { orderBy } from "lodash";
 
 // Const
@@ -26,7 +26,10 @@ const errorMessage = {
   duplicated: "Document name is duplicated.",
 };
 
-const AddDocument = () => {
+const EditDocument = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+
   // State
   const [editorData, setEditorData] = useState(getDefaultEditorData());
   const [title, setTitle] = useState("");
@@ -37,88 +40,113 @@ const AddDocument = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [relatedMembers, setRelatedMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const [reload, setReload] = useState(false);
+  const [reload, setReload] = useState(true);
 
   // Method
   const init = useCallback(async () => {
+    if (!id) {
+      navigate(routerConfig.routes.DOCUMENTS);
+      return;
+    }
+
     let response = null;
 
     try {
+      response = await apiHandler.get(
+        apiConfig.resource.EDIT_DOCUMENT.replace(":id", id)
+      );
+      const document = response.data.data.document;
+
+      // Title
+      setTitle(document.name);
+
+      // Author
       response = await apiHandler.get(apiConfig.resource.MEMBERS);
       let members = response?.data?.data?.members || [];
+      members = members.filter((member) => member.isAlive);
       members = orderBy(members, "name", "asc");
 
-      setAuthors(
-        members.filter((member) => {
-          if (member.isAlive) {
-            return {
-              id: member.id,
-              name: member.name,
-              selected: false,
-            };
-          }
-        })
+      const updatedAuthors = members.map((member) => ({
+        ...member,
+        selected: member.id === document.postMember.id,
+      }));
+      setAuthors(updatedAuthors);
+
+      // Related members
+      const updatedRelatedMembers = members.map((member) => ({
+        ...member,
+        selected: !!document.relationMembers.find(
+          (relationMember) => member.id === relationMember.memberId
+        ),
+      }));
+      setSelectedMembers(
+        updatedRelatedMembers.filter((member) => member.selected)
       );
       setRelatedMembers(
-        members.filter((member) => {
-          if (member.isAlive) {
-            return {
-              id: member.id,
-              name: member.name,
-              selected: false,
-            };
-          }
-        })
+        updatedRelatedMembers.filter((member) => !member.selected)
       );
 
+      // Category
       response = await apiHandler.get(apiConfig.resource.CATEGORIES);
       let categories = response?.data?.data?.categories || [];
-
+      categories = categories.filter((category) => category.isAlive);
       categories = orderBy(categories, "name", "asc");
-      categories = categories.filter((category) => {
-        if (category.isAlive) {
-          return {
-            id: category.id,
-            name: category.name,
-            selected: false,
-          };
+
+      let selectedCategory = null;
+      const updatedCategories = categories.map((category) => {
+        if (category.id === document.category.id) {
+          selectedCategory = category;
         }
+
+        return {
+          ...category,
+          selected: category.id === document.category.id,
+        };
       });
+      setCategories(updatedCategories);
 
-      if (categories.length > 0) {
-        categories[0].selected = true;
-        setCategories(categories);
-
+      if (updatedCategories.length > 0) {
         response = await apiHandler.get(
-          apiConfig.resource.SUBCATEGORIES.replace(":id", categories[0].id)
+          apiConfig.resource.SUBCATEGORIES.replace(":id", selectedCategory.id)
         );
         let subCategories = response?.data?.data?.subcategories || [];
         subCategories = orderBy(subCategories, "name", "asc");
         setSubCategories(
-          subCategories.map((subCategory, index) => ({
+          subCategories.map((subCategory) => ({
             id: subCategory.id,
             name: subCategory.name,
-            selected: index === 0,
+            selected: subCategory.id === document.subCategory.id,
           }))
         );
       }
 
+      // Tags
       response = await apiHandler.get(apiConfig.resource.TAGS);
       let tags = response?.data?.data?.tags || [];
       tags = orderBy(tags, "name", "asc");
-      setTags(
-        tags.map((tag) => ({
-          ...tag,
-          bgcolor: tag.colorHexCode,
-          id: tag.id,
-          name: tag.name,
-          selected: false,
-        }))
-      );
+
+      let updatedTags = tags.map((tag) => ({
+        ...tag,
+        bgcolor: tag.colorHexCode,
+        id: tag.id,
+        name: tag.name,
+        selected: !!document.tags.find(
+          (selectedTag) => tag.id === selectedTag.tagId
+        ),
+      }));
+      setSelectedTags(updatedTags.filter((tag) => tag.selected));
+      setTags(updatedTags.filter((tag) => !tag.selected));
+
+      // Content
+      setEditorData(JSON.parse(document.content));
     } catch (error) {
+      if (error.response.data.error.code === 404) {
+        navigate(routerConfig.routes.DOCUMENTS);
+      }
+
       messageUtil.showErrorMessage(commonMessage.error);
     }
-  }, []);
+  }, [id, navigate]);
 
   const changeSubCategories = (category) => async () => {
     try {
@@ -142,13 +170,9 @@ const AddDocument = () => {
   const reset = () => {
     setReload(true);
     init();
-    setTitle("");
-    setSelectedTags([]);
-    setSelectedMembers([]);
-    setEditorData(getDefaultEditorData());
   };
 
-  const add = () => async () => {
+  const save = () => async () => {
     if (!title) {
       messageUtil.showErrorMessage(errorMessage.title);
       return;
@@ -184,7 +208,10 @@ const AddDocument = () => {
     };
 
     try {
-      await apiHandler.post(apiConfig.resource.ADD_DOCUMENT, payload);
+      await apiHandler.put(
+        apiConfig.resource.EDIT_DOCUMENT.replace(":id", id),
+        payload
+      );
       messageUtil.showSuccessMessage(commonMessage.success);
       reset();
     } catch (error) {
@@ -216,9 +243,17 @@ const AddDocument = () => {
             <span className='breadcrumb--item-title'>Documents</span>
           </span>
         </Link>
+        <Link
+          to={routerConfig.routes.DOCUMENT.replace(":id", id)}
+          className='breadcrumb--item'
+        >
+          <span className='breadcrumb--item--inner'>
+            <span className='breadcrumb--item-title'>Document</span>
+          </span>
+        </Link>
         <Link onClick={reset} className='breadcrumb--item'>
           <span className='breadcrumb--item--inner'>
-            <span className='breadcrumb--item-title'>New</span>
+            <span className='breadcrumb--item-title'>Edit</span>
           </span>
         </Link>
       </div>
@@ -402,8 +437,8 @@ const AddDocument = () => {
 
         {/* Handler */}
         <div className='button-container'>
-          <Button id='submitBtn' onClick={add()}>
-            Add
+          <Button id='submitBtn' onClick={save()}>
+            Save
           </Button>
           <Button extraClasses={["cancel-button"]} onClick={() => reset()}>
             Reset
@@ -414,4 +449,4 @@ const AddDocument = () => {
   );
 };
 
-export default AddDocument;
+export default EditDocument;

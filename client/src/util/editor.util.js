@@ -16,7 +16,7 @@ export const getDefaultEditorData = () => {
       {
         type: "header",
         data: {
-          text: "New Document Title",
+          text: "Write your content here",
           level: 1,
         },
       },

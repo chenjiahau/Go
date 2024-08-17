@@ -39,6 +39,9 @@ const resource = {
   DOCUMENTS_BY_PAGE: "/documents/page/:page/size/:size",
   ADD_DOCUMENT: "/document",
   EDIT_DOCUMENT: "/document/:id",
+  DOCUMENT_COMMENTS: "/document/:id/comments",
+  ADD_DOCUMENT_COMMENT: "/document/:id/comment",
+  EDIT_DOCUMENT_COMMENT: "/document/:id/comment/:commentId",
 }
 
 export default {

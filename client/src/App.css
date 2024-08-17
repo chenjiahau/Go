@@ -3,6 +3,7 @@
 @import "./assets/css/navigation.scss";
 
 @import "./assets/css/components/editor.scss";
+@import "./assets/css/components/document.scss";
 @import "./assets/css/components/space.scss";
 @import "./assets/css/components/message.scss";
 @import "./assets/css/components/breadcrumb.scss";

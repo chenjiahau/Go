@@ -8,8 +8,12 @@ const routes = {
   TAGS: '/tags',
   TAG: '/tag/:id',
   DOCUMENTS: '/documents',
-  ADD_DOCUMENT: '/document/add',
   DOCUMENT: '/document/:id',
+  ADD_DOCUMENT: '/document/add',
+  EDIT_DOCUMENT: '/document/:id/edit',
+  DOCUMENTS_COMMENTS: '/document/:id/comments',
+  ADD_DOCUMENT_COMMENT: '/document/:id/comment',
+  EDIT_DOCUMENT_COMMENT: '/document/:id/comment/:commentId',
 };
 
 // Others

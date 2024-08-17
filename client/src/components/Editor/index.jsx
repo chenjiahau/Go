@@ -7,12 +7,13 @@ import { getEditConfig } from "@/util/editor.util";
 const url = `${apiHandler.axios.defaults.baseURL}/record/upload-image`;
 const token = apiHandler.token;
 
-const Editor = ({ data, onChange, editorBlock }) => {
+const Editor = ({ data, onChange, editorBlock, readOnly = false }) => {
   const ref = useRef();
 
   useEffect(() => {
     if (!ref.current) {
       const editor = new EditorJS({
+        readOnly,
         minHeight: 10,
         holder: editorBlock,
         tools: getEditConfig(url, token),
@@ -32,7 +33,16 @@ const Editor = ({ data, onChange, editorBlock }) => {
     };
   }, []); // Don't add onChange to the dependency array
 
-  return <div id={editorBlock}></div>;
+  const style = {};
+  if (readOnly) {
+    style["padding"] = "0 0";
+    style["border"] = "0";
+  } else {
+    style["height"] = "60vh";
+    style["overflowY"] = "auto";
+  }
+
+  return <div id={editorBlock} style={{ ...style }}></div>;
 };
 
 const MemoizedEditor = memo(Editor);

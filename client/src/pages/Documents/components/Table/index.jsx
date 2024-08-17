@@ -19,6 +19,7 @@ const Table = (props) => {
     selectedDocument,
     onShowConfirmationModal,
     saveDocument,
+    onLinkToDocument,
   } = props;
 
   // State
@@ -185,6 +186,10 @@ const Table = (props) => {
                       <i
                         className='fa-solid fa-trash'
                         onClick={() => onShowConfirmationModal(document.id)}
+                      />
+                      <i
+                        className='fa-solid fa-file'
+                        onClick={() => onLinkToDocument(document)}
                       />
                     </div>
                   </td>

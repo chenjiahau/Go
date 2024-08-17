@@ -161,6 +161,10 @@ const Documents = () => {
     setIsOpenConfirmationModal(true);
   };
 
+  const linkToDocument = (document) => {
+    navigate(routerConfig.routes.DOCUMENT.replace(":id", document.id));
+  };
+
   // Side effect
   useEffect(() => {
     handleInitialization();
@@ -195,6 +199,7 @@ const Documents = () => {
         selectedDocument={selectedDocument}
         onShowConfirmationModal={showConfirmationModal}
         saveDocument={saveDocument}
+        onLinkToDocument={linkToDocument}
       />
 
       <Page
