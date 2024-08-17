@@ -49,3 +49,19 @@ func ParseAuthorization(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func CheckTokenAlive(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !handler.CheckTokenAlive() {
+			resErr := map[string]interface{}{
+				"code": http.StatusUnauthorized,
+				"message": "Unauthorized access",
+			}
+
+			util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}

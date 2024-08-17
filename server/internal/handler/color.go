@@ -8,8 +8,6 @@ import (
 )
 
 func (Ctrl *Controller) GetAllColorCategory(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	var cc model.ColorCategoryInterface = &model.ColorCategory{}
 	colorCategories, err := cc.QueryAll()
 	if err != nil {
@@ -29,8 +27,6 @@ func (Ctrl *Controller) GetAllColorCategory(w http.ResponseWriter, r *http.Reque
 }
 
 func (Ctrl *Controller) GetAllColor(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	var c model.ColorInterface = &model.Color{}
 	colors, err := c.QueryAll()
 	if err != nil {

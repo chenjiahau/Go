@@ -11,8 +11,6 @@ import (
 )
 
 func (Ctrl *Controller) GetDocumentCommentById(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -56,8 +54,6 @@ func (Ctrl *Controller) GetDocumentCommentById(w http.ResponseWriter, r *http.Re
 }
 
 func (Ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -90,8 +86,6 @@ func (Ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Req
 }
 
 func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -187,8 +181,6 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 }
 
 func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -284,8 +276,6 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 }
 
 func (Ctrl *Controller) DeleteDocumentComment(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

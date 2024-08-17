@@ -11,8 +11,6 @@ import (
 )
 
 func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	var atp model.AddTagParams
 	err := util.DecodeJSONBody(r, &atp)
@@ -85,8 +83,6 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query all tags
 	var t model.TagInterface = &model.Tag{}
 	tags, err := t.QueryAll()
@@ -107,8 +103,6 @@ func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query total tag number
 	var t model.TagInterface = &model.Tag{}
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
@@ -129,8 +123,6 @@ func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request
 }
 
 func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query total tag page number
 	var t model.TagInterface = &model.Tag{}
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
@@ -170,8 +162,6 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 }
 
 func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
@@ -270,8 +260,6 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -309,8 +297,6 @@ func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -394,8 +380,6 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

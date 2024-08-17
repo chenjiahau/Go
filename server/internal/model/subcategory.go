@@ -77,7 +77,10 @@ func (SC *SubCategory) Create(categoryId int64, name string, createdAt time.Time
 }
 
 func (C *SubCategory) QueryAll(categoryId int64) ([]SubCategory, error) {
-	sqlStatement := `SELECT id, category_id, name, created_at, is_alive FROM subcategories WHERE category_id = $1;`
+	sqlStatement := `
+		SELECT id, category_id, name, created_at, is_alive
+		FROM subcategories
+		WHERE category_id = $1 and is_alive = true;`
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, categoryId)
 	if err != nil {

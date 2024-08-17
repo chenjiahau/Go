@@ -23,75 +23,78 @@ func GetRoutes() http.Handler {
 	mux.Post("/api/sign-in", handler.Ctrl.SignIn)
 
 	// Protected routes
-	mux.Get("/api/auth/verify-token", handler.Ctrl.VerifyToken)
-	mux.Get("/api/auth/sign-out", handler.Ctrl.SignOut)
+	mux.Route("/api/auth", func(mux chi.Router) {
+		mux.Use(CheckTokenAlive)
 
-	// Member routes
-	mux.Get("/api/member-roles", handler.Ctrl.GetAllMemberRole)
-	mux.Get("/api/members", handler.Ctrl.GetAllMember)
-	mux.Get("/api/members/total", handler.Ctrl.GetTotalMemberNumber)
-	mux.Get("/api/members/page/{size}", handler.Ctrl.GetTotalMemberPageNumber)
-	mux.Get("/api/members/page/{number}/size/{size}", handler.Ctrl.GetMemberByPage)
-	mux.Post("/api/member", handler.Ctrl.AddMember)
-	mux.Get("/api/member/{id}", handler.Ctrl.GetMemberById)
-	mux.Put("/api/member/{id}", handler.Ctrl.UpdateMember)
-	mux.Delete("/api/member/{id}", handler.Ctrl.DeleteMember)
+		mux.Get("/verify-token", handler.Ctrl.VerifyToken)
+		mux.Get("/sign-out", handler.Ctrl.SignOut)
 
-	// Category routes
-	mux.Get("/api/categories", handler.Ctrl.GetAllCategory)
-	mux.Get("/api/categories/total", handler.Ctrl.GetTotalCategoryNumber)
-	mux.Get("/api/categories/page/{size}", handler.Ctrl.GetTotalCategoryPageNumber)
-	mux.Get("/api/categories/page/{number}/size/{size}", handler.Ctrl.GetCategoryByPage)
-	mux.Post("/api/category", handler.Ctrl.AddCategory)
-	mux.Get("/api/category/{id}", handler.Ctrl.GetCategoryById)
-	mux.Put("/api/category/{id}", handler.Ctrl.UpdateCategory)
-	mux.Delete("/api/category/{id}", handler.Ctrl.DeleteCategory)
+		// Member routes
+		mux.Get("/members", handler.Ctrl.GetAllMember)
+		mux.Get("/member-roles", handler.Ctrl.GetAllMemberRole)
+		mux.Get("/members", handler.Ctrl.GetAllMember)
+		mux.Get("/members/total", handler.Ctrl.GetTotalMemberNumber)
+		mux.Get("/members/page/{size}", handler.Ctrl.GetTotalMemberPageNumber)
+		mux.Get("/members/page/{number}/size/{size}", handler.Ctrl.GetMemberByPage)
+		mux.Post("/member", handler.Ctrl.AddMember)
+		mux.Get("/member/{id}", handler.Ctrl.GetMemberById)
+		mux.Put("/member/{id}", handler.Ctrl.UpdateMember)
+		mux.Delete("/member/{id}", handler.Ctrl.DeleteMember)
 
-	mux.Get("/api/category/{id}/subcategories", handler.Ctrl.GetAllSubCategory)
-	mux.Get("/api/category/{id}/subcategories/total", handler.Ctrl.GetTotalSubCategoryNumber)
-	mux.Get("/api/category/{id}/subcategories/page/{size}", handler.Ctrl.GetTotalSubCategoryPageNumber)
-	mux.Get("/api/category/{id}/subcategories/page/{number}/size/{size}", handler.Ctrl.GetSubCategoryByPage)
-	mux.Post("/api/category/{id}/subcategory", handler.Ctrl.AddSubCategory)
-	mux.Get("/api/category/{id}/subcategory/{subId}", handler.Ctrl.GetSubCategoryById)
-	mux.Put("/api/category/{id}/subcategory/{subId}", handler.Ctrl.UpdateSubCategory)
-	mux.Delete("/api/category/{id}/subcategory/{subId}", handler.Ctrl.DeleteSubCategory)
+		// Category routes
+		mux.Get("/categories", handler.Ctrl.GetAllCategory)
+		mux.Get("/categories/total", handler.Ctrl.GetTotalCategoryNumber)
+		mux.Get("/categories/page/{size}", handler.Ctrl.GetTotalCategoryPageNumber)
+		mux.Get("/categories/page/{number}/size/{size}", handler.Ctrl.GetCategoryByPage)
+		mux.Post("/category", handler.Ctrl.AddCategory)
+		mux.Get("/category/{id}", handler.Ctrl.GetCategoryById)
+		mux.Put("/category/{id}", handler.Ctrl.UpdateCategory)
+		mux.Delete("/category/{id}", handler.Ctrl.DeleteCategory)
+		mux.Get("/category/{id}/subcategories", handler.Ctrl.GetAllSubCategory)
+		mux.Get("/category/{id}/subcategories/total", handler.Ctrl.GetTotalSubCategoryNumber)
+		mux.Get("/category/{id}/subcategories/page/{size}", handler.Ctrl.GetTotalSubCategoryPageNumber)
+		mux.Get("/category/{id}/subcategories/page/{number}/size/{size}", handler.Ctrl.GetSubCategoryByPage)
+		mux.Post("/category/{id}/subcategory", handler.Ctrl.AddSubCategory)
+		mux.Get("/category/{id}/subcategory/{subId}", handler.Ctrl.GetSubCategoryById)
+		mux.Put("/category/{id}/subcategory/{subId}", handler.Ctrl.UpdateSubCategory)
+		mux.Delete("/category/{id}/subcategory/{subId}", handler.Ctrl.DeleteSubCategory)
 
-	// Color routes
-	mux.Get("/api/color-categories", handler.Ctrl.GetAllColorCategory)
-	mux.Get("/api/colors", handler.Ctrl.GetAllColor)
+		// Color routes
+		mux.Get("/color-categories", handler.Ctrl.GetAllColorCategory)
+		mux.Get("/colors", handler.Ctrl.GetAllColor)
 
-	// Tag routes
-	mux.Get("/api/tags", handler.Ctrl.GetAllTag)
-	mux.Get("/api/tags/total", handler.Ctrl.GetTotalTagNumber)
-	mux.Get("/api/tags/page/{size}", handler.Ctrl.GetTotalTagPageNumber)
-	mux.Get("/api/tags/page/{number}/size/{size}", handler.Ctrl.GetTagsByPage)
-	mux.Post("/api/tag", handler.Ctrl.AddTag)
-	mux.Get("/api/tag/{id}", handler.Ctrl.GetTagById)
-	mux.Put("/api/tag/{id}", handler.Ctrl.UpdateTag)
-	mux.Delete("/api/tag/{id}", handler.Ctrl.DeleteTag)
+		// Tag routes
+		mux.Get("/tags", handler.Ctrl.GetAllTag)
+		mux.Get("/tags/total", handler.Ctrl.GetTotalTagNumber)
+		mux.Get("/tags/page/{size}", handler.Ctrl.GetTotalTagPageNumber)
+		mux.Get("/tags/page/{number}/size/{size}", handler.Ctrl.GetTagsByPage)
+		mux.Post("/tag", handler.Ctrl.AddTag)
+		mux.Get("/tag/{id}", handler.Ctrl.GetTagById)
+		mux.Put("/tag/{id}", handler.Ctrl.UpdateTag)
+		mux.Delete("/tag/{id}", handler.Ctrl.DeleteTag)
 
-	// Record
-	mux.Post("/api/record/upload-image", handler.Ctrl.UploadRecordImage)
+		// Record
+		mux.Post("/record/upload-image", handler.Ctrl.UploadRecordImage)
+
+		// Document routes
+		mux.Get("/documents", handler.Ctrl.GetAllDocument)
+		mux.Get("/documents/total", handler.Ctrl.GetTotalDocumentNumber)
+		mux.Get("/documents/page/{size}", handler.Ctrl.GetTotalDocumentPageNumber)
+		mux.Get("/documents/page/{number}/size/{size}", handler.Ctrl.GetDocumentByPage)
+		mux.Post("/document", handler.Ctrl.AddDocument)
+		mux.Get("/document/{id}", handler.Ctrl.GetDocumentById)
+		mux.Put("/document/{id}", handler.Ctrl.UpdateDocument)
+		mux.Delete("/document/{id}", handler.Ctrl.DeleteDocument)
+		mux.Get("/document/{id}/comments", handler.Ctrl.GetAllDocumentComment)
+		mux.Post("/document/{id}/comment", handler.Ctrl.AddDocumentComment)
+		mux.Get("/document/{id}/comment/{commentId}", handler.Ctrl.GetDocumentCommentById)
+		mux.Put("/document/{id}/comment/{commentId}", handler.Ctrl.UpdateDocumentComment)
+		mux.Delete("/document/{id}/comment/{commentId}", handler.Ctrl.DeleteDocumentComment)
+	})
 
 	// File server
 	fileServer := http.FileServer(http.Dir("./public"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
-
-	// Document routes
-	mux.Get("/api/documents", handler.Ctrl.GetAllDocument)
-	mux.Get("/api/documents/total", handler.Ctrl.GetTotalDocumentNumber)
-	mux.Get("/api/documents/page/{size}", handler.Ctrl.GetTotalDocumentPageNumber)
-	mux.Get("/api/documents/page/{number}/size/{size}", handler.Ctrl.GetDocumentByPage)
-	mux.Post("/api/document", handler.Ctrl.AddDocument)
-	mux.Get("/api/document/{id}", handler.Ctrl.GetDocumentById)
-	mux.Put("/api/document/{id}", handler.Ctrl.UpdateDocument)
-	mux.Delete("/api/document/{id}", handler.Ctrl.DeleteDocument)
-
-	mux.Get("/api/document/{id}/comments", handler.Ctrl.GetAllDocumentComment)
-	mux.Post("/api/document/{id}/comment", handler.Ctrl.AddDocumentComment)
-	mux.Get("/api/document/{id}/comment/{commentId}", handler.Ctrl.GetDocumentCommentById)
-	mux.Put("/api/document/{id}/comment/{commentId}", handler.Ctrl.UpdateDocumentComment)
-	mux.Delete("/api/document/{id}/comment/{commentId}", handler.Ctrl.DeleteDocumentComment)
 
 	return mux
 }

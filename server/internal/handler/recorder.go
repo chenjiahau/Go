@@ -14,11 +14,10 @@ import (
 const maxUploadSize = 1024 * 1024 // 1MB
 var allowedTypes = map[string]bool{
 	"image/png":  true,
+	"image/jpeg": true,
 }
 
 func (Ctrl *Controller) UploadRecordImage(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	err := r.ParseMultipartForm(maxUploadSize)
 	if err != nil {
 		resErr := map[string]interface{}{

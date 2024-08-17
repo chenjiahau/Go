@@ -12,8 +12,6 @@ import (
 )
 
 func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -46,8 +44,6 @@ func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) 
 }
 
 func (Ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Get all documents
 	var d model.DocumentInterface = &model.Document{}
 	documents, err := d.QueryAll(Ctrl.User.Id)
@@ -68,8 +64,6 @@ func (Ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Get total document number
 	var d model.DocumentInterface = &model.Document{}
 	total, err := d.QueryTotalCount(Ctrl.User.Id)
@@ -90,8 +84,6 @@ func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Re
 }
 
 func (Ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query total category page number
 	var d model.DocumentInterface = &model.Document{}
 	count, err := d.QueryTotalCount(Ctrl.User.Id)
@@ -131,8 +123,6 @@ func (Ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *htt
 }
 
 func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
@@ -228,8 +218,6 @@ func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request
 }
 
 func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	var adp model.AddDocumentParams
 	err := util.DecodeJSONBody(r, &adp)
@@ -403,8 +391,6 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -542,8 +528,6 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -571,16 +555,7 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Delete document comments
 	var dc model.DocumentCommentInterface = &model.DocumentComment{}
-	_, err = dc.DeleteById(documentId)
-	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to delete document comments",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-		return
-	}
+	_, _ = dc.DeleteById(documentId)
 
 	// Delete document relation members
 	var drm model.DocumentRelationMemberInterface = &model.DocumentRelationMember{}

@@ -11,8 +11,6 @@ import (
 )
 
 func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	var acp model.AddCategoryParams
 	err := util.DecodeJSONBody(r, &acp)
@@ -87,8 +85,6 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query all categories
 	var c model.CategoryInterface = &model.Category{}
 	categories, err := c.QueryAll()
@@ -109,8 +105,6 @@ func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query total category number
 	var c model.CategoryInterface = &model.Category{}
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
@@ -131,8 +125,6 @@ func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Re
 }
 
 func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query total category page number
 	var c model.CategoryInterface = &model.Category{}
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
@@ -172,8 +164,6 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 }
 
 func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
@@ -272,8 +262,6 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 }
 
 func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -310,8 +298,6 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 }
 
 func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -384,8 +370,6 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

@@ -8,8 +8,6 @@ import (
 )
 
 func (Ctrl *Controller) GetAllMemberRole(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	var mr model.MemberRoleInterface = &model.MemberRole{}
 	memberRoles, err := mr.QueryAll()
 	if err != nil {

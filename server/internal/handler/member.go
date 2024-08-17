@@ -11,8 +11,6 @@ import (
 )
 
 func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	var amp model.AddMemberParams
 	err := util.DecodeJSONBody(r, &amp)
@@ -86,8 +84,6 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query all members
 	var m model.MemberInterface = &model.Member{}
 	members, err := m.QueryAll()
@@ -108,8 +104,6 @@ func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query total member number
 	var m model.MemberInterface = &model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
@@ -130,8 +124,6 @@ func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Requ
 }
 
 func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Query total member number
 	var m model.MemberInterface = &model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
@@ -171,8 +163,6 @@ func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.
 }
 
 func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
@@ -269,8 +259,6 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 }
 
 func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -307,8 +295,6 @@ func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -396,8 +382,6 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

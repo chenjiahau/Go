@@ -14,10 +14,9 @@ export const getDefaultEditorData = () => {
     time: new Date().getTime(),
     blocks: [
       {
-        type: "header",
+        type: "paragraph",
         data: {
-          text: "Write your content here",
-          level: 1,
+          text: "Write something here...",
         },
       },
     ],
@@ -25,7 +24,7 @@ export const getDefaultEditorData = () => {
 };
 
 export const getEditConfig = () => {
-  const url = `${apiHandler.axios.defaults.baseURL}/record/upload-image`;
+  const url = `${apiHandler.axios.defaults.baseURL}/auth/record/upload-image`;
   const authentication = `Bearer ${apiHandler.token}`;
 
   return {

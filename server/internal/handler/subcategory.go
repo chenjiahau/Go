@@ -11,8 +11,6 @@ import (
 )
 
 func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -100,8 +98,6 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -146,8 +142,6 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 }
 
 func (Ctrl *Controller) GetTotalSubCategoryNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -180,8 +174,6 @@ func (Ctrl *Controller) GetTotalSubCategoryNumber(w http.ResponseWriter, r *http
 }
 
 func (Ctrl *Controller) GetTotalSubCategoryPageNumber(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -231,8 +223,6 @@ func (Ctrl *Controller) GetTotalSubCategoryPageNumber(w http.ResponseWriter, r *
 }
 
 func (Ctrl *Controller) GetSubCategoryByPage(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -343,8 +333,6 @@ func (Ctrl *Controller) GetSubCategoryByPage(w http.ResponseWriter, r *http.Requ
 }
 
 func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -406,8 +394,6 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 }
 
 func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -519,8 +505,6 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 }
 
 func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
-
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
