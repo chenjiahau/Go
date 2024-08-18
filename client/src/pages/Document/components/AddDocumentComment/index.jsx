@@ -47,7 +47,7 @@ const AddDocumentComment = () => {
 
       // Author
       response = await apiHandler.get(apiConfig.resource.MEMBERS);
-      let members = response?.data?.data?.members || [];
+      let members = response?.data?.data || [];
       members = members.filter((member) => member.isAlive);
       members = orderBy(members, "name", "asc");
 

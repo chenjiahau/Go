@@ -93,9 +93,9 @@ func (T *Tag) QueryAll(userId int64) ([]Tag, error) {
 		ON t.color_id = c.id
 		INNER JOIN color_categories cc
 		ON c.category_id = cc.id
-		WHERE t.id IN (SELECT tag_id FROM user_tags WHERE user_id = 2);`
+		WHERE t.id IN (SELECT tag_id FROM user_tags WHERE user_id = $1);`
 
-	rows, err := DbConf.PgConn.SQL.Query(sqlStatement)
+	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, userId)
 	if err != nil {
 		return nil, err
 	}

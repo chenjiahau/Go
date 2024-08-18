@@ -13,8 +13,8 @@ type DocumentInterface interface {
 	QueryAll(int64)																														([]Document, error)
 	QueryTotalCount(int64)																										(int64, error)
 	QueryByPage(int64, int, int, string, string)															([]Document, error)
-	Update([]int64, []int64)																									(error)
-	Delete()																																	(Document, error)
+	Update(int64, []int64, []int64)																						(error)
+	Delete(int64)																															(Document, error)
 }
 
 // Request model
@@ -347,13 +347,13 @@ func (C *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 	return documents, nil
 }
 
-func (D *Document) Update(drmIds, tagIds []int64) (error) {
+func (D *Document) Update(userId int64, drmIds, tagIds []int64) (error) {
 	sqlStatement := `
 		UPDATE documents
 		SET name = $1, category_id = $2, subcategory_id = $3, post_member_id = $4, content = $5
-		WHERE id = $6;`
+		WHERE id = $6 AND id IN (SELECT document_id FROM user_documents WHERE user_id = $7);`
 	
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, D.Name, D.Category.Id, D.SubCategory.Id, D.PostMember.Id, D.Content, D.Id)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, D.Name, D.Category.Id, D.SubCategory.Id, D.PostMember.Id, D.Content, D.Id, userId)
 	if err != nil {
 		return err
 	}
@@ -393,13 +393,15 @@ func (D *Document) Update(drmIds, tagIds []int64) (error) {
 	return nil
 }
 
-func (D *Document) Delete() (Document, error) {
-	sqlStatement := `DELETE FROM documents WHERE id = $1 RETURNING id, name, category_id, subcategory_id, post_member_id, content, created_at;`
+func (D *Document) Delete(userId int64) (Document, error) {
+	sqlStatement := `
+		DELETE FROM documents d
+		WHERE d.id = $1 AND d.id IN (SELECT document_id FROM user_documents WHERE user_id = $2)
+		RETURNING d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at;`
 
 	var document Document
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, D.Id)
-	err := row.Scan(
-		&document.Id, &document.Name, &document.Category.Id, &document.SubCategory.Id,
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, D.Id, userId)
+	err := row.Scan(&document.Id, &document.Name, &document.Category.Id, &document.SubCategory.Id,
 		&document.PostMember.Id, &document.Content, &document.CreatedAt)
 	if err != nil {
 		return Document{}, err

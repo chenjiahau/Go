@@ -96,10 +96,18 @@ func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resData := map[string]interface{}{
-		"tags": tags,
+	var resData []map[string]interface{}
+	for _, tag := range tags {
+		resData = append(resData, map[string]interface{}{
+			"id": tag.Id,
+			"colorCategoryId": tag.ColorCategoryId,
+			"colorId": tag.ColorId,
+			"colorHexCode": tag.ColorHexCode,
+			"colorRGBCode": tag.ColorRGBCode,
+			"name": tag.Name,
+		})
 	}
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetAryResponse(resData))
 }
 
 func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request) {

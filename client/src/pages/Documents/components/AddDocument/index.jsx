@@ -45,7 +45,7 @@ const AddDocument = () => {
 
     try {
       response = await apiHandler.get(apiConfig.resource.MEMBERS);
-      let members = response?.data?.data?.members || [];
+      let members = response?.data?.data || [];
       members = orderBy(members, "name", "asc");
 
       setAuthors(
@@ -72,7 +72,7 @@ const AddDocument = () => {
       );
 
       response = await apiHandler.get(apiConfig.resource.CATEGORIES);
-      let categories = response?.data?.data?.categories || [];
+      let categories = response?.data?.data || [];
 
       categories = orderBy(categories, "name", "asc");
       categories = categories.filter((category) => {
@@ -92,7 +92,7 @@ const AddDocument = () => {
         response = await apiHandler.get(
           apiConfig.resource.SUBCATEGORIES.replace(":id", categories[0].id)
         );
-        let subCategories = response?.data?.data?.subcategories || [];
+        let subCategories = response?.data?.data || [];
         subCategories = orderBy(subCategories, "name", "asc");
         setSubCategories(
           subCategories.map((subCategory, index) => ({
@@ -104,7 +104,7 @@ const AddDocument = () => {
       }
 
       response = await apiHandler.get(apiConfig.resource.TAGS);
-      let tags = response?.data?.data?.tags || [];
+      let tags = response?.data?.data || [];
       tags = orderBy(tags, "name", "asc");
       setTags(
         tags.map((tag) => ({
@@ -125,7 +125,7 @@ const AddDocument = () => {
       const response = await apiHandler.get(
         apiConfig.resource.SUBCATEGORIES.replace(":id", category.id)
       );
-      let subCategories = response?.data?.data?.subcategories || [];
+      let subCategories = response?.data?.data || [];
       subCategories = orderBy(subCategories, "name", "asc");
       setSubCategories(
         subCategories.map((subCategory, index) => ({

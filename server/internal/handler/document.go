@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -57,10 +56,30 @@ func (Ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resData := map[string]interface{}{
-		"documents": documents,
+	var resData []map[string]interface{}
+	for _, document := range documents {
+		resData = append(resData, map[string]interface{}{
+			"id": document.Id,
+			"name": document.Name,
+			"category": map[string]interface{}{
+				"id": document.Category.Id,
+				"name": document.Category.Name,
+			},
+			"subCategory": map[string]interface{}{
+				"id": document.SubCategory.Id,
+				"name": document.SubCategory.Name,
+			},
+			"postMember": map[string]interface{}{
+				"id": document.PostMember.Id,
+				"name": document.PostMember.Name,
+			},
+			"relationMembers": document.RelationMembers,
+			"tags": document.Tags,
+			"content": document.Content,
+			"createdAt": document.CreatedAt,
+		})
 	}
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetAryResponse(resData))
 }
 
 func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Request) {
@@ -465,7 +484,6 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check relation members
-	fmt.Println(udp.RelationMemberIds)
 	for _, relationMemberId := range udp.RelationMemberIds {
 		_, err = m.GetById(relationMemberId)
 		if err != nil {
@@ -498,7 +516,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	existingDocument.PostMember.Id = udp.PostMemberId
 	existingDocument.Name = udp.Name
 	existingDocument.Content = udp.Content
-	err = existingDocument.Update(udp.RelationMemberIds, udp.TagIds)
+	err = existingDocument.Update(Ctrl.User.Id, udp.RelationMemberIds, udp.TagIds)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -555,44 +573,22 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Delete document comments
 	var dc model.DocumentCommentInterface = &model.DocumentComment{}
-	_, _ = dc.DeleteById(documentId)
+	dc.DeleteById(documentId)
 
 	// Delete document relation members
 	var drm model.DocumentRelationMemberInterface = &model.DocumentRelationMember{}
 	for _, relationMember := range existingDocument.RelationMembers {
-		_, err = drm.Delete(relationMember.Id)
-		if err != nil {
-			resErr := map[string]interface{}{
-				"code": http.StatusInternalServerError,
-				"message": "Failed to delete document relation members",
-			}
-
-			util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-			return
-		}
+		drm.Delete(relationMember.Id)
 	}
 
 	// Delete document tags
 	var dt model.DocumentTagInterface = &model.DocumentTag{}
 	for _, tag := range existingDocument.Tags {
-		_, err = dt.Delete(tag.Id)
-		if err != nil {
-			resErr := map[string]interface{}{
-				"code": http.StatusInternalServerError,
-				"message": "Failed to delete document tags",
-			}
-
-			util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-			return
-		}
+		dt.Delete(tag.Id)
 	}
 
-	// Delete user document
-	var ud model.UserDocumentInterface = &model.UserDocument{}
-	ud.DeleteById(documentId)
-
 	// Delete document
-	_, err = existingDocument.Delete()
+	_, err = existingDocument.Delete(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -602,6 +598,10 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
+
+	// Delete user document
+	var ud model.UserDocumentInterface = &model.UserDocument{}
+	ud.DeleteById(documentId)
 
 	resData := map[string]interface{}{
 		"document": existingDocument,
