@@ -41,11 +41,11 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	duplicatedMemberId := m.GetByName(Ctrl.User.Id, amp.Name)
 	if duplicatedMemberId > 0 {
 		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
+			"code": http.StatusConflict,
 			"message": "Member name already exists",
 		}
 
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
 		return
 	}
 
@@ -86,7 +86,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 	// Query all members
 	var m model.MemberInterface = &model.Member{}
-	members, err := m.QueryAll()
+	members, err := m.QueryAll(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -97,10 +97,17 @@ func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resData := map[string]interface{}{
-		"members": members,
+	var resData []map[string]interface{}
+	for _, member := range members {
+		resData = append(resData, map[string]interface{}{
+			"id": member.Id,
+			"memberRoleId": member.MemberRoleId,
+			"memberRoleTitle": member.MemberRoleTitle,
+			"name": member.Name,
+			"isAlive": member.IsAlive,
+		})
 	}
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetAryResponse(resData))
 }
 
 func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Request) {
@@ -348,11 +355,11 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	duplicatedMemberId := m.GetByName(Ctrl.User.Id, ump.Name)
 	if duplicatedMemberId > 0 && duplicatedMemberId != memberId {
 		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
+			"code": http.StatusConflict,
 			"message": "Member name already exists",
 		}
 
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
 		return
 	}
 
@@ -360,7 +367,7 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	existingMember.MemberRoleId = ump.MemberRoleId
 	existingMember.Name = ump.Name
 	existingMember.IsAlive = ump.IsAlive
-	err = existingMember.Update()
+	err = existingMember.Update(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -408,7 +415,7 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete member
-	_, err = existingMember.Delete()
+	_, err = existingMember.Delete(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,

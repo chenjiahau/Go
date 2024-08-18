@@ -7,11 +7,11 @@ type MemberInterface interface {
 	GetById(int64)																(Member, error)
 	GetByName(int64, string)											(int64)
 	Create(int64, string, bool)										(int64, error)
-	QueryAll()																		([]Member, error)
+	QueryAll(int64)																([]Member, error)
 	QueryTotalCount(int64)							  				(int64, error)
 	QueryByPage(int64, int, int, string, string)	([]Member, error)
-	Update()																			(error)
-	Delete()																			(Member, error)
+	Update(int64)																	(error)
+	Delete(int64)																	(Member, error)
 }
 
 // Request model
@@ -87,14 +87,15 @@ func (M *Member) Create(memberRoleId int64, name string, isAlive bool) (int64, e
 	return id, nil
 }
 
-func (M *Member) QueryAll() ([]Member, error) {
+func (M *Member) QueryAll(userId int64) ([]Member, error) {
 	sqlStatement := `
 		SELECT mr.id, m.id, m.name , m.is_alive
 		FROM members m
 		INNER JOIN member_roles mr
-		ON m.member_role_id = mr.id;`
+		ON m.member_role_id = mr.id
+		WHERE m.id IN (SELECT member_id FROM user_members WHERE user_id = $1);`
 
-	rows, err := DbConf.PgConn.SQL.Query(sqlStatement)
+	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -172,10 +173,13 @@ func (M *Member) QueryByPage(userId int64, number, size int, orderBy, order stri
 	return members, nil
 }
 
-func (M *Member) Update() (error) {
-	sqlStatement := `UPDATE members SET member_role_id = $1, name = $2, is_alive = $3 WHERE id = $4;`
+func (M *Member) Update(userId int64) (error) {
+	sqlStatement := `
+		UPDATE members
+		SET member_role_id = $1, name = $2, is_alive = $3
+		WHERE id = $4 AND id IN (SELECT member_id FROM user_members WHERE user_id = $5);`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, M.MemberRoleId, M.Name, M.IsAlive, M.Id)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, M.MemberRoleId, M.Name, M.IsAlive, M.Id, userId)
 	if err != nil {
 		return err
 	}
@@ -183,16 +187,17 @@ func (M *Member) Update() (error) {
 	return nil
 }
 
-func (M *Member) Delete() (Member, error) {
+func (M *Member) Delete(userId int64) (Member, error) {
 	sqlStatement := `
 		DELETE FROM members
 		WHERE id = $1
+		AND id IN (SELECT member_id FROM user_members WHERE user_id = $2)
 		AND id NOT IN (SELECT post_member_id FROM documents)
 		AND id NOT IN (SELECT post_member_id FROM document_comments)
 		RETURNING id;`
 
 	var member Member
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, M.Id)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, M.Id, userId)
 	err := row.Scan(&member.Id)
 	if err != nil {
 		return Member{}, err
