@@ -41,11 +41,11 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	duplicatedTagId := t.GetByName(Ctrl.User.Id, atp.Name)
 	if duplicatedTagId > 0 {
 		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
+			"code": http.StatusConflict,
 			"message": "Tag name already exists",
 		}
 
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
 		return
 	}
 
@@ -85,7 +85,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 	// Query all tags
 	var t model.TagInterface = &model.Tag{}
-	tags, err := t.QueryAll()
+	tags, err := t.QueryAll(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -359,7 +359,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 
 	existingTag.ColorId = utp.ColorId
 	existingTag.Name = utp.Name
-	err = existingTag.Update()
+	err = existingTag.Update(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -406,7 +406,7 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete tag
-	_, err = existingTag.Delete()
+	_, err = existingTag.Delete(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,

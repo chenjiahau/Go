@@ -7,11 +7,11 @@ type TagInterface interface {
 	GetById(int64)																(Tag, error)
 	GetByName(int64, string)											(int64)
 	Create(int64, string)													(int64, error)
-	QueryAll()																		([]Tag, error)
+	QueryAll(int64)																([]Tag, error)
 	QueryTotalCount(int64)												(int64, error)
 	QueryByPage(int64, int, int, string, string)	([]Tag, error)
-	Update()																			(error)
-	Delete()																			(Tag, error)
+	Update(int64)																	(error)
+	Delete(int64)																	(Tag, error)
 }
 
 // Request model
@@ -85,14 +85,15 @@ func (T *Tag) Create(colorId int64, name string) (int64, error) {
 	return id, nil
 }
 
-func (T *Tag) QueryAll() ([]Tag, error) {
+func (T *Tag) QueryAll(userId int64) ([]Tag, error) {
 	sqlStatement := `
 		SELECT t.id, cc.id, cc.name, c.id, c.name, c.hex_code, c.rgb_code, t.name
 		FROM tags t
 		INNER JOIN colors c
 		ON t.color_id = c.id
 		INNER JOIN color_categories cc
-		ON c.category_id = cc.id;`
+		ON c.category_id = cc.id
+		WHERE t.id IN (SELECT tag_id FROM user_tags WHERE user_id = 2);`
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement)
 	if err != nil {
@@ -175,10 +176,12 @@ func (T *Tag) QueryByPage(userId int64, number, size int, orderBy, order string)
 	return tags, nil
 }
 
-func (T *Tag) Update() (error) {
-	sqlStatement := `UPDATE tags SET color_id = $1, name = $2 WHERE id = $3;`
+func (T *Tag) Update(userId int64) (error) {
+	sqlStatement := `
+		UPDATE tags SET color_id = $1, name = $2
+		WHERE id = $3 and id in (SELECT tag_id FROM user_tags WHERE user_id = $4);`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, T.ColorId, T.Name, T.Id)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, T.ColorId, T.Name, T.Id, userId)
 	if err != nil {
 		return err
 	}
@@ -196,11 +199,14 @@ func (T *Tag) DeleteAll() (error) {
 	return nil
 }
 
-func (T *Tag) Delete() (Tag, error) {
-	sqlStatement := `DELETE FROM tags WHERE id = $1 RETURNING id;`
+func (T *Tag) Delete(userId int64) (Tag, error) {
+	sqlStatement := `
+		DELETE FROM tags
+		WHERE id = $1 and id in (SELECT tag_id FROM user_tags WHERE user_id = $2)
+		RETURNING id;`
 
 	var tag Tag
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, T.Id).Scan(&tag.Id)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, T.Id, userId).Scan(&tag.Id)
 	if err != nil {
 		return Tag{}, err
 	}
