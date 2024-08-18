@@ -28,7 +28,7 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
+			"code": http.StatusConflict,
 			"message": "Category not found",
 		}
 
@@ -135,10 +135,17 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	resData := map[string]interface{}{
-		"subcategories": subCategories,
+	var resData []map[string]interface{}
+	for _, subCategory := range subCategories {
+		resData = append(resData, map[string]interface{}{
+			"id": subCategory.Id,
+			"categoryId": subCategory.CategoryId,
+			"name": subCategory.Name,
+			"isAlive": subCategory.IsAlive,
+			"createdAt": subCategory.CreatedAt,
+		})
 	}
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetAryResponse(resData))
 }
 
 func (Ctrl *Controller) GetTotalSubCategoryNumber(w http.ResponseWriter, r *http.Request) {
