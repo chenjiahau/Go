@@ -41,7 +41,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	existCategory, _ := c.GetByName(Ctrl.User.Id, acp.Name)
 	if existCategory.Id > 0{
 		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
+			"code": http.StatusConflict,
 			"message": "Category name already exists",
 		}
 
@@ -87,7 +87,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 	// Query all categories
 	var c model.CategoryInterface = &model.Category{}
-	categories, err := c.QueryAll()
+	categories, err := c.QueryAll(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -98,10 +98,18 @@ func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resData := map[string]interface{}{
-		"categories": categories,
+	var resData []map[string]interface{}
+	for _, category := range categories {
+		resData = append(resData, map[string]interface{}{
+			"id": category.Id,
+			"name": category.Name,
+			"isAlive": category.IsAlive,
+			"subcategoryCount": category.SubCategoryCount,
+			"createdAt": category.CreatedAt,
+		})
 	}
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetAryResponse(resData))
 }
 
 func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Request) {
@@ -339,7 +347,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	existCategory, _ := c.GetByName(Ctrl.User.Id, ucp.Name)
 	if existCategory.Id > 0 && existCategory.Id != categoryId {
 		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
+			"code": http.StatusConflict,
 			"message": "Category name already exists",
 		}
 
@@ -349,7 +357,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 
 	existCategory.Name = ucp.Name
 	existCategory.IsAlive = ucp.IsAlive
-	err = existCategory.Update()
+	err = existCategory.Update(Ctrl.User.Id)
 	if err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,
@@ -396,7 +404,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete category
-	existingCategory, err = existingCategory.Delete()
+	existingCategory, err = existingCategory.Delete(Ctrl.User.Id)
 	if existingCategory.Id == 0 || err != nil {
 		resErr := map[string]interface{}{
 			"code": http.StatusInternalServerError,

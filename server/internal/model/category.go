@@ -10,11 +10,11 @@ type CategoryInterface interface {
 	GetById(int64, int64)													(Category, error)
 	GetByName(int64, string)											(Category, error)
 	Create(string, time.Time, bool)								(int64, error)
-	QueryAll()																		([]Category, error)
+	QueryAll(int64)																([]Category, error)
 	QueryTotalCount(int64)												(int64, error)
 	QueryByPage(int64, int, int, string, string)	([]Category, error)
-	Update()																			(error)
-	Delete()																			(Category, error)
+	Update(int64)																	(error)
+	Delete(int64)																			(Category, error)
 }
 
 // Request model
@@ -84,10 +84,13 @@ func (C *Category) Create(name string, createdAt time.Time, isAlive bool) (int64
 	return id, nil
 }
 
-func (C *Category) QueryAll() ([]Category, error) {
-	sqlStatement := `SELECT id, name, created_at, is_alive FROM categories;`
+func (C *Category) QueryAll(userId int64) ([]Category, error) {
+	sqlStatement := `
+		SELECT c.id, c.name, c.created_at, c.is_alive
+		FROM categories c
+		WHERE c.id IN (SELECT category_id FROM user_categories WHERE user_id = $1);`
 
-	rows, err := DbConf.PgConn.SQL.Query(sqlStatement)
+	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -175,10 +178,13 @@ func (C *Category) QueryByPage(userId int64, number, size int, orderBy, order st
 	return categories, nil
 }
 
-func (C *Category) Update() (error) {
-	sqlStatement := `UPDATE categories SET name = $1, is_alive = $2 WHERE id = $3;`
+func (C *Category) Update(userId int64) (error) {
+	sqlStatement := `
+		UPDATE categories
+		SET name = $1, is_alive = $2
+		WHERE id = $3 AND id IN (SELECT category_id FROM user_categories WHERE user_id = $4);`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, C.Name, C.IsAlive, C.Id)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, C.Name, C.IsAlive, C.Id, userId)
 	if err != nil {
 		return err
 	}
@@ -186,15 +192,16 @@ func (C *Category) Update() (error) {
 	return nil
 }
 
-func (C *Category) Delete() (Category, error) {
+func (C *Category) Delete(userId int64) (Category, error) {
 	sqlStatement := `
 		DELETE FROM categories
 		WHERE id = $1
+		AND id IN (SELECT category_id FROM user_categories WHERE user_id = $2)
 		AND id NOT IN (SELECT category_id FROM documents)
 		RETURNING id;`
 
 	var category Category
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, C.Id).Scan(&category.Id)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, C.Id, userId).Scan(&category.Id)
 	if err != nil {
 		return Category{}, err
 	}

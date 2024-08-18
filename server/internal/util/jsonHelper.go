@@ -8,8 +8,13 @@ import (
 type DataMap map[string]interface{}
 type ErrorMap map[string]interface{}
 type ResponseFormat struct {
-	Data	DataMap	`json:"data,omitempty"`
+	Data	DataMap		`json:"data,omitempty"`
 	Error	ErrorMap	`json:"error,omitempty"`
+}
+
+type AryDataMap []map[string]interface{}
+type ResponseAryFormat struct {
+	Data	AryDataMap	`json:"data,omitempty"`
 }
 
 func GetResponse(data map[string]interface{}, err map[string]interface{}) ResponseFormat {
@@ -21,6 +26,16 @@ func GetResponse(data map[string]interface{}, err map[string]interface{}) Respon
 
 	if err != nil {
 		res.Error = err
+	}
+
+	return res
+}
+
+func GetAryResponse(data []map[string]interface{}) ResponseAryFormat {
+	res := ResponseAryFormat{}
+
+	if data != nil {
+		res.Data = data
 	}
 
 	return res
