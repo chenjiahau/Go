@@ -14,22 +14,16 @@ func (Ctrl *Controller) GetDocumentCommentById(w http.ResponseWriter, r *http.Re
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	documentCommentId, err := strconv.ParseInt(chi.URLParam(r, "commentId"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document comment id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -38,18 +32,24 @@ func (Ctrl *Controller) GetDocumentCommentById(w http.ResponseWriter, r *http.Re
 	var dc model.DocumentCommentInterface = &model.DocumentComment{}
 	documentComment, err := dc.GetById(documentId, documentCommentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "Document comment not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(8422)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"documentComment": documentComment,
+	// Response
+	resData := util.GetReturnMessage(8204)
+	resData["data"] = map[string]interface{}{
+		"id": documentComment.Id,
+		"documentId": documentComment.DocumentId,
+		"documentName": documentComment.DocumentName,
+		"postMemberId": documentComment.PostMemberId,
+		"postMemberName": documentComment.PostMemberName,
+		"content": documentComment.Content,
+		"createdAt": documentComment.CreatedAt,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -57,11 +57,8 @@ func (Ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Req
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -70,30 +67,37 @@ func (Ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Req
 	var dc model.DocumentCommentInterface = &model.DocumentComment{}
 	documentComments, err := dc.QueryAll(Ctrl.User.Id, documentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get document comments",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(8411)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"documentComments": documentComments,
+	// Response
+	resData := util.GetReturnMessage(8202)
+	resData["data"] = []map[string]interface{}{}
+
+	for _, documentComment := range documentComments {
+		resData["data"] = append(resData["data"].([]map[string]interface{}), map[string]interface{}{
+			"id": documentComment.Id,
+			"documentId": documentComment.DocumentId,
+			"documentName": documentComment.DocumentName,
+			"postMemberId": documentComment.PostMemberId,
+			"postMemberName": documentComment.PostMemberName,
+			"content": documentComment.Content,
+			"createdAt": documentComment.CreatedAt,
+		})
 	}
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
 func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -101,11 +105,8 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 	var adcp model.AddDocumentCommentParams
 	err = util.DecodeJSONBody(r, &adcp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -113,11 +114,8 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 	validator := validator.New()
 	err = validator.Struct(adcp)
 	if err != nil || adcp.PostMemberId == 0 || adcp.Content == "" {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid DocumentId, PostMemberId, or Content",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -126,11 +124,8 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 	var d model.DocumentInterface = &model.Document{}
 	_, err = d.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "Document not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
@@ -139,11 +134,8 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 	var m model.MemberInterface = &model.Member{}
 	_, err = m.GetById(adcp.PostMemberId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "PostMember not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
@@ -153,11 +145,8 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 	var dc model.DocumentCommentInterface = &model.DocumentComment{}
 	documentCommentId, err := dc.Create(documentId, adcp.PostMemberId, adcp.Content, now)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to create document comment",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(8402)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -165,18 +154,24 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 	// Get created document comment
 	createdDocumentComment, err := dc.GetById(documentId, documentCommentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get created document comment",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(8403)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"documentComment": createdDocumentComment,
+	// Response
+	resData := util.GetReturnMessage(8201)
+	resData["data"] = map[string]interface{}{
+		"id": createdDocumentComment.Id,
+		"documentId": createdDocumentComment.DocumentId,
+		"documentName": createdDocumentComment.DocumentName,
+		"postMemberId": createdDocumentComment.PostMemberId,
+		"postMemberName": createdDocumentComment.PostMemberName,
+		"content": createdDocumentComment.Content,
+		"createdAt": createdDocumentComment.CreatedAt,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusCreated, util.GetResponse(resData, nil))
 }
 
@@ -184,22 +179,16 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	documentCommentId, err := strconv.ParseInt(chi.URLParam(r, "commentId"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document comment id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -208,11 +197,8 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	var udcp model.UpdateDocumentCommentParams
 	err = util.DecodeJSONBody(r, &udcp)
 	if err != nil || udcp.PostMemberId == 0 || udcp.Content == "" {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -221,11 +207,8 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	var dc model.DocumentCommentInterface = &model.DocumentComment{}
 	existingDocumentComment, err := dc.GetById(documentId, documentCommentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "Document comment not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
@@ -234,11 +217,8 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	var m model.MemberInterface = &model.Member{}
 	_, err = m.GetById(udcp.PostMemberId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "PostMember not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
@@ -248,11 +228,8 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	existingDocumentComment.Content = udcp.Content
 	err = existingDocumentComment.Update()
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to update document comment",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(8423)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -260,18 +237,25 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	// Get updated document comment
 	updatedDocumentComment, err := dc.GetById(documentId, documentCommentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get updated document comment",
-		}
 
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(8413)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"documentComment": updatedDocumentComment,
+	// Response
+	resData := util.GetReturnMessage(8205)
+	resData["data"] = map[string]interface{}{
+		"id": updatedDocumentComment.Id,
+		"documentId": updatedDocumentComment.DocumentId,
+		"documentName": updatedDocumentComment.DocumentName,
+		"postMemberId": updatedDocumentComment.PostMemberId,
+		"postMemberName": updatedDocumentComment.PostMemberName,
+		"content": updatedDocumentComment.Content,
+		"createdAt": updatedDocumentComment.CreatedAt,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -279,22 +263,16 @@ func (Ctrl *Controller) DeleteDocumentComment(w http.ResponseWriter, r *http.Req
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	documentCommentId, err := strconv.ParseInt(chi.URLParam(r, "commentId"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document comment id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -303,11 +281,8 @@ func (Ctrl *Controller) DeleteDocumentComment(w http.ResponseWriter, r *http.Req
 	var dc model.DocumentCommentInterface = &model.DocumentComment{}
 	existingDocumentComment, err := dc.GetById(documentId, documentCommentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "Document comment not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
@@ -315,17 +290,23 @@ func (Ctrl *Controller) DeleteDocumentComment(w http.ResponseWriter, r *http.Req
 	// Delete document comment
 	deletedDocumentCommentId, err := existingDocumentComment.Delete()
 	if err != nil || deletedDocumentCommentId == 0 {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to delete document comment",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(8432)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"documentComment": existingDocumentComment,
+	// Response
+	resData := util.GetReturnMessage(8206)
+	resData["data"] = map[string]interface{}{
+		"id": deletedDocumentCommentId,
+		"documentId": existingDocumentComment.DocumentId,
+		"documentName": existingDocumentComment.DocumentName,
+		"postMemberId": existingDocumentComment.PostMemberId,
+		"postMemberName": existingDocumentComment.PostMemberName,
+		"content": existingDocumentComment.Content,
+		"createdAt": existingDocumentComment.CreatedAt,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

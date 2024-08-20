@@ -51,7 +51,7 @@ const Table = (props) => {
       onInitialization();
       setIsOpenColorModal(false);
     } catch (error) {
-      messageUtil.showErrorMessage(error.response.data.error.message);
+      messageUtil.showErrorMessage(error.response.data.message);
     }
   };
 

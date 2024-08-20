@@ -10,10 +10,7 @@ import (
 func (Ctrl *Controller) VerifyToken(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	resData := map[string]interface{}{
-		"message": "Success to verify token",
-	}
-
+	resData := util.GetReturnMessage(1203)
 	util.ResponseJSONWriter(w, http.StatusOK, resData)
 }
 
@@ -25,18 +22,11 @@ func (Ctrl *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
 	err := t.SetIsAlive(tokenString, false)
 
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code":    http.StatusInternalServerError,
-			"message": "Failed to log out",
-		}
-
+		resErr := util.GetReturnMessage(1421)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"message": "Logged out successfully",
-	}
-
+	resData := util.GetReturnMessage(1204)
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

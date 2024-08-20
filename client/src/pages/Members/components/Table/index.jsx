@@ -53,7 +53,7 @@ const Table = (props) => {
       onInitialization();
       setIsOpenMemberRoleModal(false);
     } catch (error) {
-      messageUtil.showErrorMessage(error.response.data.error.message);
+      messageUtil.showErrorMessage(error.response.data.message);
     }
   };
 

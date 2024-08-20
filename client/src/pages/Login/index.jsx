@@ -110,13 +110,14 @@ const Home = () => {
         apiConfig.resource.SIGNIN,
         payload
       );
+
       apiHandler.setToken(response.data.data.token);
       messageUtil.showSuccessMessage(successMessage.SIGNIN);
       dispatch(userActions.setUser(response.data.data));
       localStorage.setItem("user", JSON.stringify(response.data.data));
       navigate(routerConfig.routes.DASHBOARD);
     } catch (error) {
-      messageUtil.showErrorMessage(apiHandler.extractErrorMessage(error));
+      messageUtil.showErrorMessage(apiHandler.extractMessage(error));
     }
   };
 
@@ -130,6 +131,7 @@ const Home = () => {
       messageUtil.showErrorMessage(errorMessage.FIELDS_NOT_FILL);
       return;
     }
+
     if (signUpData.password !== signUpData.confirmPassword) {
       messageUtil.showErrorMessage(errorMessage.PASSWORD_NOT_MATCH);
       return;

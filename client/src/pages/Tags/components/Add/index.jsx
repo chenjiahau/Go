@@ -76,7 +76,7 @@ const Add = (props) => {
       messageUtil.showSuccessMessage(commonMessage.success);
       onInitialization();
     } catch (error) {
-      if (error.response.data.error.code === 500) {
+      if (error.response.data.code === 2423) {
         messageUtil.showErrorMessage(errorMessage.duplicated);
         return;
       }

@@ -8,20 +8,21 @@ import (
 )
 
 func (Ctrl *Controller) GetAllMemberRole(w http.ResponseWriter, r *http.Request) {
+	// Get all member roles
 	var mr model.MemberRoleInterface = &model.MemberRole{}
 	memberRoles, err := mr.QueryAll()
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all member roles order by id asc",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(21411)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Return response
+	resData := util.GetReturnMessage(21211)
+	resData["data"] = map[string]interface{}{
 		"memberRoles": memberRoles,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

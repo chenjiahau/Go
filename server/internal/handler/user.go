@@ -9,16 +9,12 @@ import (
 )
 
 func (Ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
-	var u model.UserInterface = &model.User{}
+	// Validate request
 	var sp model.SignUpParams
-
 	err := util.DecodeJSONBody(r, &sp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -26,85 +22,68 @@ func (Ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 	err = validate.Struct(sp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid email, username, password, or confirm password",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1401)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	if sp.Email == "" || sp.Name == "" || sp.Password == "" || sp.ConfirmPassword == "" {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Email, username, password, and confirm password are required",
-		}
-
+		resErr := util.GetReturnMessage(1402)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	if sp.Password != sp.ConfirmPassword {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Password and confirm password do not match",
-		}
-		
+		resErr := util.GetReturnMessage(1403)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// Check if email is already registered
+	var u model.UserInterface = &model.User{}
   id := u.GetId(sp)
   if id != 0 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Email is already registered",
-		}
-
+		resErr := util.GetReturnMessage(1404)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// Hash password
 	sp.Password, err = util.HashPassword(sp.Password)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to hash password",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1405)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// Insert user
 	err = u.Create(sp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to insert user",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1406)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"message": "User created successfully",
+	// Response
+	resData := util.GetReturnMessage(1201)
+	resData["data"] = map[string]interface{}{
+		"email": sp.Email,
+		"name": sp.Name,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
 func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
-	var u model.UserInterface = &model.User{}
+	// Validate request
 	var si model.SignInParams
-
 	err := util.DecodeJSONBody(r, &si)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+    resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -112,75 +91,47 @@ func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 	err = validate.Struct(si)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid email or password",
-		}
-
+		util.WriteErrorLog(err.Error())
+    resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	if si.Email == "" || si.Password == "" {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Email and password are required",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
-		return
-	}
-
+	// Query user
+	var u model.UserInterface = &model.User{}
 	err = u.Query(si)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code":    http.StatusUnauthorized,
-			"message": "Invalid email or password",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1411)
 		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// Create token
 	user := u.(*model.User)
-	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get token",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-		return
-	}
-
 	tokenString, err := util.CreateToken(user.Id, user.Name)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code":    http.StatusInternalServerError,
-			"message": "Failed to create token",
-		}
-
+		util.WriteErrorLog(err.Error())
+    resErr := util.GetReturnMessage(1412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
 	var t model.TokenInterface = &model.Token{}
 	err = t.Create(user.Id, tokenString, util.GetNow(), util.GetNow().AddDate(0, 0, 1)) // 1 day
-
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code":    http.StatusInternalServerError,
-			"message": "Failed to insert token",
-		}
-
+		util.WriteErrorLog(err.Error())
+    resErr := util.GetReturnMessage(1413)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"id":    user.Id,
+	// Response
+	resData := util.GetReturnMessage(1202)
+	resData["data"] = map[string]interface{}{
+		"id": user.Id,
 		"email": user.Email,
-		"name":  user.Name,
+		"name": user.Name,
 		"token": tokenString,
 	}
 

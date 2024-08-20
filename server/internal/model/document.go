@@ -113,7 +113,7 @@ func (D *Document) GetById(userId, id int64) (Document, error) {
 		CreatedAt: createdAt,
 	}, nil
 }
-	
+
 func (D *Document) GetByName(userId int64, name string) (int64) {
 	sqlStatement := `
 		SELECT d.id

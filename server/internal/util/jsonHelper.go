@@ -6,36 +6,48 @@ import (
 )
 
 type DataMap map[string]interface{}
-type ErrorMap map[string]interface{}
+
 type ResponseFormat struct {
-	Data	DataMap		`json:"data,omitempty"`
-	Error	ErrorMap	`json:"error,omitempty"`
+	Code		int				`json:"code,omitempty"`
+	Message string		`json:"message,omitempty"`
+	Data		DataMap		`json:"data,omitempty"`
 }
 
-type AryDataMap []map[string]interface{}
-type ResponseAryFormat struct {
-	Data	AryDataMap	`json:"data,omitempty"`
+type ListDataMap []map[string]interface{}
+
+type ResponseListFormat struct {
+	Code		int					`json:"code,omitempty"`
+	Message string			`json:"message,omitempty"`
+	Data		ListDataMap	`json:"data,omitempty"`
 }
 
 func GetResponse(data map[string]interface{}, err map[string]interface{}) ResponseFormat {
 	res := ResponseFormat{}
 
 	if data != nil {
-		res.Data = data
+		res.Code = data["code"].(int)
+		res.Message = data["message"].(string)
+		res.Data = data["data"].(map[string]interface{})
 	}
 
 	if err != nil {
-		res.Error = err
+		res.Code = err["code"].(int)
+		res.Message = err["message"].(string)
 	}
 
 	return res
 }
 
-func GetAryResponse(data []map[string]interface{}) ResponseAryFormat {
-	res := ResponseAryFormat{}
+func GetListResponse(data map[string]interface{}) ResponseListFormat {
+	res := ResponseListFormat{}
 
 	if data != nil {
-		res.Data = data
+		res.Code = data["code"].(int)
+		res.Message = data["message"].(string)
+
+		for _, v := range data["data"].([]map[string]interface{}) {
+			res.Data = append(res.Data, v)
+		}
 	}
 
 	return res
@@ -46,10 +58,6 @@ func DecodeJSONBody(r *http.Request, data interface{}) error {
 }
 
 func ResponseJSONWriter(w http.ResponseWriter, statusCode int, response interface{}) {
-	if statusCode > 400 {
-		WriteWarnLog(response.(ResponseFormat).Error["message"].(string))
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(response)

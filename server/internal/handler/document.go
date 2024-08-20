@@ -14,11 +14,8 @@ func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) 
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -27,18 +24,26 @@ func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) 
 	var d model.DocumentInterface = &model.Document{}
 	document, err := d.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "Document not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7422)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"document": document,
+	// Response
+	resData := util.GetReturnMessage(7204)
+  resData["data"] = map[string]interface{}{
+		"id": document.Id,
+		"name": document.Name,
+		"category": document.Category,
+		"subCategory": document.SubCategory,
+		"postMember": document.PostMember,
+		"relationMembers": document.RelationMembers,
+		"tags": document.Tags,
+		"content": document.Content,
+		"createdAt": document.CreatedAt,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -47,39 +52,31 @@ func (Ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
 	var d model.DocumentInterface = &model.Document{}
 	documents, err := d.QueryAll(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get documents",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7411)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	var resData []map[string]interface{}
+	// Response
+	resData := util.GetReturnMessage(7202)
+	resData["data"] = []map[string]interface{}{}
+
 	for _, document := range documents {
-		resData = append(resData, map[string]interface{}{
+		resData["data"] = append(resData["data"].([]map[string]interface{}) , map[string]interface{}{
 			"id": document.Id,
 			"name": document.Name,
-			"category": map[string]interface{}{
-				"id": document.Category.Id,
-				"name": document.Category.Name,
-			},
-			"subCategory": map[string]interface{}{
-				"id": document.SubCategory.Id,
-				"name": document.SubCategory.Name,
-			},
-			"postMember": map[string]interface{}{
-				"id": document.PostMember.Id,
-				"name": document.PostMember.Name,
-			},
+			"category": document.Category,
+			"subCategory": document.SubCategory,
+			"postMember": document.PostMember,
 			"relationMembers": document.RelationMembers,
 			"tags": document.Tags,
 			"content": document.Content,
 			"createdAt": document.CreatedAt,
 		})
 	}
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetAryResponse(resData))
+
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
 func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Request) {
@@ -87,18 +84,18 @@ func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Re
 	var d model.DocumentInterface = &model.Document{}
 	total, err := d.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get total document number",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(7203)
+	resData["data"] = map[string]interface{}{
 		"totalDocumentNumber": total,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -107,11 +104,8 @@ func (Ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *htt
 	var d model.DocumentInterface = &model.Document{}
 	count, err := d.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get total document number",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -119,11 +113,8 @@ func (Ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *htt
 	// Validate request
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page size",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -135,9 +126,12 @@ func (Ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *htt
 		totalPageNumber++
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(7412)
+	resData["data"] = map[string]interface{}{
 		"totalPageNumber": totalPageNumber,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -145,59 +139,16 @@ func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page number",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page size",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
-		return
-	}
-
-	// Query total document number
-	var d model.DocumentInterface = &model.Document{}
-	count, err := d.QueryTotalCount(Ctrl.User.Id)
-	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get total document number",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-		return
-	}
-
-	if count == 0 {
-		resData := map[string]interface{}{
-			"documents": []model.Document{},
-		}
-		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
-		return
-	}
-
-	totalPageNumber := count / int64(size)
-	restCount := count %  int64(size)
-	if restCount > 0 {
-		totalPageNumber++
-	}
-
-	if int64(number) > totalPageNumber {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page number",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -214,18 +165,57 @@ func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request
 		order = "asc"
 	}
 
-	documents, err := d.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	// Query total document number
+	var d model.DocumentInterface = &model.Document{}
+	count, err := d.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get documents",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// If no document, return empty array
+	if count == 0 {
+		resData := util.GetReturnMessage(7203)
+		resData["data"] = map[string]interface{}{
+			"documents": []model.Document{},
+			"totalPageNumber": 0,
+			"number": number,
+			"size": size,
+			"order": order,
+			"orderBy": order,
+		}
+
+		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+		return
+	}
+
+	// Calculate total page number
+	totalPageNumber := count / int64(size)
+	restCount := count %  int64(size)
+	if restCount > 0 {
+		totalPageNumber++
+	}
+
+	if int64(number) > totalPageNumber {
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Query document by page
+	documents, err := d.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Response
+	resData := util.GetReturnMessage(7203)
+	resData["data"] = map[string]interface{}{
 		"documents": documents,
 		"totalPageNumber": totalPageNumber,
 		"number": number,
@@ -233,6 +223,7 @@ func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request
 		"order": order,
 		"orderBy": orderBy,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -241,11 +232,8 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	var adp model.AddDocumentParams
 	err := util.DecodeJSONBody(r, &adp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -253,11 +241,8 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	validator := validator.New()
 	err = validator.Struct(adp)
 	if err != nil || adp.Name == "" || adp.Content == "" {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid Name or Content",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -266,11 +251,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	var d model.DocumentInterface = &model.Document{}
 	duplicatedDocumentId := d.GetByName(Ctrl.User.Id, adp.Name)
 	if duplicatedDocumentId != 0 {
-		resErr := map[string]interface{}{
-			"code": http.StatusConflict,
-			"message": "Document name already exists",
-		}
-
+		resErr := util.GetReturnMessage(7402)
 		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
 		return
 	}
@@ -279,11 +260,8 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	var c model.CategoryInterface = &model.Category{}
 	_, err = c.GetById(Ctrl.User.Id, adp.CategoryId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "Category not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3422)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
@@ -291,22 +269,15 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	var sc model.SubCategoryInterface = &model.SubCategory{}
 	_, err = sc.GetById(adp.CategoryId, adp.SubCategoryId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "SubCategory not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(4422)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
 
   // Check post member and relation members
 	if adp.PostMemberId == 0 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "PostMemberId is required",
-		}
-
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -314,11 +285,8 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	var m model.MemberInterface = &model.Member{}
 	_, err = m.GetById(adp.PostMemberId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "PostMember not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
@@ -326,11 +294,8 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	for _, relationMemberId := range adp.RelationMemberIds {
 		_, err = m.GetById(relationMemberId)
 		if err != nil {
-			resErr := map[string]interface{}{
-				"code": http.StatusNotFound,
-				"message": "RelationMember not found",
-			}
-
+			util.WriteErrorLog(err.Error())
+			resErr := util.GetReturnMessage(400)
 			util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 			return
 		}
@@ -341,11 +306,8 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	for _, tagId := range adp.TagIds {
 		_, err = t.GetById(tagId)
 		if err != nil {
-			resErr := map[string]interface{}{
-				"code": http.StatusNotFound,
-				"message": "Tag not found",
-			}
-
+			util.WriteErrorLog(err.Error())
+			resErr := util.GetReturnMessage(400)
 			util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 			return
 		}
@@ -353,11 +315,8 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Check content
 	if adp.Content == "" {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Content is required",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -369,11 +328,8 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 		adp.Name, adp.CategoryId, adp.SubCategoryId, adp.PostMemberId,
 		adp.RelationMemberIds, adp.TagIds, adp.Content, now)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to create document",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7403)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -382,11 +338,8 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	var ud model.UserDocumentInterface = &model.UserDocument{}
 	_, err = ud.Create(Ctrl.User.Id, documentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to create user_document",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7404)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -394,18 +347,26 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	// Get created document
 	createdDocument, err := document.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get created document",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7413)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"document": createdDocument,
+	// Response
+	resData := util.GetReturnMessage(7201)
+	resData["data"] = map[string]interface{}{
+		"id": createdDocument.Id,
+		"name": createdDocument.Name,
+		"category": createdDocument.Category,
+		"subCategory": createdDocument.SubCategory,
+		"postMember": createdDocument.PostMember,
+		"relationMembers": createdDocument.RelationMembers,
+		"tags": createdDocument.Tags,
+		"content": createdDocument.Content,
+		"createdAt": createdDocument.CreatedAt,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusCreated, util.GetResponse(resData, nil))
 }
 
@@ -413,11 +374,8 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -426,46 +384,40 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	var udp model.UpdateDocumentParams
 	err = util.DecodeJSONBody(r, &udp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	// Check post member
 	if udp.PostMemberId == 0 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "PostMemberId is required",
-		}
-
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	// Check if document exists
+	// Check if document name already exists
 	var d model.DocumentInterface = &model.Document{}
+	duplicatedDocumentId := d.GetByName(Ctrl.User.Id, udp.Name)
+	if duplicatedDocumentId != 0 && duplicatedDocumentId != documentId {
+		resErr := util.GetReturnMessage(7423)
+		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Check if document exists
 	existingDocument, err := d.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "Document not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
 
 	// Check content
 	if udp.Content == "" {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Content is required",
-		}
-
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -474,11 +426,8 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	var m model.MemberInterface = &model.Member{}
 	_, err = m.GetById(udp.PostMemberId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "PostMember not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
@@ -487,11 +436,8 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	for _, relationMemberId := range udp.RelationMemberIds {
 		_, err = m.GetById(relationMemberId)
 		if err != nil {
-			resErr := map[string]interface{}{
-				"code": http.StatusNotFound,
-				"message": "RelationMember not found",
-			}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 			util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 			return
 		}
@@ -502,11 +448,8 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	for _, tagId := range udp.TagIds {
 		_, err = t.GetById(tagId)
 		if err != nil {
-			resErr := map[string]interface{}{
-				"code": http.StatusNotFound,
-				"message": "Tag not found",
-			}
-
+			util.WriteErrorLog(err.Error())
+			resErr := util.GetReturnMessage(400)
 			util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 			return
 		}
@@ -518,11 +461,8 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	existingDocument.Content = udp.Content
 	err = existingDocument.Update(Ctrl.User.Id, udp.RelationMemberIds, udp.TagIds)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to update document",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7424)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -530,18 +470,26 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	// Get updated document
 	updatedDocument, err := d.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get updated document",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7413)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
-		"document": updatedDocument,
+	// Response
+	resData := util.GetReturnMessage(7205)
+	resData["data"] = map[string]interface{}{
+		"id": updatedDocument.Id,
+		"name": updatedDocument.Name,
+		"category": updatedDocument.Category,
+		"subCategory": updatedDocument.SubCategory,
+		"postMember": updatedDocument.PostMember,
+		"relationMembers": updatedDocument.RelationMembers,
+		"tags": updatedDocument.Tags,
+		"content": updatedDocument.Content,
+		"createdAt": updatedDocument.CreatedAt,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -549,11 +497,8 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid document id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -562,11 +507,8 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	var d model.DocumentInterface = &model.Document{}
 	existingDocument, err := d.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusNotFound,
-			"message": "Document not found",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusNotFound, util.GetResponse(nil, resErr))
 		return
 	}
@@ -590,11 +532,8 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	// Delete document
 	_, err = existingDocument.Delete(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to delete document",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7432)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -603,8 +542,19 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	var ud model.UserDocumentInterface = &model.UserDocument{}
 	ud.DeleteById(documentId)
 
-	resData := map[string]interface{}{
-		"document": existingDocument,
+	// Response
+	resData := util.GetReturnMessage(7206)
+	resData["data"] = map[string]interface{}{
+		"id": existingDocument.Id,
+		"name": existingDocument.Name,
+		"category": existingDocument.Category,
+		"subCategory": existingDocument.SubCategory,
+		"postMember": existingDocument.PostMember,
+		"relationMembers": existingDocument.RelationMembers,
+		"tags": existingDocument.Tags,
+		"content": existingDocument.Content,
+		"createdAt": existingDocument.CreatedAt,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

@@ -55,14 +55,15 @@ const EditDocument = () => {
       response = await apiHandler.get(
         apiConfig.resource.EDIT_DOCUMENT.replace(":id", id)
       );
-      const document = response.data.data.document;
+      const document = response.data.data;
 
       // Title
       setTitle(document.name);
 
       // Author
       response = await apiHandler.get(apiConfig.resource.MEMBERS);
-      let members = response?.data?.data?.members || [];
+      let members = response?.data?.data || [];
+
       members = members.filter((member) => member.isAlive);
       members = orderBy(members, "name", "asc");
 
@@ -75,7 +76,7 @@ const EditDocument = () => {
       // Related members
       const updatedRelatedMembers = members.map((member) => ({
         ...member,
-        selected: !!document.relationMembers.find(
+        selected: document.relationMembers?.find(
           (relationMember) => member.id === relationMember.memberId
         ),
       }));
@@ -88,7 +89,7 @@ const EditDocument = () => {
 
       // Category
       response = await apiHandler.get(apiConfig.resource.CATEGORIES);
-      let categories = response?.data?.data?.categories || [];
+      let categories = response?.data?.data || [];
       categories = categories.filter((category) => category.isAlive);
       categories = orderBy(categories, "name", "asc");
 
@@ -109,7 +110,7 @@ const EditDocument = () => {
         response = await apiHandler.get(
           apiConfig.resource.SUBCATEGORIES.replace(":id", selectedCategory.id)
         );
-        let subCategories = response?.data?.data?.subcategories || [];
+        let subCategories = response?.data?.data || [];
         subCategories = orderBy(subCategories, "name", "asc");
         setSubCategories(
           subCategories.map((subCategory) => ({
@@ -122,7 +123,7 @@ const EditDocument = () => {
 
       // Tags
       response = await apiHandler.get(apiConfig.resource.TAGS);
-      let tags = response?.data?.data?.tags || [];
+      let tags = response?.data?.data || [];
       tags = orderBy(tags, "name", "asc");
 
       let updatedTags = tags.map((tag) => ({
@@ -130,7 +131,7 @@ const EditDocument = () => {
         bgcolor: tag.colorHexCode,
         id: tag.id,
         name: tag.name,
-        selected: !!document.tags.find(
+        selected: document.tags?.find(
           (selectedTag) => tag.id === selectedTag.tagId
         ),
       }));
@@ -140,10 +141,7 @@ const EditDocument = () => {
       // Content
       setEditorData(JSON.parse(document.content));
     } catch (error) {
-      if (error.response.data.error.code === 404) {
-        navigate(routerConfig.routes.DOCUMENTS);
-      }
-
+      console.log(error);
       messageUtil.showErrorMessage(commonMessage.error);
     }
   }, [id, navigate]);
@@ -153,7 +151,7 @@ const EditDocument = () => {
       const response = await apiHandler.get(
         apiConfig.resource.SUBCATEGORIES.replace(":id", category.id)
       );
-      let subCategories = response?.data?.data?.subcategories || [];
+      let subCategories = response?.data?.data || [];
       subCategories = orderBy(subCategories, "name", "asc");
       setSubCategories(
         subCategories.map((subCategory, index) => ({

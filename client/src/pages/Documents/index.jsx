@@ -136,7 +136,7 @@ const Documents = () => {
       updatedDocuments[documentIndex].isEditing = false;
       setDocuments(updatedDocuments);
     } catch (error) {
-      messageUtil.showErrorMessage(error.response.data.error.message);
+      messageUtil.showErrorMessage(error.response.data.message);
     }
   };
 

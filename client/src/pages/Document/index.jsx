@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { cloneDeep } from "lodash";
 
@@ -38,16 +38,16 @@ const Document = () => {
       response = await apiHandler.get(
         apiConfig.resource.EDIT_DOCUMENT.replace(":id", id)
       );
-      const document = response.data.data.document;
+      const document = response.data.data;
       setDocument(document);
 
       response = await apiHandler.get(
         apiConfig.resource.DOCUMENT_COMMENTS.replace(":id", id)
       );
 
-      if (response.data.data.documentComments) {
+      if (response.data.data) {
         setDocumentComments(
-          response.data.data.documentComments.map((comment) => {
+          response.data.data.map((comment) => {
             return {
               ...comment,
               showComment: false,
@@ -197,7 +197,7 @@ const Document = () => {
         <>
           {documentComments.map((comment, index) => {
             return (
-              <>
+              <Fragment key={index}>
                 <div className='document' key={index}>
                   <div className='box'>
                     <div key={comment.id} className='box-comment'>
@@ -249,7 +249,7 @@ const Document = () => {
                 {documentComments.length - 1 === index && (
                   <div className='space-t-4'></div>
                 )}
-              </>
+              </Fragment>
             );
           })}
         </>

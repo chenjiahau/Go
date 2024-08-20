@@ -42,7 +42,7 @@ const AddDocumentComment = () => {
       response = await apiHandler.get(
         apiConfig.resource.EDIT_DOCUMENT.replace(":id", id)
       );
-      const document = response.data.data.document;
+      const document = response.data.data;
       setDocument(document);
 
       // Author

@@ -15,11 +15,8 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	var acp model.AddCategoryParams
 	err := util.DecodeJSONBody(r, &acp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -27,11 +24,8 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 	err = validate.Struct(acp)
 	if err != nil || acp.Name == ""{
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid category name",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -40,11 +34,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	var c model.CategoryInterface = &model.Category{}
 	existCategory, _ := c.GetByName(Ctrl.User.Id, acp.Name)
 	if existCategory.Id > 0{
-		resErr := map[string]interface{}{
-			"code": http.StatusConflict,
-			"message": "Category name already exists",
-		}
-
+		resErr := util.GetReturnMessage(3402)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -53,11 +43,8 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	now := util.GetNow()
 	id, err := c.Create(acp.Name, now, acp.IsAlive)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to create category",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3403)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -66,21 +53,21 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	var uc model.UserCategoryInterface = &model.UserCategory{}
 	_, err = uc.Create(Ctrl.User.Id, id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to create user category",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3404)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(3201)
+	resData["data"] = map[string]interface{}{
 		"id": id,
 		"name": acp.Name,
 		"isAlive": acp.IsAlive,
 		"createdAt": now,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -89,18 +76,17 @@ func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 	var c model.CategoryInterface = &model.Category{}
 	categories, err := c.QueryAll(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3411)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	var resData []map[string]interface{}
+	// Response
+	resData := util.GetReturnMessage(3202)
+	resData["data"] = []map[string]interface{}{}
 	for _, category := range categories {
-		resData = append(resData, map[string]interface{}{
+		resData["data"] = append(resData["data"].([]map[string]interface{}), map[string]interface{}{
 			"id": category.Id,
 			"name": category.Name,
 			"isAlive": category.IsAlive,
@@ -109,7 +95,7 @@ func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetAryResponse(resData))
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
 func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Request) {
@@ -117,44 +103,38 @@ func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Re
 	var c model.CategoryInterface = &model.Category{}
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(3202)
+	resData["data"] = map[string]interface{}{
 		"totalCategoryNumber": count,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
 func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *http.Request) {
+	// Validate request
+	size, err := strconv.Atoi(chi.URLParam(r, "size"))
+	if err != nil || size < 1 {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
 	// Query total category page number
 	var c model.CategoryInterface = &model.Category{}
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-		return
-	}
-
-	// Validate request
-	size, err := strconv.Atoi(chi.URLParam(r, "size"))
-	if err != nil || size < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page size",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
@@ -165,9 +145,12 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 		totalPageNumber++
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(3203)
+	resData["data"] = map[string]interface{}{
 		"totalPageNumber": totalPageNumber,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -175,50 +158,57 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page number",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page size",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
+	}
+
+	orderBy := r.URL.Query().Get("orderBy")
+	if orderBy == "" {
+		orderBy = "id"
+	}
+
+	order := r.URL.Query().Get("order")
+	if order == "" {
+		order = "asc"
 	}
 
 	// Query total category number
 	var c model.CategoryInterface = &model.Category{}
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// If no category, return empty data
 	if count == 0 {
-		resData := map[string]interface{}{
+		resData := util.GetReturnMessage(3202)
+		resData["data"] = map[string]interface{}{
 			"categories": []model.Category{},
 			"totalPageNumber": 0,
 			"number": number,
 			"size": size,
+			"order": order,
+			"orderBy": orderBy,
 		}
+
 		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 		return
 	}
 
+	// Calculate total page number
 	totalPageNumber := count / int64(size)
 	restCount := count %  int64(size)
 	if restCount > 0 {
@@ -226,39 +216,23 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 	}
 
 	if int64(number) > totalPageNumber {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page number",
-		}
-
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
-	// orderBy: id, name, created_at, is_alive
-	orderBy := r.URL.Query().Get("orderBy")
-	if orderBy == "" {
-		orderBy = "id"
-	}
-
-	// order: asc, desc
-	order := r.URL.Query().Get("order")
-	if order == "" {
-		order = "asc"
-	}
-
+	// Query category by page
 	categories, err := c.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all categories",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(3203)
+	resData["data"] = map[string]interface{}{
 		"categories": categories,
 		"totalPageNumber": totalPageNumber,
 		"number": number,
@@ -266,6 +240,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 		"order": order,
 		"orderBy": orderBy,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -273,11 +248,8 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid category id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -286,22 +258,22 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 	var c model.CategoryInterface = &model.Category{}
 	category, err := c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get category",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3413)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(3204)
+	resData["data"] = map[string]interface{}{
 		"id": category.Id,
 		"name": category.Name,
 		"isAlive": category.IsAlive,
 		"subcategoryCount": category.SubCategoryCount,
 		"createdAt": category.CreatedAt,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -309,11 +281,8 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid category id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -321,11 +290,8 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	var ucp model.UpdateCategoryParams
 	err = util.DecodeJSONBody(r, &ucp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -333,11 +299,8 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 	err = validate.Struct(ucp)
 	if err != nil || ucp.Name == ""{
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid category name",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -346,29 +309,25 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	var c model.CategoryInterface = &model.Category{}
 	existCategory, _ := c.GetByName(Ctrl.User.Id, ucp.Name)
 	if existCategory.Id > 0 && existCategory.Id != categoryId {
-		resErr := map[string]interface{}{
-			"code": http.StatusConflict,
-			"message": "Category name already exists",
-		}
-
+		resErr := util.GetReturnMessage(3423)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// Update category
 	existCategory.Name = ucp.Name
 	existCategory.IsAlive = ucp.IsAlive
 	err = existCategory.Update(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to update category",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3424)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(3205)
+	resData["data"] = map[string]interface{}{
 		"id": categoryId,
 		"name": ucp.Name,
 		"isAlive": ucp.IsAlive,
@@ -381,11 +340,8 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid category id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -394,11 +350,8 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	var c model.CategoryInterface = &model.Category{}
 	existingCategory, err := c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get category",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3431)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -406,20 +359,21 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	// Delete category
 	existingCategory, err = existingCategory.Delete(Ctrl.User.Id)
 	if existingCategory.Id == 0 || err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Category is used or not exists",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3432)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// Delete user category
 	var uc model.UserCategoryInterface = &model.UserCategory{}
 	uc.DeleteById(categoryId)
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(3206)
+	resData["data"] = map[string]interface{}{
 		"id": categoryId,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

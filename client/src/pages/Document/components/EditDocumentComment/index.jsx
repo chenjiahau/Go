@@ -20,7 +20,7 @@ const errorMessage = {
   author: "Author is required.",
 };
 
-const AddDocumentComment = () => {
+const EditDocumentComment = () => {
   const navigate = useNavigate();
   const { id, commentId } = useParams();
 
@@ -42,7 +42,7 @@ const AddDocumentComment = () => {
       response = await apiHandler.get(
         apiConfig.resource.EDIT_DOCUMENT.replace(":id", id)
       );
-      const document = response.data.data.document;
+      const document = response.data.data;
       setDocument(document);
 
       response = await apiHandler.get(
@@ -51,11 +51,11 @@ const AddDocumentComment = () => {
           commentId
         )
       );
-      const comment = response.data.data.documentComment;
+      const comment = response.data.data;
 
       // Author
       response = await apiHandler.get(apiConfig.resource.MEMBERS);
-      let members = response?.data?.data?.members || [];
+      let members = response?.data?.data || [];
       members = members.filter((member) => member.isAlive);
       members = orderBy(members, "name", "asc");
 
@@ -70,10 +70,6 @@ const AddDocumentComment = () => {
       // Content
       setEditorData(JSON.parse(comment.content));
     } catch (error) {
-      if (error.response.data.error.code === 404) {
-        navigate(routerConfig.routes.DOCUMENTS);
-      }
-
       messageUtil.showErrorMessage(commonMessage.error);
     }
   }, [commentId, id, navigate]);
@@ -196,4 +192,4 @@ const AddDocumentComment = () => {
   );
 };
 
-export default AddDocumentComment;
+export default EditDocumentComment;

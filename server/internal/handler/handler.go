@@ -62,21 +62,21 @@ func CheckTokenAlive() bool {
 func CheckToken(w http.ResponseWriter, r *http.Request) bool {
 	var _ model.TokenInterface = &model.Token{}
 
+	resErr := map[string]interface{}{
+		"code": 401,
+		"message": util.CommonErrorMessages[401],
+	}
+
 	if Ctrl.User != nil {
 		var t model.TokenInterface = &model.Token{}
 
 		token, err := t.Query(Ctrl.User.Token)
-		if err != nil {
-			util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-			return false
-		}
-
-		if !token.IsAlive {
-			util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
-			return false
+		if err != nil || !token.IsAlive {
+			util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		  return false
 		}
 	} else {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, GetUnauthorizedResponse())
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
 		return false
 	}
 

@@ -21,7 +21,7 @@ const errorMessage = {
   delete: "Member is used or not found.",
 };
 
-const Category = () => {
+const Members = () => {
   // State
   const [memberRoles, setMemberRoles] = useState([]);
   const [orderBy, setOrderBy] = useState("id");
@@ -150,7 +150,7 @@ const Category = () => {
       updatedMembers[memberIndex].isEditing = false;
       setMembers(updatedMembers);
     } catch (error) {
-      messageUtil.showErrorMessage(error.response.data.error.message);
+      messageUtil.showErrorMessage(error.response.data.message);
     }
   };
 
@@ -229,4 +229,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Members;

@@ -35,10 +35,10 @@ const Category = () => {
     let response = null;
 
     response = await apiHandler.get(apiConfig.resource.COLOR_CATEGORIES);
-    setColorCategories(response.data.data.colorCategories);
+    setColorCategories(response.data.data);
 
     response = await apiHandler.get(apiConfig.resource.COLORS);
-    setColors(response.data.data.colors);
+    setColors(response.data.data);
 
     response = await apiHandler.get(apiConfig.resource.NUMBER_OF_TAGS);
     const totalTagNumber = response.data.data.totalTagNumber;
@@ -134,7 +134,7 @@ const Category = () => {
       updatedTags[tagIndex].isEditing = false;
       setTags(updatedTags);
     } catch (error) {
-      messageUtil.showErrorMessage(error.response.data.error.message);
+      messageUtil.showErrorMessage(error.response.data.message);
     }
   };
 

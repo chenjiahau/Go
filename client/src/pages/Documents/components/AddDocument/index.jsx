@@ -23,7 +23,7 @@ const errorMessage = {
   title: "Title is required.",
   author: "Author is required.",
   category: "Category or sub subcategory required.",
-  duplicated: "Document name is duplicated.",
+  duplicated: "Document title is duplicated.",
 };
 
 const AddDocument = () => {
@@ -188,7 +188,7 @@ const AddDocument = () => {
       messageUtil.showSuccessMessage(commonMessage.success);
       reset();
     } catch (error) {
-      if (error.response.data.error.code === 409) {
+      if (error.response.data.code === 7402) {
         messageUtil.showErrorMessage(errorMessage.duplicated);
         return;
       }

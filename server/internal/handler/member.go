@@ -15,11 +15,8 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	var amp model.AddMemberParams
 	err := util.DecodeJSONBody(r, &amp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -27,11 +24,8 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 	err = validate.Struct(amp)
 	if err != nil || amp.Name == ""{
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid member name",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -40,11 +34,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	var m model.MemberInterface = &model.Member{}
 	duplicatedMemberId := m.GetByName(Ctrl.User.Id, amp.Name)
 	if duplicatedMemberId > 0 {
-		resErr := map[string]interface{}{
-			"code": http.StatusConflict,
-			"message": "Member name already exists",
-		}
-
+		resErr := util.GetReturnMessage(2402)
 		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
 		return
 	}
@@ -52,11 +42,8 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	// Create member
 	id, err := m.Create(amp.MemberRoleId, amp.Name, amp.IsAlive)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to create member",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(2403)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -65,21 +52,20 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	var um model.UserMemberInterface = &model.UserMember{}
 	_, err = um.Create(Ctrl.User.Id, id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to create user member",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(3403)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
 	// Response
-	resData := map[string]interface{}{
+	resData := util.GetReturnMessage(2201)
+	resData["data"] = map[string]interface{}{
 		"id": id,
 		"MemberRoleId": amp.MemberRoleId,
 		"name": amp.Name,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -88,18 +74,17 @@ func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 	var m model.MemberInterface = &model.Member{}
 	members, err := m.QueryAll(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all members",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	var resData []map[string]interface{}
+	// Response
+	resData := util.GetReturnMessage(2202)
+	resData["data"] = []map[string]interface{}{}
 	for _, member := range members {
-		resData = append(resData, map[string]interface{}{
+		resData["data"] = append(resData["data"].([]map[string]interface{}), map[string]interface{}{
 			"id": member.Id,
 			"memberRoleId": member.MemberRoleId,
 			"memberRoleTitle": member.MemberRoleTitle,
@@ -107,7 +92,8 @@ func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 			"isAlive": member.IsAlive,
 		})
 	}
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetAryResponse(resData))
+
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
 func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Request) {
@@ -115,18 +101,18 @@ func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Requ
 	var m model.MemberInterface = &model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all members",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{} {
+	// Response
+	resData := util.GetReturnMessage(2202)
+	resData["data"] = map[string]interface{}{
 		"totalMemberNumber": count,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -135,11 +121,8 @@ func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.
 	var m model.MemberInterface = &model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all members",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -147,11 +130,8 @@ func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.
 	// Validate request
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page size",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -159,13 +139,17 @@ func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.
 	// Calculate total page number
 	totalPageNumber := count / int64(size)
 	restCount := count % int64(size)
+
 	if restCount > 0 {
 		totalPageNumber++
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(2202)
+	resData["data"] = map[string]interface{}{
 		"totalPageNumber": totalPageNumber,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -173,62 +157,16 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page number",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page size",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
-		return
-	}
-
-	// Query members by page
-	var m model.MemberInterface = &model.Member{}
-	count, err := m.QueryTotalCount(Ctrl.User.Id)
-	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all members",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-		return
-	}
-
-	if count == 0 {
-		resData := map[string]interface{}{
-			"members": []model.Member{},
-			"totalPageNumber": 0,
-			"number": number,
-			"size": size,
-		}
-		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
-		return
-	}
-
-	totalPageNumber := count / int64(size)
-	restCount := count %  int64(size)
-	if restCount > 0 {
-		totalPageNumber++
-	}
-
-	if int64(number) > totalPageNumber {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page number",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -243,18 +181,56 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 		order = "asc"
 	}
 
-	members, err := m.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	// Query members by page
+	var m model.MemberInterface = &model.Member{}
+	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query members by page",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(2411)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// If no member, return empty data
+	if count == 0 {
+		resData := util.GetReturnMessage(2203)
+		resData["data"] = map[string]interface{}{
+			"members": []map[string]interface{}{},
+			"totalPageNumber": 0,
+			"number": number,
+			"size": size,
+			"order": order,
+			"orderBy": orderBy,
+		}
+
+		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+		return
+	}
+
+	// If page number is invalid, return error
+	totalPageNumber := count / int64(size)
+	restCount := count %  int64(size)
+	if restCount > 0 {
+		totalPageNumber++
+	}
+
+	if int64(number) > totalPageNumber {
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	members, err := m.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+    resErr := util.GetReturnMessage(2412)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Response
+	resData := util.GetReturnMessage(2203)
+	resData["data"] = map[string]interface{}{
 		"members": members,
 		"totalPageNumber": totalPageNumber,
 		"number": number,
@@ -262,6 +238,7 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 		"order": order,
 		"orderBy": orderBy,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -269,11 +246,8 @@ func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid member id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -282,22 +256,22 @@ func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	var m model.MemberInterface = &model.Member{}
 	member, err := m.GetById(memberId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get member",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(2204)
+	resData["data"] = map[string]interface{}{
 		"id": member.Id,
 		"memberRoleId": member.MemberRoleId,
 		"memberRoleTitle": member.MemberRoleTitle,
 		"name": member.Name,
 		"isAlive": member.IsAlive,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -305,11 +279,8 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid member id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -317,11 +288,8 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	var ump model.UpdateMemberParams
 	err = util.DecodeJSONBody(r, &ump)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -329,11 +297,8 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 	err = validate.Struct(ump)
 	if err != nil || ump.Name == ""{
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid member name",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -342,11 +307,8 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	var m model.MemberInterface = &model.Member{}
 	existingMember, err := m.GetById(memberId)
 	if existingMember.Id == 0 || err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get member",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(2422)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -354,11 +316,7 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	// Check if member name already exists
 	duplicatedMemberId := m.GetByName(Ctrl.User.Id, ump.Name)
 	if duplicatedMemberId > 0 && duplicatedMemberId != memberId {
-		resErr := map[string]interface{}{
-			"code": http.StatusConflict,
-			"message": "Member name already exists",
-		}
-
+		resErr := util.GetReturnMessage(2423)
 		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
 		return
 	}
@@ -369,16 +327,15 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	existingMember.IsAlive = ump.IsAlive
 	err = existingMember.Update(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to update member",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(2424)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(2205)
+	resData["data"] = map[string]interface{}{
 		"id": memberId,
 		"memberRoleId": existingMember.MemberRoleId,
 		"name": existingMember.Name,
@@ -392,11 +349,8 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid member id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -405,11 +359,8 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	var m model.MemberInterface = &model.Member{}
 	existingMember, err := m.GetById(memberId)
 	if existingMember.Id == 0 || err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Member is used or not exists",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(2431)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -417,11 +368,8 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	// Delete member
 	_, err = existingMember.Delete(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to delete member",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(2432)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -430,8 +378,11 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	var um model.UserMemberInterface = &model.UserMember{}
 	um.DeleteById(memberId)
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(2206)
+	resData["data"] = map[string]interface{}{
 		"id": memberId,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

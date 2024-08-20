@@ -161,7 +161,7 @@ const Category = () => {
       updatedSubcategories[subcategoryIndex].isEditing = false;
       setSubcategories(updatedSubcategories);
     } catch (error) {
-      messageUtil.showErrorMessage(error.response.data.error.message);
+      messageUtil.showErrorMessage(error.response.data.message);
     }
   };
 

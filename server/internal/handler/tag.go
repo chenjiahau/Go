@@ -15,11 +15,8 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	var atp model.AddTagParams
 	err := util.DecodeJSONBody(r, &atp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -27,11 +24,8 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 	err = validate.Struct(atp)
 	if err != nil || atp.Name == ""{
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid tag name",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -40,11 +34,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	var t model.TagInterface = &model.Tag{}
 	duplicatedTagId := t.GetByName(Ctrl.User.Id, atp.Name)
 	if duplicatedTagId > 0 {
-		resErr := map[string]interface{}{
-			"code": http.StatusConflict,
-			"message": "Tag name already exists",
-		}
-
+		resErr := util.GetReturnMessage(5402)
 		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
 		return
 	}
@@ -52,11 +42,8 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	// Create tag
 	id, err := t.Create(atp.ColorId, atp.Name)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to create tag",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(5403)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -65,20 +52,20 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	var ut model.UserTagInterface = &model.UserTag{}
 	_, err = ut.Create(Ctrl.User.Id, id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to create user tag",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(5404)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(5201)
+	resData["data"] = map[string]interface{}{
 		"id": id,
 		"colorId": atp.ColorId,
 		"name": atp.Name,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -87,18 +74,18 @@ func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 	var t model.TagInterface = &model.Tag{}
 	tags, err := t.QueryAll(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all tags",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	var resData []map[string]interface{}
+	// Response
+	resData := util.GetReturnMessage(5202)
+	resData["data"] = []map[string]interface{}{}
+
 	for _, tag := range tags {
-		resData = append(resData, map[string]interface{}{
+		resData["data"] = append(resData["data"].([]map[string]interface{}), map[string]interface{}{
 			"id": tag.Id,
 			"colorCategoryId": tag.ColorCategoryId,
 			"colorId": tag.ColorId,
@@ -107,7 +94,8 @@ func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 			"name": tag.Name,
 		})
 	}
-	util.ResponseJSONWriter(w, http.StatusOK, util.GetAryResponse(resData))
+
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
 func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request) {
@@ -115,44 +103,38 @@ func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request
 	var t model.TagInterface = &model.Tag{}
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all tags",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(5412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(5203)
+	resData["data"] = map[string]interface{}{
 		"totalTagNumber": count,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
 func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Request) {
+	// Validate request
+	size, err := strconv.Atoi(chi.URLParam(r, "size"))
+	if err != nil || size < 1 {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
 	// Query total tag page number
 	var t model.TagInterface = &model.Tag{}
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all tags",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(5412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
-		return
-	}
-
-	// Validate request
-	size, err := strconv.Atoi(chi.URLParam(r, "size"))
-	if err != nil || size < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page size",
-		}
-
-		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
@@ -163,9 +145,12 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 		totalPageNumber++
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(5203)
+	resData["data"] = map[string]interface{}{
 		"totalPageNumber": totalPageNumber,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -173,22 +158,16 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page number",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page size",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -197,18 +176,17 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 	var t model.TagInterface = &model.Tag{}
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all tags",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(5412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// If no tags, return empty array
 	if count == 0 {
-		resData := map[string]interface{}{
-			"tags": []model.Tag{},
+		resData := util.GetReturnMessage(5203)
+		resData["data"] = map[string]interface{}{
+			"tags": []map[string]interface{}{},
 			"totalPageNumber": 0,
 			"number": number,
 			"size": size,
@@ -217,6 +195,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Calculate total page number
 	totalPageNumber := count / int64(size)
 	restCount := count %  int64(size)
 	if restCount > 0 {
@@ -224,11 +203,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if int64(number) > totalPageNumber {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid page number",
-		}
-
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -247,16 +222,15 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 
 	tags, err := t.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to query all tags",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(5412)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(5203)
+	resData["data"] = map[string]interface{}{
 		"tags": tags,
 		"totalPageNumber": totalPageNumber,
 		"number": number,
@@ -264,6 +238,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 		"order": order,
 		"orderBy": orderBy,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -271,11 +246,8 @@ func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid tag id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -284,16 +256,15 @@ func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 	var t model.TagInterface = &model.Tag{}
 	tag, err := t.GetById(tagId)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to get tag",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(5413)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(5204)
+	resData["data"] = map[string]interface{}{
 		"id": tag.Id,
 		"colorCategoryId": tag.ColorCategoryId,
 		"colorId": tag.ColorId,
@@ -301,6 +272,7 @@ func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 		"colorRGBCode": tag.ColorRGBCode,
 		"name": tag.Name,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
@@ -308,11 +280,8 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid tag id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -320,11 +289,8 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	var utp model.UpdateTagParams
 	err = util.DecodeJSONBody(r, &utp)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid request",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -332,11 +298,8 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 	err = validate.Struct(utp)
 	if err != nil || utp.Name == ""{
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid tag name",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -345,40 +308,33 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	var t model.TagInterface = &model.Tag{}
 	existingTag, err := t.GetById(tagId)
 	if existingTag.Id == 0 || err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid tag id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	duplicatedTagId := t.GetByName(Ctrl.User.Id, utp.Name)
 	if tagId != duplicatedTagId && duplicatedTagId > 0 {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Tag name already exists",
-		}
-
+		resErr := util.GetReturnMessage(5423)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
+	// Update tag
 	existingTag.ColorId = utp.ColorId
 	existingTag.Name = utp.Name
 	err = existingTag.Update(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to update tag",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(5424)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(5205)
+	resData["data"] = map[string]interface{}{
 		"id": tagId,
 		"colorId": utp.ColorId,
 		"name": utp.Name,
@@ -391,11 +347,8 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid tag id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -404,11 +357,8 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	var t model.TagInterface = &model.Tag{}
 	existingTag, err := t.GetById(tagId)
 	if existingTag.Id == 0 || err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusBadRequest,
-			"message": "Invalid tag id",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -416,11 +366,8 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	// Delete tag
 	_, err = existingTag.Delete(Ctrl.User.Id)
 	if err != nil {
-		resErr := map[string]interface{}{
-			"code": http.StatusInternalServerError,
-			"message": "Failed to delete tag",
-		}
-
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(5432)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -429,8 +376,11 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	var ut model.UserTagInterface = &model.UserTag{}
 	ut.DeleteById(tagId)
 
-	resData := map[string]interface{}{
+	// Response
+	resData := util.GetReturnMessage(5206)
+	resData["data"] = map[string]interface{}{
 		"id": tagId,
 	}
+
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

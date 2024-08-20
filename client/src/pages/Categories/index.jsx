@@ -150,7 +150,7 @@ const Category = () => {
       updatedCategories[categoryIndex].isEditing = false;
       setCategories(updatedCategories);
     } catch (error) {
-      messageUtil.showErrorMessage(error.response.data.error.message);
+      messageUtil.showErrorMessage(error.response.data.message);
     }
   };
 
