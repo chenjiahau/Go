@@ -1,9 +1,8 @@
 package handler
 
 import (
+	"html/template"
 	"net/http"
-
-	"ivanfun.com/mis/internal/util"
 )
 
 type IndexResponse struct {
@@ -19,5 +18,15 @@ func (Ctrl *Controller) Index(w http.ResponseWriter, r *http.Request) {
 		Message: "Welcome to the API",
 	}
 
-	util.ResponseJSONWriter(w, http.StatusOK, res)
+	tmpl, err := template.ParseFiles("template/index.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(w, res)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

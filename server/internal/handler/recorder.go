@@ -84,7 +84,7 @@ func (Ctrl *Controller) UploadRecordImage(w http.ResponseWriter, r *http.Request
 
 	resData := util.GetReturnMessage(200)
 	resData["data"] = map[string]interface{}{
-		"url": fmt.Sprintf(serverURL + "/static/upload/%s", fileName),
+		"url": fmt.Sprintf(serverURL + "/upload/%s", fileName),
 	}
 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))

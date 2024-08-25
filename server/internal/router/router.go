@@ -92,9 +92,12 @@ func GetRoutes() http.Handler {
 		mux.Delete("/document/{id}/comment/{commentId}", handler.Ctrl.DeleteDocumentComment)
 	})
 
+	// Index route
+	mux.Get("/", handler.Ctrl.Index)
+
 	// File server
 	fileServer := http.FileServer(http.Dir("./public"))
-	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
+	mux.Handle("/*", http.StripPrefix("/", fileServer))
 
 	return mux
 }

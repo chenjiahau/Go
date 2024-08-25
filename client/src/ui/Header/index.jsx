@@ -1,7 +1,5 @@
 import Logo from "@/assets/img/brand.png";
 
-import PropTypes from "prop-types";
-
 import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "../../util/message.util";
 
