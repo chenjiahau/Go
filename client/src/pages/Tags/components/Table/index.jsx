@@ -65,7 +65,7 @@ const Table = (props) => {
                 <th width='30'>
                   <div className='n'>#</div>
                 </th>
-                <th onClick={() => onChangeOrder("name")}>
+                <th width='60%' onClick={() => onChangeOrder("name")}>
                   <div className='order'>
                     <span>Tag</span>
                     {orderBy === "name" && (
@@ -149,7 +149,7 @@ const Table = (props) => {
                       </div>
                     ) : (
                       <div
-                        className='edit-button height'
+                        className='edit-button title height'
                         onClick={() => onClickTagName(tag.id)}
                       >
                         {tag.name}

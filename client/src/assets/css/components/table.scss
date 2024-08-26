@@ -59,8 +59,13 @@
     display: flex;
     align-items: center;
 
+    &.title {
+      text-wrap: pretty;
+      text-align: left;
+    }
+
     &.height {
-      height: var(--general-height);
+      min-height: var(--general-height);
     }
   }
 
