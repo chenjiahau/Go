@@ -27,7 +27,10 @@ func GetResponse(data map[string]interface{}, err map[string]interface{}) Respon
 	if data != nil {
 		res.Code = data["code"].(int)
 		res.Message = data["message"].(string)
-		res.Data = data["data"].(map[string]interface{})
+
+		if data["data"] != nil {
+			res.Data = data["data"].(map[string]interface{})
+		}
 	}
 
 	if err != nil {
