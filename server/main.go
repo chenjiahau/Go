@@ -17,15 +17,35 @@ import (
 var (
 	appName	string
 	version	string
+	dbUser	string
+	dbPass	string
 )
 
 func main() {
 	flag.Parse()
 	appName = flag.Arg(0)
 	version = flag.Arg(1)
+	dbUser = flag.Arg(2)
+	dbPass = flag.Arg(3)
 
-	pgConn, err := driver.ConnectSQL(driver.PostgreSQLDataSourceName)
+	var systemInfo string
+	if appName == "" || version == "" {
+		systemInfo = driver.SystemInfo
+	} else {
+		systemInfo = fmt.Sprintf("%s Version %s", appName, version)
+	}
+	util.WriteInfoLog(systemInfo)
+
+	var dbConnect string
+	if dbUser == "" || dbPass == "" {
+		dbConnect = driver.PostgreSQLDataSourceName
+	} else {
+		dbConnect = fmt.Sprintf("postgres://%s:%s@localhost:5432/mis?sslmode=disable", dbUser, dbPass)
+	}
+
+	pgConn, err := driver.ConnectSQL(dbConnect)
 	if err != nil {
+		util.WriteErrorLog(err.Error())
 		log.Fatal("cannot connect to database")
 	}
 	model.NewDbConfig(pgConn)
