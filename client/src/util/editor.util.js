@@ -26,6 +26,7 @@ export const getDefaultEditorData = () => {
 export const getEditConfig = () => {
   const url = `${apiHandler.axios.defaults.baseURL}/auth/record/upload-image`;
   const authentication = `Bearer ${apiHandler.token}`;
+  const serverUrl = import.meta.env.VITE_SERVER_URL || "";
 
   return {
     paragraph: {
@@ -62,7 +63,7 @@ export const getEditConfig = () => {
                   resolve({
                     success: 1,
                     file: {
-                      url: result.data.url,
+                      url: `${serverUrl}${result.data.url}`,
                     },
                   });
                 })

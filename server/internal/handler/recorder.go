@@ -75,16 +75,21 @@ func (Ctrl *Controller) UploadRecordImage(w http.ResponseWriter, r *http.Request
 	}
 
 	// Response
-	scheme := "http"
-  if r.TLS != nil {
-		scheme = "https"
-	}
-	host := r.Host
-	serverURL := fmt.Sprintf("%s://%s", scheme, host)
+	// scheme := "http"
+  // if r.TLS != nil {
+	// 	scheme = "https"
+	// }
+	// host := r.Host
+	// serverURL := fmt.Sprintf("%s://%s", scheme, host)
+
+	// resData := util.GetReturnMessage(200)
+	// resData["data"] = map[string]interface{}{
+	// 	"url": fmt.Sprintf(serverURL + "/upload/%s", fileName),
+	// }
 
 	resData := util.GetReturnMessage(200)
 	resData["data"] = map[string]interface{}{
-		"url": fmt.Sprintf(serverURL + "/upload/%s", fileName),
+		"url": fmt.Sprintf( "/upload/%s", fileName),
 	}
 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
