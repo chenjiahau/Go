@@ -38,6 +38,10 @@ type User struct {
 }
 
 // Methods
+func NewUser() UserInterface {
+	return &User{}
+}
+
 // Method to get the id of the user with the given email
 func (U *User) GetId(sp SignUpParams) int64 {
 	sqlStatement := `SELECT id FROM users WHERE email = $1`

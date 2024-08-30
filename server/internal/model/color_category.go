@@ -14,6 +14,10 @@ type ColorCategory struct {
 }
 
 // Method
+func NewColorCategory() ColorCategoryInterface {
+	return &ColorCategory{}
+}
+
 func (C *ColorCategory) Create(name string) (int64, error) {
 	sqlStatement := `INSERT INTO color_categories (name) VALUES ($1) RETURNING id;`
 

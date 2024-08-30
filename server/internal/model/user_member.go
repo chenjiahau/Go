@@ -16,6 +16,10 @@ type UserMember struct {
 }
 
 // Method
+func NewUserMember() UserMemberInterface {
+	return &UserMember{}
+}
+
 func (UM *UserMember) Create(userId, memberId int64) (int64, error) {
 	sqlStatement := `INSERT INTO user_members (user_id, member_id) VALUES ($1, $2) RETURNING id;`
 

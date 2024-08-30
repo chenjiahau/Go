@@ -31,7 +31,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if tag name already exists
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	duplicatedTagId := t.GetByName(Ctrl.User.Id, atp.Name)
 	if duplicatedTagId > 0 {
 		resErr := util.GetReturnMessage(5402)
@@ -49,7 +49,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create user tag
-	var ut model.UserTagInterface = &model.UserTag{}
+	ut := model.NewUserTag()
 	_, err = ut.Create(Ctrl.User.Id, id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -71,7 +71,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 
 func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 	// Query all tags
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	tags, err := t.QueryAll(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -100,7 +100,7 @@ func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 
 func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total tag number
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -129,7 +129,7 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 	}
 
 	// Query total tag page number
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -173,7 +173,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Query tags by page
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	count, err := t.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -253,7 +253,7 @@ func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Query tag by id
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	tag, err := t.GetById(tagId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -305,7 +305,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if tag name already exists
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	existingTag, err := t.GetById(tagId)
 	if existingTag.Id == 0 || err != nil {
 		util.WriteErrorLog(err.Error())
@@ -354,7 +354,7 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if tag exists
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	existingTag, err := t.GetById(tagId)
 	if existingTag.Id == 0 || err != nil {
 		util.WriteErrorLog(err.Error())
@@ -373,7 +373,7 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete user tag
-	var ut model.UserTagInterface = &model.UserTag{}
+	ut := model.NewUserTag()
 	ut.DeleteById(tagId)
 
 	// Response

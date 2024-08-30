@@ -29,7 +29,7 @@ func (Ctrl *Controller) GetDocumentCommentById(w http.ResponseWriter, r *http.Re
 	}
 
 	// Get document comment
-	var dc model.DocumentCommentInterface = &model.DocumentComment{}
+	dc := model.DocumentComment{}
 	documentComment, err := dc.GetById(documentId, documentCommentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -64,7 +64,7 @@ func (Ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Req
 	}
 
 	// Get all document comments
-	var dc model.DocumentCommentInterface = &model.DocumentComment{}
+	dc := model.DocumentComment{}
 	documentComments, err := dc.QueryAll(Ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -121,7 +121,7 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Check if document exists
-	var d model.DocumentInterface = &model.Document{}
+	d := model.Document{}
 	_, err = d.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -131,7 +131,7 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Check if post member exists
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	_, err = m.GetById(adcp.PostMemberId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -142,7 +142,7 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 
 	// Create document comment
 	now := util.GetNow()
-	var dc model.DocumentCommentInterface = &model.DocumentComment{}
+	dc := model.DocumentComment{}
 	documentCommentId, err := dc.Create(documentId, adcp.PostMemberId, adcp.Content, now)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -204,7 +204,7 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	}
 
 	// Check if document comment exists
-	var dc model.DocumentCommentInterface = &model.DocumentComment{}
+	dc := model.DocumentComment{}
 	existingDocumentComment, err := dc.GetById(documentId, documentCommentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -214,7 +214,7 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	}
 
 	// Check if post member exists
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	_, err = m.GetById(udcp.PostMemberId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -278,7 +278,7 @@ func (Ctrl *Controller) DeleteDocumentComment(w http.ResponseWriter, r *http.Req
 	}
 
 	// Check if document comment exists
-	var dc model.DocumentCommentInterface = &model.DocumentComment{}
+	dc := model.DocumentComment{}
 	existingDocumentComment, err := dc.GetById(documentId, documentCommentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())

@@ -24,6 +24,10 @@ type DocumentRelationMember struct {
 }
 
 // Method
+func NewDocumentRelationMember() DocumentRelationMemberInterface {
+	return &DocumentRelationMember{}
+}
+
 func (DRM *DocumentRelationMember) GetById(documentId int64) ([]DocumentRelationMember, error) {
 	sqlStatement := `
 	  SELECT drm.id, drm.document_id, drm.member_id, drm.created_at, m.name as member_name,

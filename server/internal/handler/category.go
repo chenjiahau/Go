@@ -31,7 +31,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if category name already exists
-	var c model.CategoryInterface = &model.Category{}
+	c := model.NewCategory()
 	existCategory, _ := c.GetByName(Ctrl.User.Id, acp.Name)
 	if existCategory.Id > 0{
 		resErr := util.GetReturnMessage(3402)
@@ -50,7 +50,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create user category
-	var uc model.UserCategoryInterface = &model.UserCategory{}
+	uc := model.NewUserCategory()
 	_, err = uc.Create(Ctrl.User.Id, id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -73,7 +73,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 
 func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 	// Query all categories
-	var c model.CategoryInterface = &model.Category{}
+	c := model.NewCategory()
 	categories, err := c.QueryAll(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -100,7 +100,7 @@ func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 
 func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total category number
-	var c model.CategoryInterface = &model.Category{}
+	c := model.NewCategory()
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -129,7 +129,7 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 	}
 
 	// Query total category page number
-	var c model.CategoryInterface = &model.Category{}
+	c := model.NewCategory()
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -183,7 +183,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 	}
 
 	// Query total category number
-	var c model.CategoryInterface = &model.Category{}
+	c := model.NewCategory()
 	count, err := c.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -255,7 +255,7 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Query category by id
-	var c model.CategoryInterface = &model.Category{}
+	c := model.NewCategory()
 	category, err := c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -306,7 +306,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if category name already exists
-	var c model.CategoryInterface = &model.Category{}
+	c := model.NewCategory()
 	existCategory, _ := c.GetByName(Ctrl.User.Id, ucp.Name)
 	if existCategory.Id > 0 && existCategory.Id != categoryId {
 		resErr := util.GetReturnMessage(3423)
@@ -347,7 +347,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if category exists
-	var c model.CategoryInterface = &model.Category{}
+	c := model.NewCategory()
 	existingCategory, err := c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -366,7 +366,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete user category
-	var uc model.UserCategoryInterface = &model.UserCategory{}
+	uc := model.NewUserCategory()
 	uc.DeleteById(categoryId)
 
 	// Response

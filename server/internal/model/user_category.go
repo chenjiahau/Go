@@ -16,6 +16,10 @@ type UserCategory struct {
 }
 
 // Method
+func NewUserCategory() UserCategoryInterface {
+	return &UserCategory{}
+}
+
 func (UC *UserCategory) Create(userId, categoryId int64) (int64, error) {
 	sqlStatement := `INSERT INTO user_categories (user_id, category_id) VALUES ($1, $2) RETURNING id;`
 

@@ -31,7 +31,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if member name already exists
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	duplicatedMemberId := m.GetByName(Ctrl.User.Id, amp.Name)
 	if duplicatedMemberId > 0 {
 		resErr := util.GetReturnMessage(2402)
@@ -49,7 +49,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create user member
-	var um model.UserMemberInterface = &model.UserMember{}
+	um := model.UserMember{}
 	_, err = um.Create(Ctrl.User.Id, id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -71,7 +71,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 
 func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 	// Query all members
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	members, err := m.QueryAll(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -98,7 +98,7 @@ func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 
 func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total member number
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -118,7 +118,7 @@ func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Requ
 
 func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total member number
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -182,7 +182,7 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Query members by page
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	count, err := m.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -253,7 +253,7 @@ func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get member by id
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	member, err := m.GetById(memberId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -304,7 +304,7 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if member exists
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	existingMember, err := m.GetById(memberId)
 	if existingMember.Id == 0 || err != nil {
 		util.WriteErrorLog(err.Error())
@@ -356,7 +356,7 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if member exists
-	var m model.MemberInterface = &model.Member{}
+	m := model.Member{}
 	existingMember, err := m.GetById(memberId)
 	if existingMember.Id == 0 || err != nil {
 		util.WriteErrorLog(err.Error())
@@ -375,7 +375,7 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete user member
-	var um model.UserMemberInterface = &model.UserMember{}
+	um := model.UserMember{}
 	um.DeleteById(memberId)
 
 	// Response

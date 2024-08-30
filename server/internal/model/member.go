@@ -38,6 +38,10 @@ type Member struct {
 }
 
 // Method
+func NewMember() MemberInterface {
+	return &Member{}
+}
+
 func (M *Member) GetById(id int64) (Member, error) {
 	sqlStatement := `
 		SELECT mr.id, mr.title, mr.abbr, m.id, m.name, m.is_alive

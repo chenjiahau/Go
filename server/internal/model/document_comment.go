@@ -37,6 +37,10 @@ type DocumentComment struct {
 }
 
 // Method
+func NewDocumentComment() DocumentCommentInterface {
+	return &DocumentComment{}
+}
+
 func (DC *DocumentComment) GetById(documentId, documentCommentId int64) (DocumentComment, error) {
 	sqlStatement := `
 		SELECT 

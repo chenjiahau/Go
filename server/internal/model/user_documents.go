@@ -17,6 +17,10 @@ type UserDocument struct {
 }
 
 // Method
+func NewUserDocument() UserDocumentInterface {
+	return &UserDocument{}
+}
+
 func (UD *UserDocument) Create(userId, memberId int64) (int64, error) {
 	sqlStatement := `INSERT INTO user_documents (user_id, document_id) VALUES ($1, $2) RETURNING id;`
 

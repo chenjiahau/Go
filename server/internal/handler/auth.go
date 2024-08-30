@@ -17,7 +17,7 @@ func (Ctrl *Controller) VerifyToken(w http.ResponseWriter, r *http.Request) {
 func (Ctrl *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
-	var t model.TokenInterface = &model.Token{}
+	t := model.NewToken()
 	tokenString := Ctrl.User.Token
 	err := t.SetIsAlive(tokenString, false)
 

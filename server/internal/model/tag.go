@@ -38,6 +38,10 @@ type Tag struct {
 }
 
 // Method
+func NewTag() TagInterface {
+	return &Tag{}
+}
+
 func (T *Tag) GetById(id int64) (Tag, error) {
 	sqlStatement := `
 		SELECT t.id, cc.id, cc.name, c.id, c.name, c.hex_code, c.rgb_code, t.name

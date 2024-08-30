@@ -52,6 +52,10 @@ type Document struct {
 }
 
 // Method
+func NewDocument() DocumentInterface {
+	return &Document{}
+}
+
 func (D *Document) GetById(userId, id int64) (Document, error) {
 	sqlStatement := `
 		SELECT d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at

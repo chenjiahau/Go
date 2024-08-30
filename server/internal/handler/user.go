@@ -41,7 +41,7 @@ func (Ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if email is already registered
-	var u model.UserInterface = &model.User{}
+	u := model.NewUser()
   id := u.GetId(sp)
   if id != 0 {
 		resErr := util.GetReturnMessage(1404)
@@ -98,7 +98,7 @@ func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Query user
-	var u model.UserInterface = &model.User{}
+	u := model.NewUser()
 	err = u.Query(si)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -117,7 +117,7 @@ func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var t model.TokenInterface = &model.Token{}
+  t := model.NewToken()
 	err = t.Create(user.Id, tokenString, util.GetNow(), util.GetNow().AddDate(0, 0, 1)) // 1 day
 	if err != nil {
 		util.WriteErrorLog(err.Error())

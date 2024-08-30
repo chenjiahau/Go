@@ -8,7 +8,7 @@ import (
 )
 
 func (Ctrl *Controller) GetAllColorCategory(w http.ResponseWriter, r *http.Request) {
-	var cc model.ColorCategoryInterface = &model.ColorCategory{}
+	cc := model.NewColorCategory()
 	colorCategories, err := cc.QueryAll()
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -32,7 +32,7 @@ func (Ctrl *Controller) GetAllColorCategory(w http.ResponseWriter, r *http.Reque
 }
 
 func (Ctrl *Controller) GetAllColor(w http.ResponseWriter, r *http.Request) {
-	var c model.ColorInterface = &model.Color{}
+	c := model.NewColor()
 	colors, err := c.QueryAll()
 	if err != nil {
 		util.WriteErrorLog(err.Error())

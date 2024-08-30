@@ -38,6 +38,10 @@ type SubCategory struct {
 }
 
 // Method
+func NewSubCategory() SubCategoryInterface {
+	return &SubCategory{}
+}
+
 func (SC *SubCategory) GetById(id , subId int64) (SubCategory, error) {
 	sqlStatement := `SELECT * FROM subcategories WHERE id = $2 and category_id = $1;`
 

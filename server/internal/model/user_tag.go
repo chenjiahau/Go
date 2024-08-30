@@ -16,6 +16,10 @@ type UserTag struct {
 }
 
 // Method
+func NewUserTag() UserTagInterface {
+	return &UserTag{}
+}
+
 func (UT *UserTag) Create(userId, tagId int64) (int64, error) {
 	sqlStatement := `INSERT INTO user_tags (user_id, tag_id) VALUES ($1, $2) RETURNING id;`
 

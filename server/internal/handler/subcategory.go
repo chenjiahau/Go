@@ -21,7 +21,7 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if category exists
-	var c model.CategoryInterface = &model.Category{}
+	c := model.Category{}
 	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -50,7 +50,7 @@ func (Ctrl *Controller) AddSubCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if subcategory name already exists
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	sc := model.NewSubCategory()
 	existSubCategory, _ := sc.GetByName(categoryId, ascp.Name)
 	if existSubCategory.Id > 0 {
 		resErr := util.GetReturnMessage(4402)
@@ -91,7 +91,7 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var c model.CategoryInterface = &model.Category{}
+	c := model.Category{}
 	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -101,7 +101,7 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 	}
 
 	// Query all subcategories
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	sc := model.NewSubCategory()
 	subCategories, err := sc.QueryAll(categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -137,7 +137,7 @@ func (Ctrl *Controller) GetTotalSubCategoryNumber(w http.ResponseWriter, r *http
 	}
 
 	// Query total subcategory number
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	sc := model.NewSubCategory()
 	count, err := sc.QueryTotalCount(categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -174,7 +174,7 @@ func (Ctrl *Controller) GetTotalSubCategoryPageNumber(w http.ResponseWriter, r *
 	}
 
 	// Query total subcategory page number
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	sc := model.NewSubCategory()
 	count, err := sc.QueryTotalCount(categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -236,7 +236,7 @@ func (Ctrl *Controller) GetSubCategoryByPage(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Query total subcategory number
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	sc := model.NewSubCategory()
 	count, err := sc.QueryTotalCount(categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -320,7 +320,7 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 	}
 
   // Check if category exists
-	var c model.CategoryInterface = &model.Category{}
+	c := model.Category{}
 	_, err = c.GetById(Ctrl.User.Id, categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -330,7 +330,7 @@ func (Ctrl *Controller) GetSubCategoryById(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Check if subcategory exists
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	sc := model.NewSubCategory()
 	subCategory, err := sc.GetById(categoryId, subCategoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -399,7 +399,7 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 	}
 
 	// Check if subcategory exists
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	sc := model.NewSubCategory()
 	subCategory, _ := sc.GetById(categoryId, subCategoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -459,7 +459,7 @@ func (Ctrl *Controller) DeleteSubCategory(w http.ResponseWriter, r *http.Request
 	}
 
 	// Check if category exists
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	sc := model.NewSubCategory()
 	existingSubCategory, err := sc.GetById(categoryId, subCategoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())

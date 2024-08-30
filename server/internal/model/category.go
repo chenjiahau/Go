@@ -38,6 +38,10 @@ type Category struct {
 }
 
 // Method
+func NewCategory() CategoryInterface {
+	return &Category{}
+}
+
 func (C *Category) GetById(userId, id int64) (Category, error) {
 	sqlStatement := `
 		SELECT c.id, c.name, c.created_at, c.is_alive,

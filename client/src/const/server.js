@@ -1,6 +1,6 @@
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-const APIRoot = `http://${serverUrl}:8080/api`;
+const APIRoot = `${serverUrl}/api`;
 
 export default {
   API_URL: APIRoot,

@@ -24,6 +24,10 @@ type Token struct {
 }
 
 // Methods
+func NewToken() TokenInterface {
+	return &Token{}
+}
+
 // Method to get the token of the user with the given user id
 func (T *Token) GetByUserId(userId int64) ([]Token, error) {
 	sqlStatement := `SELECT token FROM tokens WHERE user_id = $1 and is_alive = true;`

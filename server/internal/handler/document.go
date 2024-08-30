@@ -21,7 +21,7 @@ func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Get document
-	var d model.DocumentInterface = &model.Document{}
+	d := model.NewDocument()
 	document, err := d.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -49,7 +49,7 @@ func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) 
 
 func (Ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
 	// Get all documents
-	var d model.DocumentInterface = &model.Document{}
+	d := model.NewDocument()
 	documents, err := d.QueryAll(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -81,7 +81,7 @@ func (Ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
 
 func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Request) {
 	// Get total document number
-	var d model.DocumentInterface = &model.Document{}
+	d := model.NewDocument()
 	total, err := d.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -101,7 +101,7 @@ func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Re
 
 func (Ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total category page number
-	var d model.DocumentInterface = &model.Document{}
+	d := model.NewDocument()
 	count, err := d.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -166,7 +166,7 @@ func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request
 	}
 
 	// Query total document number
-	var d model.DocumentInterface = &model.Document{}
+	d := model.NewDocument()
 	count, err := d.QueryTotalCount(Ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -248,7 +248,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if document name already exists
-	var d model.DocumentInterface = &model.Document{}
+	d := model.NewDocument()
 	duplicatedDocumentId := d.GetByName(Ctrl.User.Id, adp.Name)
 	if duplicatedDocumentId != 0 {
 		resErr := util.GetReturnMessage(7402)
@@ -257,7 +257,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check category and subcategory
-	var c model.CategoryInterface = &model.Category{}
+	c := model.NewCategory()
 	_, err = c.GetById(Ctrl.User.Id, adp.CategoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -266,7 +266,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var sc model.SubCategoryInterface = &model.SubCategory{}
+	sc := model.NewSubCategory()
 	_, err = sc.GetById(adp.CategoryId, adp.SubCategoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -282,7 +282,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var m model.MemberInterface = &model.Member{}
+	m := model.NewMember()
 	_, err = m.GetById(adp.PostMemberId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -302,7 +302,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check tags
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	for _, tagId := range adp.TagIds {
 		_, err = t.GetById(tagId)
 		if err != nil {
@@ -323,8 +323,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Create document
 	now := util.GetNow()
-	var document model.DocumentInterface = &model.Document{}
-	documentId, err := document.Create(
+	documentId, err := d.Create(
 		adp.Name, adp.CategoryId, adp.SubCategoryId, adp.PostMemberId,
 		adp.RelationMemberIds, adp.TagIds, adp.Content, now)
 	if err != nil {
@@ -335,7 +334,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create user_document
-	var ud model.UserDocumentInterface = &model.UserDocument{}
+	ud := model.NewUserDocument()
 	_, err = ud.Create(Ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -345,7 +344,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get created document
-	createdDocument, err := document.GetById(Ctrl.User.Id, documentId)
+	createdDocument, err := d.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7413)
@@ -398,7 +397,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if document name already exists
-	var d model.DocumentInterface = &model.Document{}
+	d := model.NewDocument()
 	duplicatedDocumentId := d.GetByName(Ctrl.User.Id, udp.Name)
 	if duplicatedDocumentId != 0 && duplicatedDocumentId != documentId {
 		resErr := util.GetReturnMessage(7423)
@@ -423,7 +422,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if post member exists
-	var m model.MemberInterface = &model.Member{}
+	m := model.NewMember()
 	_, err = m.GetById(udp.PostMemberId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -444,7 +443,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check tags
-	var t model.TagInterface = &model.Tag{}
+	t := model.NewTag()
 	for _, tagId := range udp.TagIds {
 		_, err = t.GetById(tagId)
 		if err != nil {
@@ -504,7 +503,7 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get document
-	var d model.DocumentInterface = &model.Document{}
+	d := model.NewDocument()
 	existingDocument, err := d.GetById(Ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -514,17 +513,17 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete document comments
-	var dc model.DocumentCommentInterface = &model.DocumentComment{}
+	dc := model.NewDocumentComment()
 	dc.DeleteById(documentId)
 
 	// Delete document relation members
-	var drm model.DocumentRelationMemberInterface = &model.DocumentRelationMember{}
+	drm := model.NewDocumentRelationMember()
 	for _, relationMember := range existingDocument.RelationMembers {
 		drm.Delete(relationMember.Id)
 	}
 
 	// Delete document tags
-	var dt model.DocumentTagInterface = &model.DocumentTag{}
+	dt := model.NewDocumentTag()
 	for _, tag := range existingDocument.Tags {
 		dt.Delete(tag.Id)
 	}
@@ -539,7 +538,7 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete user document
-	var ud model.UserDocumentInterface = &model.UserDocument{}
+	ud := model.NewUserDocument()
 	ud.DeleteById(documentId)
 
 	// Response

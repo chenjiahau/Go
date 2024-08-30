@@ -9,7 +9,7 @@ import (
 
 func (Ctrl *Controller) GetAllMemberRole(w http.ResponseWriter, r *http.Request) {
 	// Get all member roles
-	var mr model.MemberRoleInterface = &model.MemberRole{}
+	mr := model.MemberRole{}
 	memberRoles, err := mr.QueryAll()
 	if err != nil {
 		util.WriteErrorLog(err.Error())

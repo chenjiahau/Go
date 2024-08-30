@@ -24,6 +24,10 @@ type DocumentTag struct {
 }
 
 // Method
+func NewDocumentTag() DocumentTagInterface {
+	return &DocumentTag{}
+}
+
 func (DT *DocumentTag) GetByTags(documentId int64) ([]DocumentTag, error) {
 	sqlStatement := `
 		SELECT dt.id, dt.document_id, dt.tag_id, dt.created_at,

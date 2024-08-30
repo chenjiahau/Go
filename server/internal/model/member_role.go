@@ -15,6 +15,10 @@ type MemberRole struct {
 }
 
 // Method
+func NewMemberRole() MemberRoleInterface {
+	return &MemberRole{}
+}
+
 func (MR *MemberRole) Create(title, abbr string) (int64, error) {
 	sqlStatement := `INSERT INTO member_roles (title, abbr) VALUES ($1, $2) RETURNING id;`
 
