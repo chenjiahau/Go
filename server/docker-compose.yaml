@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:12-alpine
+    container_name: server-db-mis
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: mis
+      POSTGRES_PASSWORD: mis
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: server-pgadmin-mis
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@mis.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "8001:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    links:
+      - "db:pgsql-server"
+volumes:
+  db-data:
+  pgadmin-data:

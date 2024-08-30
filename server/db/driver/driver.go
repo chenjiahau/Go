@@ -8,7 +8,7 @@ import (
 )
 
 var SystemInfo = "MIS Version 1.0.0"
-var PostgreSQLDataSourceName = "postgres://root:password@localhost:5432/mis?sslmode=disable"
+var PostgreSQLDataSourceName = "postgres://mis:mis@localhost:5432/mis?sslmode=disable"
 
 type DBConn struct {
 	SQL *sql.DB
