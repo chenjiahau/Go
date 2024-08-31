@@ -23,7 +23,7 @@ const Documents = () => {
   // State
   const [initialized, setInitialized] = useState(false);
   const [orderBy, setOrderBy] = useState("id");
-  const [order, setOrder] = useState("asc");
+  const [order, setOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(pageSizeDefinition[1]);
   const [totalDocumentCount, setTotalDocumentCount] = useState(0);

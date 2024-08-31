@@ -176,7 +176,7 @@ func (D *Document) Create(
 func (C *Document) QueryAll(userId int64) ([]Document, error) {
 	sqlStatement := `
 		SELECT d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at
-		FROM documents d`;
+		FROM documents d ORDER BY d.created_at DESC;`;
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement)
 	if err != nil {
@@ -269,7 +269,7 @@ func (C *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 	case "created":
 		orderBy = "created_at"
 	default:
-		orderBy = "id"
+		orderBy = "created_at"
 	}
 
 	sqlStatement := fmt.Sprintf(`
