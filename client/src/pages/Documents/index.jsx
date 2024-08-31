@@ -9,6 +9,7 @@ import apiConfig from "@/const/config/api";
 // Component
 import { pageSizeDefinition } from "@/components/Pagination";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import Search from "./components/Search";
 import Table from "./components/Table";
 import Page from "./components/Page";
 
@@ -20,6 +21,7 @@ const Documents = () => {
   const navigate = useNavigate();
 
   // State
+  const [initialized, setInitialized] = useState(false);
   const [orderBy, setOrderBy] = useState("id");
   const [order, setOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,6 +30,7 @@ const Documents = () => {
   const [documents, setDocuments] = useState([]);
   const [selectedDocument, setSelectedDocument] = useState({});
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false);
+  const [search, setSearch] = useState("");
 
   // Method
   const handleInitialization = useCallback(async () => {
@@ -72,7 +75,26 @@ const Documents = () => {
     }
 
     setDocuments(updatedDocuments);
+    setInitialized(true);
   }, [orderBy, order, currentPage, pageSize, selectedDocument?.id]);
+
+  const searchDocuments = useCallback(async () => {
+    if (!initialized) {
+      return;
+    }
+
+    if (!search || search.length < 3) {
+      handleInitialization();
+      return;
+    }
+
+    const queryString = `?keyword=${search}`;
+    const response = await apiHandler.get(
+      `${apiConfig.resource.SEARCH_DOCUMENTS}${queryString}`
+    );
+
+    setDocuments(response.data.data || []);
+  }, [handleInitialization, initialized, search]);
 
   const changeOrder = (newOrderBy) => {
     if (newOrderBy === orderBy) {
@@ -162,6 +184,16 @@ const Documents = () => {
   };
 
   const linkToDocument = (document) => {
+    if (search) {
+      window.open(
+        `/#${routerConfig.routes.DOCUMENT.replace(
+          ":id",
+          document.id
+        )}?keyword=${search}`
+      );
+      return;
+    }
+
     navigate(routerConfig.routes.DOCUMENT.replace(":id", document.id));
   };
 
@@ -187,37 +219,65 @@ const Documents = () => {
         />
       </div>
 
-      <Table
-        currentPage={currentPage}
-        pageSize={pageSize}
-        orderBy={orderBy}
-        order={order}
-        onChangeOrder={changeOrder}
-        documents={documents}
-        onClickDocumentName={clickDocumentName}
-        onChangeDocumentName={changeDocumentName}
-        selectedDocument={selectedDocument}
-        onShowConfirmationModal={showConfirmationModal}
-        saveDocument={saveDocument}
-        onLinkToDocument={linkToDocument}
+      <Search
+        search={search}
+        setSearch={setSearch}
+        onSearchDocuments={searchDocuments}
       />
 
-      <Page
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalDocumentCount={totalDocumentCount}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-      />
+      {search ? (
+        <>
+          <Table
+            search={search}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            orderBy={orderBy}
+            order={order}
+            onChangeOrder={changeOrder}
+            documents={documents}
+            onClickDocumentName={clickDocumentName}
+            onChangeDocumentName={changeDocumentName}
+            selectedDocument={selectedDocument}
+            onShowConfirmationModal={showConfirmationModal}
+            saveDocument={saveDocument}
+            onLinkToDocument={linkToDocument}
+          />
+        </>
+      ) : (
+        <>
+          <Table
+            currentPage={currentPage}
+            pageSize={pageSize}
+            orderBy={orderBy}
+            order={order}
+            onChangeOrder={changeOrder}
+            documents={documents}
+            onClickDocumentName={clickDocumentName}
+            onChangeDocumentName={changeDocumentName}
+            selectedDocument={selectedDocument}
+            onShowConfirmationModal={showConfirmationModal}
+            saveDocument={saveDocument}
+            onLinkToDocument={linkToDocument}
+          />
 
-      <ConfirmationModal
-        isOpen={isOpenConfirmationModal}
-        onClose={() => {
-          setSelectedDocument(null);
-          setIsOpenConfirmationModal(false);
-        }}
-        onConfirm={deleteDocument}
-      />
+          <Page
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalDocumentCount={totalDocumentCount}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+          />
+
+          <ConfirmationModal
+            isOpen={isOpenConfirmationModal}
+            onClose={() => {
+              setSelectedDocument(null);
+              setIsOpenConfirmationModal(false);
+            }}
+            onConfirm={deleteDocument}
+          />
+        </>
+      )}
     </>
   );
 };

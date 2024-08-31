@@ -8,6 +8,7 @@ import { formatDateTime } from "@/util/datetime.util";
 
 const Table = (props) => {
   const {
+    search,
     currentPage,
     pageSize,
     orderBy,
@@ -36,65 +37,98 @@ const Table = (props) => {
                 <th width='30'>
                   <div className='n'>#</div>
                 </th>
-                <th width='60%' onClick={() => onChangeOrder("name")}>
-                  <div className='order'>
-                    <span>Document</span>
-                    {orderBy === "name" && (
-                      <i
-                        className={`fa-solid fa-arrow-${
-                          order === "asc" ? "down" : "up"
-                        }`}
-                      />
-                    )}
-                  </div>
+                <th
+                  width='60%'
+                  onClick={() => !search && onChangeOrder("name")}
+                >
+                  {search ? (
+                    <div>
+                      <span>Document</span>
+                    </div>
+                  ) : (
+                    <div className='order'>
+                      <span>Document</span>
+                      {orderBy === "name" && (
+                        <i
+                          className={`fa-solid fa-arrow-${
+                            order === "asc" ? "down" : "up"
+                          }`}
+                        />
+                      )}
+                    </div>
+                  )}
                 </th>
-                <th onClick={() => onChangeOrder("category")}>
-                  <div className='order'>
-                    <span>Category</span>
-                    {orderBy === "category" && (
-                      <i
-                        className={`fa-solid fa-arrow-${
-                          order === "asc" ? "down" : "up"
-                        }`}
-                      />
-                    )}
-                  </div>
+                <th onClick={() => !search && onChangeOrder("category")}>
+                  {search ? (
+                    <div>
+                      <span>Category</span>
+                    </div>
+                  ) : (
+                    <div className='order'>
+                      <span>Category</span>
+                      {orderBy === "category" && (
+                        <i
+                          className={`fa-solid fa-arrow-${
+                            order === "asc" ? "down" : "up"
+                          }`}
+                        />
+                      )}
+                    </div>
+                  )}
                 </th>
-                <th onClick={() => onChangeOrder("subcategory")}>
-                  <div className='order'>
-                    <span>Subcategory</span>
-                    {orderBy === "subcategory" && (
-                      <i
-                        className={`fa-solid fa-arrow-${
-                          order === "asc" ? "down" : "up"
-                        }`}
-                      />
-                    )}
-                  </div>
+                <th onClick={() => !search && onChangeOrder("subcategory")}>
+                  {search ? (
+                    <div>
+                      <span>Subcategory</span>
+                    </div>
+                  ) : (
+                    <div className='order'>
+                      <span>Subcategory</span>
+                      {orderBy === "subcategory" && (
+                        <i
+                          className={`fa-solid fa-arrow-${
+                            order === "asc" ? "down" : "up"
+                          }`}
+                        />
+                      )}
+                    </div>
+                  )}
                 </th>
-                <th onClick={() => onChangeOrder("postMember")}>
-                  <div className='order'>
-                    <span>Author</span>
-                    {orderBy === "postMember" && (
-                      <i
-                        className={`fa-solid fa-arrow-${
-                          order === "asc" ? "down" : "up"
-                        }`}
-                      />
-                    )}
-                  </div>
+                <th onClick={() => !search && onChangeOrder("postMember")}>
+                  {search ? (
+                    <div>
+                      <span>Author</span>
+                    </div>
+                  ) : (
+                    <div className='order'>
+                      <span>Author</span>
+                      {orderBy === "postMember" && (
+                        <i
+                          className={`fa-solid fa-arrow-${
+                            order === "asc" ? "down" : "up"
+                          }`}
+                        />
+                      )}
+                    </div>
+                  )}
                 </th>
-                <th onClick={() => onChangeOrder("created")}>
-                  <div className='order'>
-                    <span>Created Date</span>
-                    {orderBy === "created" && (
-                      <i
-                        className={`fa-solid fa-arrow-${
-                          order === "asc" ? "down" : "up"
-                        }`}
-                      />
-                    )}
-                  </div>
+                <th onClick={() => !search && onChangeOrder("created")}>
+                  {search ? (
+                    <div>
+                      <span>Created Date</span>
+                    </div>
+                  ) : (
+                    <div className='order'>
+                      <span>Created Date</span>
+                      {orderBy === "created" && (
+                        <i
+                          className={`fa-solid fa-arrow-${
+                            order === "asc" ? "down" : "up"
+                          }`}
+                        />
+                      )}
+                    </div>
+                  )}
                 </th>
                 <th width='50'>
                   <div className='n'></div>
@@ -161,12 +195,18 @@ const Table = (props) => {
                         </div>
                       </div>
                     ) : (
-                      <div
-                        className='edit-button title height'
-                        onClick={() => onClickDocumentName(document.id)}
-                      >
-                        {document.name}
-                      </div>
+                      <>
+                        {search ? (
+                          <div className='title height'>{document.name}</div>
+                        ) : (
+                          <div
+                            className='edit-button title height'
+                            onClick={() => onClickDocumentName(document.id)}
+                          >
+                            {document.name}
+                          </div>
+                        )}
+                      </>
                     )}
                   </td>
                   <td>
@@ -183,12 +223,14 @@ const Table = (props) => {
                   </td>
                   <td>
                     <div className='action'>
+                      {!search && (
+                        <i
+                          className='fa-solid fa-trash'
+                          onClick={() => onShowConfirmationModal(document.id)}
+                        />
+                      )}
                       <i
-                        className='fa-solid fa-trash'
-                        onClick={() => onShowConfirmationModal(document.id)}
-                      />
-                      <i
-                        className='fa-solid fa-file'
+                        className={`fa-solid ${search ? "fa-eye" : "fa-file"}`}
                         onClick={() => onLinkToDocument(document)}
                       />
                     </div>

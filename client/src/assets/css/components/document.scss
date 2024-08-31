@@ -1,6 +1,12 @@
 .document {
   padding: 16px;
 
+  .search-keyword {
+    text-align: right;
+    color: var(--primary-color);
+    margin-bottom: 32px;
+  }
+
   .title {
     display: flex;
     justify-content: space-between;

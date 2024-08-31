@@ -42,6 +42,7 @@ const resource = {
   DOCUMENT_COMMENTS: "/auth/document/:id/comments",
   ADD_DOCUMENT_COMMENT: "/auth/document/:id/comment",
   EDIT_DOCUMENT_COMMENT: "/auth/document/:id/comment/:commentId",
+  SEARCH_DOCUMENTS: "/auth/documents/search",
 }
 
 export default {

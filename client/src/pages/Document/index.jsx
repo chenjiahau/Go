@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, Fragment } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { cloneDeep } from "lodash";
 
 // Const
@@ -17,7 +17,9 @@ import messageUtil, { commonMessage } from "@/util/message.util";
 
 const Document = () => {
   const navigate = useNavigate();
+  const { search } = useLocation();
   const { id } = useParams();
+  const keyword = new URLSearchParams(search).get("keyword");
 
   // State
   const [showDocument, setShowDocument] = useState(true);
@@ -50,7 +52,7 @@ const Document = () => {
           response.data.data.map((comment) => {
             return {
               ...comment,
-              showComment: false,
+              showComment: keyword ? true : false,
             };
           })
         );
@@ -130,19 +132,33 @@ const Document = () => {
         </Link>
       </div>
 
-      <div className='floating-button'>
-        <i
-          className='fa-solid fa-plus'
-          onClick={() =>
-            navigate(
-              routerConfig.routes.ADD_DOCUMENT_COMMENT.replace(":id", id)
-            )
-          }
-        />
-      </div>
+      {keyword ? (
+        <div className='floating-button'>
+          <i
+            className='fa-solid fa-arrow-right-from-bracket'
+            onClick={() => window.close()}
+          />
+        </div>
+      ) : (
+        <div className='floating-button'>
+          <i
+            className='fa-solid fa-plus'
+            onClick={() =>
+              navigate(
+                routerConfig.routes.ADD_DOCUMENT_COMMENT.replace(":id", id)
+              )
+            }
+          />
+        </div>
+      )}
 
       {/* Document */}
       <div className='document'>
+        {keyword && (
+          <h1 className='search-keyword'>
+            <span>{`Search: ${keyword}`}</span>
+          </h1>
+        )}
         <div className='title'>{document.name}</div>
         <div className='box'>
           <div className='box-author'>
@@ -150,18 +166,22 @@ const Document = () => {
             <div className='right'>
               <div className='data'>{formatDateTime(document.createdAt)}</div>
               <div className='action'>
-                <i
-                  className='fa-solid fa-pen'
-                  onClick={() =>
-                    navigate(
-                      routerConfig.routes.EDIT_DOCUMENT.replace(":id", id)
-                    )
-                  }
-                />
-                <i
-                  className='fa-solid fa-expand'
-                  onClick={() => setShowDocument(!showDocument)}
-                />
+                {!keyword && (
+                  <>
+                    <i
+                      className='fa-solid fa-pen'
+                      onClick={() =>
+                        navigate(
+                          routerConfig.routes.EDIT_DOCUMENT.replace(":id", id)
+                        )
+                      }
+                    />
+                    <i
+                      className='fa-solid fa-expand'
+                      onClick={() => setShowDocument(!showDocument)}
+                    />
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -208,33 +228,42 @@ const Document = () => {
                             {formatDateTime(comment.createdAt)}
                           </div>
                           <div className='action'>
-                            <i
-                              className='fa-solid fa-pen'
-                              onClick={() =>
-                                navigate(
-                                  routerConfig.routes.EDIT_DOCUMENT_COMMENT.replace(
-                                    ":id",
-                                    id
-                                  ).replace(":commentId", comment.id)
-                                )
-                              }
-                            />
-                            <i
-                              className='fa-solid fa-trash'
-                              onClick={() => showConfirmationModal(comment.id)}
-                            />
-                            <i
-                              className='fa-solid fa-expand'
-                              onClick={() => {
-                                {
-                                  const updatedDocumentComments =
-                                    cloneDeep(documentComments);
-                                  updatedDocumentComments[index].showComment =
-                                    !comment.showComment;
-                                  setDocumentComments(updatedDocumentComments);
-                                }
-                              }}
-                            />
+                            {!keyword && (
+                              <>
+                                <i
+                                  className='fa-solid fa-pen'
+                                  onClick={() =>
+                                    navigate(
+                                      routerConfig.routes.EDIT_DOCUMENT_COMMENT.replace(
+                                        ":id",
+                                        id
+                                      ).replace(":commentId", comment.id)
+                                    )
+                                  }
+                                />
+                                <i
+                                  className='fa-solid fa-trash'
+                                  onClick={() =>
+                                    showConfirmationModal(comment.id)
+                                  }
+                                />
+                                <i
+                                  className='fa-solid fa-expand'
+                                  onClick={() => {
+                                    {
+                                      const updatedDocumentComments =
+                                        cloneDeep(documentComments);
+                                      updatedDocumentComments[
+                                        index
+                                      ].showComment = !comment.showComment;
+                                      setDocumentComments(
+                                        updatedDocumentComments
+                                      );
+                                    }
+                                  }}
+                                />
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
