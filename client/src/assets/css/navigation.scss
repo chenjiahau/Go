@@ -48,4 +48,10 @@
       }
     }
   }
+
+  .nav_active {
+    background-color: var(--black-color);
+    color: var(--white-color);
+    font-weight: bold;
+  }
 }

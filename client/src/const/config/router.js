@@ -14,6 +14,7 @@ const routes = {
   DOCUMENTS_COMMENTS: '/document/:id/comments',
   ADD_DOCUMENT_COMMENT: '/document/:id/comment',
   EDIT_DOCUMENT_COMMENT: '/document/:id/comment/:commentId',
+  SETTING: '/setting',
 };
 
 // Others
