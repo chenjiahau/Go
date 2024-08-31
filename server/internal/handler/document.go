@@ -557,3 +557,43 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
+
+func (Ctrl *Controller) GetDocumentBySearch(w http.ResponseWriter, r *http.Request) {
+	// Validate request
+	search := r.URL.Query().Get("keyword")
+	if search == "" {
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Get document by search
+	d := model.NewDocument()
+	documents, err := d.QueryBySearch(Ctrl.User.Id, search)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7441)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Response
+	resData := util.GetReturnMessage(7207)
+	resData["data"] = []map[string]interface{}{}
+
+	for _, document := range documents {
+		resData["data"] = append(resData["data"].([]map[string]interface{}) , map[string]interface{}{
+			"id": document.Id,
+			"name": document.Name,
+			"category": document.Category,
+			"subCategory": document.SubCategory,
+			"postMember": document.PostMember,
+			"relationMembers": document.RelationMembers,
+			"tags": document.Tags,
+			"content": document.Content,
+			"createdAt": document.CreatedAt,
+		})
+	}
+
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
+}

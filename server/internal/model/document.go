@@ -3,6 +3,8 @@ package model
 import (
 	"fmt"
 	"time"
+
+	"ivanfun.com/mis/internal/config"
 )
 
 // Interface
@@ -15,6 +17,7 @@ type DocumentInterface interface {
 	QueryByPage(int64, int, int, string, string)															([]Document, error)
 	Update(int64, []int64, []int64)																						(error)
 	Delete(int64)																															(Document, error)
+	QueryBySearch(int64, string)																							([]Document, error)
 }
 
 // Request model
@@ -412,4 +415,89 @@ func (D *Document) Delete(userId int64) (Document, error) {
 	}
 
 	return document, nil
+}
+
+func (D *Document) QueryBySearch(userId int64, keyword string) ([]Document, error) {
+	sqlStatement := fmt.Sprintf(`
+		SELECT
+		DISTINCT d.id,
+		d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at
+		FROM documents d
+		INNER JOIN members m ON m.id  = d.post_member_id
+		INNER JOIN categories c ON c.id = d.category_id
+		INNER JOIN subcategories s ON s.id = d.subcategory_id
+		FULL JOIN document_comments dc ON dc.document_id = d.id
+		FULL JOIN document_tags dt ON dt.document_id = d.id
+		WHERE
+		d.id IN (SELECT document_id FROM user_documents WHERE user_id = %d)
+		AND (UPPER(d.name) LIKE UPPER($1)
+		OR UPPER(c.name) LIKE UPPER($1)
+		OR UPPER(s.name) like UPPER($1)
+		OR UPPER(m.name) LIKE UPPER($1)
+		OR dt.tag_id IN (SELECT id FROM tags t WHERE t.id = dt.tag_id AND UPPER(t.name) LIKE UPPER($1))
+		OR UPPER(d.content) LIKE UPPER($1)
+		OR UPPER(dc.content) LIKE UPPER($1))
+		ORDER BY d.created_at DESC
+		LIMIT $2`, userId)
+
+	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, "%" + keyword + "%", config.App["SearchingLimit"].(int))
+	if err != nil {
+		return []Document{}, err
+	}
+
+	var documents []Document
+	for rows.Next() {
+		var id, categoryId, subcategoryId, postMemberId int64
+		var name, content string
+		var createdAt time.Time
+
+		err = rows.Scan(&id, &name, &categoryId, &subcategoryId, &postMemberId, &content, &createdAt)
+		if err != nil {
+			return []Document{}, err
+		}
+
+		var c CategoryInterface = &Category{}
+		category, err := c.GetById(userId, categoryId)
+		if err != nil {
+			return []Document{}, err
+		}
+
+		var sc SubCategoryInterface = &SubCategory{}
+		subCategory, err := sc.GetById(categoryId, subcategoryId)
+		if err != nil {
+			return []Document{}, err
+		}
+
+		var m MemberInterface = &Member{}
+		postMember, err := m.GetById(postMemberId)
+		if err != nil {
+			return []Document{}, err
+		}
+
+		var drm DocumentRelationMemberInterface = &DocumentRelationMember{}
+		relationMembers, err := drm.GetById(id)
+		if err != nil {
+			return []Document{}, err
+		}
+
+		var dt DocumentTagInterface = &DocumentTag{}
+		tags, err := dt.GetByTags(id)
+		if err != nil {
+			return []Document{}, err
+		}
+
+		documents = append(documents, Document{
+			Id: id,
+			Name: name,
+			Category: category,
+			SubCategory: subCategory,
+			PostMember: postMember,
+			RelationMembers: relationMembers,
+			Tags: tags,
+			Content: content,
+			CreatedAt: createdAt,
+		})
+	}
+
+	return documents, nil
 }

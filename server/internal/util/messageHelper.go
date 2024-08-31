@@ -341,6 +341,8 @@ var DocumentSuccessMessage = map[int]string {
 	7205: "Document updated successfully",
 	// Delete document
 	7206: "Document deleted successfully",
+	// Search document
+	7207: "Success to search document",
 }
 
 var DocumentErrorMessage = map[int]string {
@@ -363,6 +365,8 @@ var DocumentErrorMessage = map[int]string {
 	// Delete document
 	7431: "Document is not found",
 	7432: "Failed to delete document",
+	// Search document
+	7441: "Failed to search document",
 }
 
 // Document comment

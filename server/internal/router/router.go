@@ -90,6 +90,8 @@ func GetRoutes() http.Handler {
 		mux.Get("/document/{id}/comment/{commentId}", handler.Ctrl.GetDocumentCommentById)
 		mux.Put("/document/{id}/comment/{commentId}", handler.Ctrl.UpdateDocumentComment)
 		mux.Delete("/document/{id}/comment/{commentId}", handler.Ctrl.DeleteDocumentComment)
+
+		mux.Get("/documents/search", handler.Ctrl.GetDocumentBySearch)
 	})
 
 	// Index route
