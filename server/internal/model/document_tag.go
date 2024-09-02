@@ -28,7 +28,7 @@ func NewDocumentTag() DocumentTagInterface {
 	return &DocumentTag{}
 }
 
-func (DT *DocumentTag) GetByTags(documentId int64) ([]DocumentTag, error) {
+func (dt *DocumentTag) GetByTags(documentId int64) ([]DocumentTag, error) {
 	sqlStatement := `
 		SELECT dt.id, dt.document_id, dt.tag_id, dt.created_at,
 		(
@@ -79,7 +79,7 @@ func (DT *DocumentTag) GetByTags(documentId int64) ([]DocumentTag, error) {
 	return documentTags, nil
 }
 
-func (DT *DocumentTag) Create(documentId, tagId int64, createdAt time.Time) (int64, error) {
+func (dt *DocumentTag) Create(documentId, tagId int64, createdAt time.Time) (int64, error) {
 	sqlStatement := `INSERT INTO document_tags (document_id, tag_id, created_at) VALUES ($1, $2, $3) RETURNING id;`
 
 	var id int64
@@ -91,7 +91,7 @@ func (DT *DocumentTag) Create(documentId, tagId int64, createdAt time.Time) (int
 	return id, nil
 }
 
-func (DT *DocumentTag) Delete(tagId int64) (DocumentTag, error) {
+func (dt *DocumentTag) Delete(tagId int64) (DocumentTag, error) {
 	sqlStatement := `DELETE FROM document_tags WHERE id = $1 RETURNING document_id, tag_id, created_at;`
 
 	var documentTag DocumentTag

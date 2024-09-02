@@ -10,7 +10,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	var amp model.AddMemberParams
 	err := util.DecodeJSONBody(r, &amp)
@@ -32,7 +32,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 
 	// Check if member name already exists
 	m := model.Member{}
-	duplicatedMemberId := m.GetByName(Ctrl.User.Id, amp.Name)
+	duplicatedMemberId := m.GetByName(ctrl.User.Id, amp.Name)
 	if duplicatedMemberId > 0 {
 		resErr := util.GetReturnMessage(2402)
 		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
@@ -50,7 +50,7 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 
 	// Create user member
 	um := model.UserMember{}
-	_, err = um.Create(Ctrl.User.Id, id)
+	_, err = um.Create(ctrl.User.Id, id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3403)
@@ -69,10 +69,10 @@ func (Ctrl *Controller) AddMember(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 	// Query all members
 	m := model.Member{}
-	members, err := m.QueryAll(Ctrl.User.Id)
+	members, err := m.QueryAll(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -96,10 +96,10 @@ func (Ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
-func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total member number
 	m := model.Member{}
-	count, err := m.QueryTotalCount(Ctrl.User.Id)
+	count, err := m.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -116,10 +116,10 @@ func (Ctrl *Controller) GetTotalMemberNumber(w http.ResponseWriter, r *http.Requ
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total member number
 	m := model.Member{}
-	count, err := m.QueryTotalCount(Ctrl.User.Id)
+	count, err := m.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -153,7 +153,7 @@ func (Ctrl *Controller) GetTotalMemberPageNumber(w http.ResponseWriter, r *http.
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
@@ -183,7 +183,7 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 
 	// Query members by page
 	m := model.Member{}
-	count, err := m.QueryTotalCount(Ctrl.User.Id)
+	count, err := m.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(2411)
@@ -220,7 +220,7 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	members, err := m.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	members, err := m.QueryByPage(ctrl.User.Id, number, size, orderBy, order)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
     resErr := util.GetReturnMessage(2412)
@@ -242,7 +242,7 @@ func (Ctrl *Controller) GetMemberByPage(w http.ResponseWriter, r *http.Request) 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -275,7 +275,7 @@ func (Ctrl *Controller) GetMemberById(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -314,7 +314,7 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if member name already exists
-	duplicatedMemberId := m.GetByName(Ctrl.User.Id, ump.Name)
+	duplicatedMemberId := m.GetByName(ctrl.User.Id, ump.Name)
 	if duplicatedMemberId > 0 && duplicatedMemberId != memberId {
 		resErr := util.GetReturnMessage(2423)
 		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
@@ -325,7 +325,7 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	existingMember.MemberRoleId = ump.MemberRoleId
 	existingMember.Name = ump.Name
 	existingMember.IsAlive = ump.IsAlive
-	err = existingMember.Update(Ctrl.User.Id)
+	err = existingMember.Update(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(2424)
@@ -345,7 +345,7 @@ func (Ctrl *Controller) UpdateMember(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	memberId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -366,7 +366,7 @@ func (Ctrl *Controller) DeleteMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete member
-	_, err = existingMember.Delete(Ctrl.User.Id)
+	_, err = existingMember.Delete(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(2432)

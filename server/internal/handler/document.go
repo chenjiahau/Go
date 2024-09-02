@@ -10,7 +10,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -22,7 +22,7 @@ func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) 
 
 	// Get document
 	d := model.NewDocument()
-	document, err := d.GetById(Ctrl.User.Id, documentId)
+	document, err := d.GetById(ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7422)
@@ -47,10 +47,10 @@ func (Ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
 	// Get all documents
 	d := model.NewDocument()
-	documents, err := d.QueryAll(Ctrl.User.Id)
+	documents, err := d.QueryAll(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7411)
@@ -79,10 +79,10 @@ func (Ctrl *Controller) GetAllDocument(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
-func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Request) {
 	// Get total document number
 	d := model.NewDocument()
-	total, err := d.QueryTotalCount(Ctrl.User.Id)
+	total, err := d.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7412)
@@ -99,10 +99,10 @@ func (Ctrl *Controller) GetTotalDocumentNumber(w http.ResponseWriter, r *http.Re
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total category page number
 	d := model.NewDocument()
-	count, err := d.QueryTotalCount(Ctrl.User.Id)
+	count, err := d.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -135,7 +135,7 @@ func (Ctrl *Controller) GetTotalDocumentPageNumber(w http.ResponseWriter, r *htt
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
@@ -167,7 +167,7 @@ func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request
 
 	// Query total document number
 	d := model.NewDocument()
-	count, err := d.QueryTotalCount(Ctrl.User.Id)
+	count, err := d.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7412)
@@ -205,7 +205,7 @@ func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request
 	}
 
 	// Query document by page
-	documents, err := d.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	documents, err := d.QueryByPage(ctrl.User.Id, number, size, orderBy, order)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -227,7 +227,7 @@ func (Ctrl *Controller) GetDocumentByPage(w http.ResponseWriter, r *http.Request
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	var adp model.AddDocumentParams
 	err := util.DecodeJSONBody(r, &adp)
@@ -249,7 +249,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Check if document name already exists
 	d := model.NewDocument()
-	duplicatedDocumentId := d.GetByName(Ctrl.User.Id, adp.Name)
+	duplicatedDocumentId := d.GetByName(ctrl.User.Id, adp.Name)
 	if duplicatedDocumentId != 0 {
 		resErr := util.GetReturnMessage(7402)
 		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
@@ -258,7 +258,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Check category and subcategory
 	c := model.NewCategory()
-	_, err = c.GetById(Ctrl.User.Id, adp.CategoryId)
+	_, err = c.GetById(ctrl.User.Id, adp.CategoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3422)
@@ -335,7 +335,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Create user_document
 	ud := model.NewUserDocument()
-	_, err = ud.Create(Ctrl.User.Id, documentId)
+	_, err = ud.Create(ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7404)
@@ -344,7 +344,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get created document
-	createdDocument, err := d.GetById(Ctrl.User.Id, documentId)
+	createdDocument, err := d.GetById(ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7413)
@@ -369,7 +369,7 @@ func (Ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusCreated, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -398,7 +398,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Check if document name already exists
 	d := model.NewDocument()
-	duplicatedDocumentId := d.GetByName(Ctrl.User.Id, udp.Name)
+	duplicatedDocumentId := d.GetByName(ctrl.User.Id, udp.Name)
 	if duplicatedDocumentId != 0 && duplicatedDocumentId != documentId {
 		resErr := util.GetReturnMessage(7423)
 		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
@@ -406,7 +406,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if document exists
-	existingDocument, err := d.GetById(Ctrl.User.Id, documentId)
+	existingDocument, err := d.GetById(ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -458,7 +458,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	existingDocument.PostMember.Id = udp.PostMemberId
 	existingDocument.Name = udp.Name
 	existingDocument.Content = udp.Content
-	err = existingDocument.Update(Ctrl.User.Id, udp.RelationMemberIds, udp.TagIds)
+	err = existingDocument.Update(ctrl.User.Id, udp.RelationMemberIds, udp.TagIds)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7424)
@@ -467,7 +467,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get updated document
-	updatedDocument, err := d.GetById(Ctrl.User.Id, documentId)
+	updatedDocument, err := d.GetById(ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7413)
@@ -492,7 +492,7 @@ func (Ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -504,7 +504,7 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Get document
 	d := model.NewDocument()
-	existingDocument, err := d.GetById(Ctrl.User.Id, documentId)
+	existingDocument, err := d.GetById(ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -529,7 +529,7 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete document
-	_, err = existingDocument.Delete(Ctrl.User.Id)
+	_, err = existingDocument.Delete(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7432)
@@ -558,7 +558,7 @@ func (Ctrl *Controller) DeleteDocument(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetDocumentBySearch(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetDocumentBySearch(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	search := r.URL.Query().Get("keyword")
 	if search == "" {
@@ -569,7 +569,7 @@ func (Ctrl *Controller) GetDocumentBySearch(w http.ResponseWriter, r *http.Reque
 
 	// Get document by search
 	d := model.NewDocument()
-	documents, err := d.QueryBySearch(Ctrl.User.Id, search)
+	documents, err := d.QueryBySearch(ctrl.User.Id, search)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7441)

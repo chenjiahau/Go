@@ -28,7 +28,7 @@ func NewDocumentRelationMember() DocumentRelationMemberInterface {
 	return &DocumentRelationMember{}
 }
 
-func (DRM *DocumentRelationMember) GetById(documentId int64) ([]DocumentRelationMember, error) {
+func (drm *DocumentRelationMember) GetById(documentId int64) ([]DocumentRelationMember, error) {
 	sqlStatement := `
 	  SELECT drm.id, drm.document_id, drm.member_id, drm.created_at, m.name as member_name,
 		(
@@ -74,7 +74,7 @@ func (DRM *DocumentRelationMember) GetById(documentId int64) ([]DocumentRelation
 	return documentRelationMembers, nil
 }
 
-func (DRM *DocumentRelationMember) Create(documentId, memberId int64, createdAt time.Time) (int64, error) {
+func (drm *DocumentRelationMember) Create(documentId, memberId int64, createdAt time.Time) (int64, error) {
 	sqlStatement := `INSERT INTO document_relation_members (document_id, member_id, created_at) VALUES ($1, $2, $3) RETURNING id;`
 
 	var id int64
@@ -86,7 +86,7 @@ func (DRM *DocumentRelationMember) Create(documentId, memberId int64, createdAt 
 	return id, nil
 }
 
-func (DRM *DocumentRelationMember) Delete(drmId int64) (DocumentRelationMember, error) {
+func (drm *DocumentRelationMember) Delete(drmId int64) (DocumentRelationMember, error) {
 	sqlStatement := `DELETE FROM document_relation_members WHERE id = $1 RETURNING document_id, member_id, created_at;`
 
 	var documentRelationMember DocumentRelationMember

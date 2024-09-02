@@ -7,18 +7,18 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) VerifyToken(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) VerifyToken(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	resData := util.GetReturnMessage(1203)
 	util.ResponseJSONWriter(w, http.StatusOK, resData)
 }
 
-func (Ctrl *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) SignOut(w http.ResponseWriter, r *http.Request) {
 	if ok := CheckToken(w, r) ; !ok { return }
 
 	t := model.NewToken()
-	tokenString := Ctrl.User.Token
+	tokenString := ctrl.User.Token
 	err := t.SetIsAlive(tokenString, false)
 
 	if err != nil {

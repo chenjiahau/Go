@@ -20,7 +20,7 @@ func NewUserMember() UserMemberInterface {
 	return &UserMember{}
 }
 
-func (UM *UserMember) Create(userId, memberId int64) (int64, error) {
+func (um *UserMember) Create(userId, memberId int64) (int64, error) {
 	sqlStatement := `INSERT INTO user_members (user_id, member_id) VALUES ($1, $2) RETURNING id;`
 
 	var id int64
@@ -32,7 +32,7 @@ func (UM *UserMember) Create(userId, memberId int64) (int64, error) {
 	return id, nil
 }
 
-func (UM *UserMember) DeleteById(memberId int64) () {
+func (um *UserMember) DeleteById(memberId int64) () {
 	sqlStatement := `DELETE FROM user_members WHERE member_id = $1;`
 	DbConf.PgConn.SQL.QueryRow(sqlStatement, memberId)
 }

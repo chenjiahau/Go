@@ -21,7 +21,7 @@ func NewColor() ColorInterface {
 	return &Color{}
 }
 
-func (C *Color) Create(categoryId int64, name, hexCode, rgbCode string) (int64, error) {
+func (c *Color) Create(categoryId int64, name, hexCode, rgbCode string) (int64, error) {
 	sqlStatement := `INSERT INTO colors (category_id, name, hex_code, rgb_code) VALUES ($1, $2, $3, $4) RETURNING id;`
 
 	
@@ -34,7 +34,7 @@ func (C *Color) Create(categoryId int64, name, hexCode, rgbCode string) (int64, 
 	return id, nil
 }
 
-func (C *Color) QueryAll() ([]Color, error) {
+func (c *Color) QueryAll() ([]Color, error) {
 	sqlStatement := `
 		SELECT cc.id, c.id, c.name , c.hex_code , c.rgb_code
 		FROM colors c
@@ -62,7 +62,7 @@ func (C *Color) QueryAll() ([]Color, error) {
 	return colors, nil
 }
 
-func (C *Color) DeleteAll() (error) {
+func (c *Color) DeleteAll() (error) {
 	sqlStatement := `DELETE FROM colors;`
 	_, err := DbConf.PgConn.SQL.Exec(sqlStatement)
 	if err != nil {

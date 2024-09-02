@@ -7,7 +7,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) GetAllColorCategory(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetAllColorCategory(w http.ResponseWriter, r *http.Request) {
 	cc := model.NewColorCategory()
 	colorCategories, err := cc.QueryAll()
 	if err != nil {
@@ -31,7 +31,7 @@ func (Ctrl *Controller) GetAllColorCategory(w http.ResponseWriter, r *http.Reque
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
-func (Ctrl *Controller) GetAllColor(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetAllColor(w http.ResponseWriter, r *http.Request) {
 	c := model.NewColor()
 	colors, err := c.QueryAll()
 	if err != nil {

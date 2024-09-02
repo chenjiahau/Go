@@ -42,7 +42,7 @@ func NewMember() MemberInterface {
 	return &Member{}
 }
 
-func (M *Member) GetById(id int64) (Member, error) {
+func (m *Member) GetById(id int64) (Member, error) {
 	sqlStatement := `
 		SELECT mr.id, mr.title, mr.abbr, m.id, m.name, m.is_alive
 		FROM members m
@@ -60,7 +60,7 @@ func (M *Member) GetById(id int64) (Member, error) {
 	return member, nil
 }
 
-func (M *Member) GetByName(userId int64, name string) (int64) {
+func (m *Member) GetByName(userId int64, name string) (int64) {
 	sqlStatement := `
 		SELECT m.id
 		FROM members m
@@ -78,7 +78,7 @@ func (M *Member) GetByName(userId int64, name string) (int64) {
 	return member.Id
 }
 
-func (M *Member) Create(memberRoleId int64, name string, isAlive bool) (int64, error) {
+func (m *Member) Create(memberRoleId int64, name string, isAlive bool) (int64, error) {
 	sqlStatement := `INSERT INTO members (member_role_id, name, is_alive) VALUES ($1, $2, $3) RETURNING id;`
 	
 	var id int64
@@ -120,7 +120,7 @@ func (M *Member) QueryAll(userId int64) ([]Member, error) {
 	return members, nil
 }
 
-func (M *Member) QueryTotalCount(userId int64) (int64, error) {
+func (m *Member) QueryTotalCount(userId int64) (int64, error) {
 	sqlStatement := `
 	  SELECT COUNT(*) FROM members
 		WHERE id in (SELECT member_id FROM user_members WHERE user_id = $1);`
@@ -135,7 +135,7 @@ func (M *Member) QueryTotalCount(userId int64) (int64, error) {
 	return count, nil
 }
 
-func (M *Member) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Member, error) {
+func (m *Member) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Member, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "m.id"
@@ -177,13 +177,13 @@ func (M *Member) QueryByPage(userId int64, number, size int, orderBy, order stri
 	return members, nil
 }
 
-func (M *Member) Update(userId int64) (error) {
+func (m *Member) Update(userId int64) (error) {
 	sqlStatement := `
 		UPDATE members
 		SET member_role_id = $1, name = $2, is_alive = $3
 		WHERE id = $4 AND id IN (SELECT member_id FROM user_members WHERE user_id = $5);`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, M.MemberRoleId, M.Name, M.IsAlive, M.Id, userId)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, m.MemberRoleId, m.Name, m.IsAlive, m.Id, userId)
 	if err != nil {
 		return err
 	}
@@ -191,7 +191,7 @@ func (M *Member) Update(userId int64) (error) {
 	return nil
 }
 
-func (M *Member) Delete(userId int64) (Member, error) {
+func (m *Member) Delete(userId int64) (Member, error) {
 	sqlStatement := `
 		DELETE FROM members
 		WHERE id = $1
@@ -201,7 +201,7 @@ func (M *Member) Delete(userId int64) (Member, error) {
 		RETURNING id;`
 
 	var member Member
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, M.Id, userId)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, m.Id, userId)
 	err := row.Scan(&member.Id)
 	if err != nil {
 		return Member{}, err

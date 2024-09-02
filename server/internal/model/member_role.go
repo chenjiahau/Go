@@ -19,7 +19,7 @@ func NewMemberRole() MemberRoleInterface {
 	return &MemberRole{}
 }
 
-func (MR *MemberRole) Create(title, abbr string) (int64, error) {
+func (mr *MemberRole) Create(title, abbr string) (int64, error) {
 	sqlStatement := `INSERT INTO member_roles (title, abbr) VALUES ($1, $2) RETURNING id;`
 
 	var id int64
@@ -31,7 +31,7 @@ func (MR *MemberRole) Create(title, abbr string) (int64, error) {
 	return id, nil
 }
 
-func (MR *MemberRole) QueryAll() ([]MemberRole, error) {
+func (mr *MemberRole) QueryAll() ([]MemberRole, error) {
 	sqlStatement := `SELECT id, title, abbr FROM member_roles;`
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement)
@@ -55,7 +55,7 @@ func (MR *MemberRole) QueryAll() ([]MemberRole, error) {
 	return memberRoles, nil
 }
 
-func (MR *MemberRole) DeleteAll() (error) {
+func (mr *MemberRole) DeleteAll() (error) {
 	sqlStatement := `DELETE FROM member_roles;`
 	_, err := DbConf.PgConn.SQL.Exec(sqlStatement)
 	if err != nil {

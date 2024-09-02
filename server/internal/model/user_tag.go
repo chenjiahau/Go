@@ -20,7 +20,7 @@ func NewUserTag() UserTagInterface {
 	return &UserTag{}
 }
 
-func (UT *UserTag) Create(userId, tagId int64) (int64, error) {
+func (ut *UserTag) Create(userId, tagId int64) (int64, error) {
 	sqlStatement := `INSERT INTO user_tags (user_id, tag_id) VALUES ($1, $2) RETURNING id;`
 
 	var id int64
@@ -32,7 +32,7 @@ func (UT *UserTag) Create(userId, tagId int64) (int64, error) {
 	return id, nil
 }
 
-func (UT *UserTag) DeleteById(tagId int64) () {
+func (ut *UserTag) DeleteById(tagId int64) () {
 	sqlStatement := `DELETE FROM user_tags WHERE tag_id = $1;`
 	DbConf.PgConn.SQL.QueryRow(sqlStatement, tagId)
 }

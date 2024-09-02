@@ -41,7 +41,7 @@ func NewDocumentComment() DocumentCommentInterface {
 	return &DocumentComment{}
 }
 
-func (DC *DocumentComment) GetById(documentId, documentCommentId int64) (DocumentComment, error) {
+func (dc *DocumentComment) GetById(documentId, documentCommentId int64) (DocumentComment, error) {
 	sqlStatement := `
 		SELECT 
 		dc.id, dc.post_member_id, dc.content, dc.created_at,
@@ -55,15 +55,15 @@ func (DC *DocumentComment) GetById(documentId, documentCommentId int64) (Documen
 		WHERE dc.id = $1 and dc.document_id = $2;`
 
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, documentCommentId, documentId)
-	err := row.Scan(&DC.Id, &DC.PostMemberId, &DC.Content, &DC.CreatedAt, &DC.DocumentId, &DC.DocumentName, &DC.PostMemberId, &DC.PostMemberName)
+	err := row.Scan(&dc.Id, &dc.PostMemberId, &dc.Content, &dc.CreatedAt, &dc.DocumentId, &dc.DocumentName, &dc.PostMemberId, &dc.PostMemberName)
 	if err != nil {
 		return DocumentComment{}, err
 	}
 
-	return *DC, nil
+	return *dc, nil
 }
 
-func (DC *DocumentComment) Create(documentId, postMemberId int64, content string, createdAt time.Time) (int64, error) {
+func (dc *DocumentComment) Create(documentId, postMemberId int64, content string, createdAt time.Time) (int64, error) {
 	sqlStatement := `
 		INSERT INTO document_comments
 		(document_id, post_member_id, content, created_at)
@@ -78,7 +78,7 @@ func (DC *DocumentComment) Create(documentId, postMemberId int64, content string
 	return id, nil
 }
 
-func (DC *DocumentComment) QueryAll(userId, documentId int64) ([]DocumentComment, error) {
+func (dc *DocumentComment) QueryAll(userId, documentId int64) ([]DocumentComment, error) {
 	sqlStatement := `
 		SELECT
 		dc.id, dc.post_member_id, dc.content, dc.created_at,
@@ -112,13 +112,13 @@ func (DC *DocumentComment) QueryAll(userId, documentId int64) ([]DocumentComment
 	return documentComments, nil
 }
 
-func (DC *DocumentComment) Update() (error) {
+func (dc *DocumentComment) Update() (error) {
 	sqlStatement := `
 		UPDATE document_comments
 		SET post_member_id = $1, content = $2
 		WHERE id = $3;`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, DC.PostMemberId, DC.Content, DC.Id)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, dc.PostMemberId, dc.Content, dc.Id)
 	if err != nil {
 		return err
 	}
@@ -126,13 +126,13 @@ func (DC *DocumentComment) Update() (error) {
 	return nil
 }
 
-func (DC *DocumentComment) Delete() (int64, error) {
+func (dc *DocumentComment) Delete() (int64, error) {
 	sqlStatement := `
 		DELETE FROM document_comments
 		WHERE id = $1 RETURNING id;`
 
 	var documentCommentId int64
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, DC.Id)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, dc.Id)
 	err := row.Scan(&documentCommentId)
 	if err != nil {
 		return 0, err
@@ -141,7 +141,7 @@ func (DC *DocumentComment) Delete() (int64, error) {
 	return documentCommentId, nil
 }
 
-func (DC *DocumentComment) DeleteById(documentId int64) (int64, error) {
+func (dc *DocumentComment) DeleteById(documentId int64) (int64, error) {
 	sqlStatement := `
 		DELETE FROM document_comments
 		WHERE document_id = $1 RETURNING id;`

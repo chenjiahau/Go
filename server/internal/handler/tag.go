@@ -10,7 +10,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	var atp model.AddTagParams
 	err := util.DecodeJSONBody(r, &atp)
@@ -32,7 +32,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 
 	// Check if tag name already exists
 	t := model.NewTag()
-	duplicatedTagId := t.GetByName(Ctrl.User.Id, atp.Name)
+	duplicatedTagId := t.GetByName(ctrl.User.Id, atp.Name)
 	if duplicatedTagId > 0 {
 		resErr := util.GetReturnMessage(5402)
 		util.ResponseJSONWriter(w, http.StatusConflict, util.GetResponse(nil, resErr))
@@ -50,7 +50,7 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 
 	// Create user tag
 	ut := model.NewUserTag()
-	_, err = ut.Create(Ctrl.User.Id, id)
+	_, err = ut.Create(ctrl.User.Id, id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(5404)
@@ -69,10 +69,10 @@ func (Ctrl *Controller) AddTag(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 	// Query all tags
 	t := model.NewTag()
-	tags, err := t.QueryAll(Ctrl.User.Id)
+	tags, err := t.QueryAll(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -98,10 +98,10 @@ func (Ctrl *Controller) GetAllTag(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
-func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total tag number
 	t := model.NewTag()
-	count, err := t.QueryTotalCount(Ctrl.User.Id)
+	count, err := t.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(5412)
@@ -118,7 +118,7 @@ func (Ctrl *Controller) GetTotalTagNumber(w http.ResponseWriter, r *http.Request
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
@@ -130,7 +130,7 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 
 	// Query total tag page number
 	t := model.NewTag()
-	count, err := t.QueryTotalCount(Ctrl.User.Id)
+	count, err := t.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(5412)
@@ -154,7 +154,7 @@ func (Ctrl *Controller) GetTotalTagPageNumber(w http.ResponseWriter, r *http.Req
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
@@ -174,7 +174,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 
 	// Query tags by page
 	t := model.NewTag()
-	count, err := t.QueryTotalCount(Ctrl.User.Id)
+	count, err := t.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(5412)
@@ -220,7 +220,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 		order = "asc"
 	}
 
-	tags, err := t.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	tags, err := t.QueryByPage(ctrl.User.Id, number, size, orderBy, order)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(5412)
@@ -242,7 +242,7 @@ func (Ctrl *Controller) GetTagsByPage(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -276,7 +276,7 @@ func (Ctrl *Controller) GetTagById(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -314,7 +314,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	duplicatedTagId := t.GetByName(Ctrl.User.Id, utp.Name)
+	duplicatedTagId := t.GetByName(ctrl.User.Id, utp.Name)
 	if tagId != duplicatedTagId && duplicatedTagId > 0 {
 		resErr := util.GetReturnMessage(5423)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -324,7 +324,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	// Update tag
 	existingTag.ColorId = utp.ColorId
 	existingTag.Name = utp.Name
-	err = existingTag.Update(Ctrl.User.Id)
+	err = existingTag.Update(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(5424)
@@ -343,7 +343,7 @@ func (Ctrl *Controller) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	tagId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -364,7 +364,7 @@ func (Ctrl *Controller) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete tag
-	_, err = existingTag.Delete(Ctrl.User.Id)
+	_, err = existingTag.Delete(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(5432)

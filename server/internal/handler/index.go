@@ -11,10 +11,10 @@ type IndexResponse struct {
 	Message string	`json:"message"`
 }
 
-func (Ctrl *Controller) Index(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) Index(w http.ResponseWriter, r *http.Request) {
 	res := IndexResponse{
-		AppName: Ctrl.Config.AppName,
-		Version: Ctrl.Config.Version,
+		AppName: ctrl.Config.AppName,
+		Version: ctrl.Config.Version,
 		Message: "Welcome to the API",
 	}
 

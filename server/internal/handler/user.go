@@ -8,7 +8,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	var sp model.SignUpParams
 	err := util.DecodeJSONBody(r, &sp)
@@ -77,7 +77,7 @@ func (Ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	var si model.SignInParams
 	err := util.DecodeJSONBody(r, &si)

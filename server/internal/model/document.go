@@ -59,7 +59,7 @@ func NewDocument() DocumentInterface {
 	return &Document{}
 }
 
-func (D *Document) GetById(userId, id int64) (Document, error) {
+func (d *Document) GetById(userId, id int64) (Document, error) {
 	sqlStatement := `
 		SELECT d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at
 		FROM documents d
@@ -121,7 +121,7 @@ func (D *Document) GetById(userId, id int64) (Document, error) {
 	}, nil
 }
 
-func (D *Document) GetByName(userId int64, name string) (int64) {
+func (d *Document) GetByName(userId int64, name string) (int64) {
 	sqlStatement := `
 		SELECT d.id
 		FROM documents d
@@ -137,7 +137,7 @@ func (D *Document) GetByName(userId int64, name string) (int64) {
 	return documentId
 }
 
-func (D *Document) Create(
+func (d *Document) Create(
 	name string, categoryId, subcategoryId, postMemberId int64, 
 	relationMemberIds, tagIds []int64, content string, createdAt time.Time) (int64, error) {
 	sqlStatement := `
@@ -173,7 +173,7 @@ func (D *Document) Create(
 	return documentId, nil
 }
 
-func (C *Document) QueryAll(userId int64) ([]Document, error) {
+func (d *Document) QueryAll(userId int64) ([]Document, error) {
 	sqlStatement := `
 		SELECT d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at
 		FROM documents d ORDER BY d.created_at DESC;`;
@@ -240,7 +240,7 @@ func (C *Document) QueryAll(userId int64) ([]Document, error) {
 	return documents, nil
 }
 
-func (C *Document) QueryTotalCount(userId int64) (int64, error) {
+func (d *Document) QueryTotalCount(userId int64) (int64, error) {
 	sqlStatement := `
 		SELECT COUNT(*) FROM documents
 		WHERE id in (SELECT document_id FROM user_documents WHERE user_id=$1);`
@@ -254,7 +254,7 @@ func (C *Document) QueryTotalCount(userId int64) (int64, error) {
 		return count, nil
 }
 
-func (C *Document) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Document, error) {
+func (d *Document) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Document, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "id"
@@ -354,20 +354,20 @@ func (C *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 	return documents, nil
 }
 
-func (D *Document) Update(userId int64, drmIds, tagIds []int64) (error) {
+func (d *Document) Update(userId int64, drmIds, tagIds []int64) (error) {
 	sqlStatement := `
 		UPDATE documents
 		SET name = $1, category_id = $2, subcategory_id = $3, post_member_id = $4, content = $5
 		WHERE id = $6 AND id IN (SELECT document_id FROM user_documents WHERE user_id = $7);`
 	
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, D.Name, D.Category.Id, D.SubCategory.Id, D.PostMember.Id, D.Content, D.Id, userId)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, d.Name, d.Category.Id, d.SubCategory.Id, d.PostMember.Id, d.Content, d.Id, userId)
 	if err != nil {
 		return err
 	}
 
 	// Delete relation members
 	sqlStatement = `DELETE FROM document_relation_members WHERE document_id = $1;`
-	_, err = DbConf.PgConn.SQL.Exec(sqlStatement, D.Id)
+	_, err = DbConf.PgConn.SQL.Exec(sqlStatement, d.Id)
 	if err != nil {
 		return err
 	}
@@ -375,7 +375,7 @@ func (D *Document) Update(userId int64, drmIds, tagIds []int64) (error) {
 	// Insert relation members
 	for _, drmId := range drmIds {
 		sqlStatement = `INSERT INTO document_relation_members (document_id, member_id, created_at) VALUES ($1, $2, $3);`
-		_, err = DbConf.PgConn.SQL.Exec(sqlStatement, D.Id, drmId, time.Now())
+		_, err = DbConf.PgConn.SQL.Exec(sqlStatement, d.Id, drmId, time.Now())
 		if err != nil {
 			return err
 		}
@@ -383,7 +383,7 @@ func (D *Document) Update(userId int64, drmIds, tagIds []int64) (error) {
 
 	// Delete tags
 	sqlStatement = `DELETE FROM document_tags WHERE document_id = $1;`
-	_, err = DbConf.PgConn.SQL.Exec(sqlStatement, D.Id)
+	_, err = DbConf.PgConn.SQL.Exec(sqlStatement, d.Id)
 	if err != nil {
 		return err
 	}
@@ -391,7 +391,7 @@ func (D *Document) Update(userId int64, drmIds, tagIds []int64) (error) {
 	// Insert tags
 	for _, tagId := range tagIds {
 		sqlStatement = `INSERT INTO document_tags (document_id, tag_id, created_at) VALUES ($1, $2, $3);`
-		_, err = DbConf.PgConn.SQL.Exec(sqlStatement, D.Id, tagId, time.Now())
+		_, err = DbConf.PgConn.SQL.Exec(sqlStatement, d.Id, tagId, time.Now())
 		if err != nil {
 			return err
 		}
@@ -400,14 +400,14 @@ func (D *Document) Update(userId int64, drmIds, tagIds []int64) (error) {
 	return nil
 }
 
-func (D *Document) Delete(userId int64) (Document, error) {
+func (d *Document) Delete(userId int64) (Document, error) {
 	sqlStatement := `
 		DELETE FROM documents d
 		WHERE d.id = $1 AND d.id IN (SELECT document_id FROM user_documents WHERE user_id = $2)
 		RETURNING d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at;`
 
 	var document Document
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, D.Id, userId)
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, d.Id, userId)
 	err := row.Scan(&document.Id, &document.Name, &document.Category.Id, &document.SubCategory.Id,
 		&document.PostMember.Id, &document.Content, &document.CreatedAt)
 	if err != nil {
@@ -417,7 +417,7 @@ func (D *Document) Delete(userId int64) (Document, error) {
 	return document, nil
 }
 
-func (D *Document) QueryBySearch(userId int64, keyword string) ([]Document, error) {
+func (d *Document) QueryBySearch(userId int64, keyword string) ([]Document, error) {
 	sqlStatement := fmt.Sprintf(`
 		SELECT
 		DISTINCT d.id,

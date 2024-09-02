@@ -20,7 +20,7 @@ func NewUserCategory() UserCategoryInterface {
 	return &UserCategory{}
 }
 
-func (UC *UserCategory) Create(userId, categoryId int64) (int64, error) {
+func (uc *UserCategory) Create(userId, categoryId int64) (int64, error) {
 	sqlStatement := `INSERT INTO user_categories (user_id, category_id) VALUES ($1, $2) RETURNING id;`
 
 	var id int64
@@ -32,7 +32,7 @@ func (UC *UserCategory) Create(userId, categoryId int64) (int64, error) {
 	return id, nil
 }
 
-func (UC *UserCategory) DeleteById(categoryId int64) () {
+func (uc *UserCategory) DeleteById(categoryId int64) () {
 	sqlStatement := `DELETE FROM user_categories WHERE category_id = $1;`
 	DbConf.PgConn.SQL.QueryRow(sqlStatement, categoryId)
 }

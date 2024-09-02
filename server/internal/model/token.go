@@ -29,7 +29,7 @@ func NewToken() TokenInterface {
 }
 
 // Method to get the token of the user with the given user id
-func (T *Token) GetByUserId(userId int64) ([]Token, error) {
+func (t *Token) GetByUserId(userId int64) ([]Token, error) {
 	sqlStatement := `SELECT token FROM tokens WHERE user_id = $1 and is_alive = true;`
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, userId)
 
@@ -53,7 +53,7 @@ func (T *Token) GetByUserId(userId int64) ([]Token, error) {
 	return tokens, nil
 }
 
-func (T *Token) Create(userId int64, token string, createdAt time.Time, expiredAt time.Time) error {
+func (t *Token) Create(userId int64, token string, createdAt time.Time, expiredAt time.Time) error {
 	sqlStatement := `INSERT INTO tokens (user_id, token, created_at, expired_at, is_alive) VALUES ($1, $2, $3, $4, $5);`
 
 	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, userId, token, createdAt, expiredAt, true)
@@ -64,20 +64,20 @@ func (T *Token) Create(userId int64, token string, createdAt time.Time, expiredA
 	return nil
 }
 
-func (T *Token) Query(token string) (Token, error) {
+func (t *Token) Query(token string) (Token, error) {
 	sqlStatement := `SELECT user_id, token, created_at, expired_at, is_alive FROM tokens WHERE token = $1;`
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, token)
 
-	var t Token
-	err := row.Scan(&t.UserId, &t.Token, &t.CreatedAt, &t.ExpiredAt, &t.IsAlive)
+	var rt Token
+	err := row.Scan(&rt.UserId, &rt.Token, &rt.CreatedAt, &rt.ExpiredAt, &rt.IsAlive)
 	if err != nil {
 		return Token{}, err
 	}
 
-	return t, nil
+	return rt, nil
 }
 
-func (T *Token) SetIsAlive(token string, isAlive bool) error {
+func (t *Token) SetIsAlive(token string, isAlive bool) error {
 	sqlStatement := `UPDATE tokens SET is_alive = $1 WHERE token = $2;`
 
 	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, isAlive, token)

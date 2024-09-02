@@ -42,7 +42,7 @@ func NewTag() TagInterface {
 	return &Tag{}
 }
 
-func (T *Tag) GetById(id int64) (Tag, error) {
+func (t *Tag) GetById(id int64) (Tag, error) {
 	sqlStatement := `
 		SELECT t.id, cc.id, cc.name, c.id, c.name, c.hex_code, c.rgb_code, t.name
 		FROM tags t
@@ -62,7 +62,7 @@ func (T *Tag) GetById(id int64) (Tag, error) {
 	return tag, nil
 }
 
-func (T *Tag) GetByName(userId int64, name string) (int64) {
+func (t *Tag) GetByName(userId int64, name string) (int64) {
 	sqlStatement := `
 	  SELECT id FROM tags
 		WHERE name = $1 and id in (SELECT id FROM user_tags where user_id = $2);`
@@ -77,7 +77,7 @@ func (T *Tag) GetByName(userId int64, name string) (int64) {
 	return tag.Id
 }
 
-func (T *Tag) Create(colorId int64, name string) (int64, error) {
+func (t *Tag) Create(colorId int64, name string) (int64, error) {
 	sqlStatement := `INSERT INTO tags (color_id, name) VALUES ($1, $2) RETURNING id;`
 	
 	var id int64
@@ -89,7 +89,7 @@ func (T *Tag) Create(colorId int64, name string) (int64, error) {
 	return id, nil
 }
 
-func (T *Tag) QueryAll(userId int64) ([]Tag, error) {
+func (t *Tag) QueryAll(userId int64) ([]Tag, error) {
 	sqlStatement := `
 		SELECT t.id, cc.id, cc.name, c.id, c.name, c.hex_code, c.rgb_code, t.name
 		FROM tags t
@@ -120,7 +120,7 @@ func (T *Tag) QueryAll(userId int64) ([]Tag, error) {
 	return tags, nil
 }
 
-func (T *Tag) QueryTotalCount(userId int64) (int64, error) {
+func (t *Tag) QueryTotalCount(userId int64) (int64, error) {
 	sqlStatement := `
 	  SELECT COUNT(*) FROM tags
 		WHERE id IN (SELECT tag_id FROM user_tags WHERE user_id = $1);`
@@ -134,7 +134,7 @@ func (T *Tag) QueryTotalCount(userId int64) (int64, error) {
 	return count, nil
 }
 
-func (T *Tag) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Tag, error) {
+func (t *Tag) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Tag, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "t.id"
@@ -180,12 +180,12 @@ func (T *Tag) QueryByPage(userId int64, number, size int, orderBy, order string)
 	return tags, nil
 }
 
-func (T *Tag) Update(userId int64) (error) {
+func (t *Tag) Update(userId int64) (error) {
 	sqlStatement := `
 		UPDATE tags SET color_id = $1, name = $2
 		WHERE id = $3 and id in (SELECT tag_id FROM user_tags WHERE user_id = $4);`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, T.ColorId, T.Name, T.Id, userId)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, t.ColorId, t.Name, t.Id, userId)
 	if err != nil {
 		return err
 	}
@@ -193,7 +193,7 @@ func (T *Tag) Update(userId int64) (error) {
 	return nil
 }
 
-func (T *Tag) DeleteAll() (error) {
+func (t *Tag) DeleteAll() (error) {
 	sqlStatement := `DELETE FROM tags;`
 	_, err := DbConf.PgConn.SQL.Exec(sqlStatement)
 	if err != nil {
@@ -203,14 +203,14 @@ func (T *Tag) DeleteAll() (error) {
 	return nil
 }
 
-func (T *Tag) Delete(userId int64) (Tag, error) {
+func (t *Tag) Delete(userId int64) (Tag, error) {
 	sqlStatement := `
 		DELETE FROM tags
 		WHERE id = $1 and id in (SELECT tag_id FROM user_tags WHERE user_id = $2)
 		RETURNING id;`
 
 	var tag Tag
-	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, T.Id, userId).Scan(&tag.Id)
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, t.Id, userId).Scan(&tag.Id)
 	if err != nil {
 		return Tag{}, err
 	}

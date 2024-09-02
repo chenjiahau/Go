@@ -21,7 +21,7 @@ func NewUserDocument() UserDocumentInterface {
 	return &UserDocument{}
 }
 
-func (UD *UserDocument) Create(userId, memberId int64) (int64, error) {
+func (ud *UserDocument) Create(userId, memberId int64) (int64, error) {
 	sqlStatement := `INSERT INTO user_documents (user_id, document_id) VALUES ($1, $2) RETURNING id;`
 
 	var id int64
@@ -33,12 +33,12 @@ func (UD *UserDocument) Create(userId, memberId int64) (int64, error) {
 	return id, nil
 }
 
-func (UD *UserDocument) DeleteById(memberId int64) () {
+func (ud *UserDocument) DeleteById(memberId int64) () {
 	sqlStatement := `DELETE FROM user_documents WHERE document_id = $1;`
 	DbConf.PgConn.SQL.QueryRow(sqlStatement, memberId)
 }
 
-func (UD *UserDocument) Delete(documentId int64) (UserDocument, error) {
+func (ud *UserDocument) Delete(documentId int64) (UserDocument, error) {
 	sqlStatement := `DELETE FROM user_documents WHERE id = $1 RETURNING user_id, document_id;`
 
 	var userDocument UserDocument

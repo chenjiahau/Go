@@ -10,7 +10,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	var acp model.AddCategoryParams
 	err := util.DecodeJSONBody(r, &acp)
@@ -32,7 +32,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 
 	// Check if category name already exists
 	c := model.NewCategory()
-	existCategory, _ := c.GetByName(Ctrl.User.Id, acp.Name)
+	existCategory, _ := c.GetByName(ctrl.User.Id, acp.Name)
 	if existCategory.Id > 0{
 		resErr := util.GetReturnMessage(3402)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -51,7 +51,7 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 
 	// Create user category
 	uc := model.NewUserCategory()
-	_, err = uc.Create(Ctrl.User.Id, id)
+	_, err = uc.Create(ctrl.User.Id, id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3404)
@@ -71,10 +71,10 @@ func (Ctrl *Controller) AddCategory(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 	// Query all categories
 	c := model.NewCategory()
-	categories, err := c.QueryAll(Ctrl.User.Id)
+	categories, err := c.QueryAll(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3411)
@@ -98,10 +98,10 @@ func (Ctrl *Controller) GetAllCategory(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
-func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Request) {
 	// Query total category number
 	c := model.NewCategory()
-	count, err := c.QueryTotalCount(Ctrl.User.Id)
+	count, err := c.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -118,7 +118,7 @@ func (Ctrl *Controller) GetTotalCategoryNumber(w http.ResponseWriter, r *http.Re
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	size, err := strconv.Atoi(chi.URLParam(r, "size"))
 	if err != nil || size < 1 {
@@ -130,7 +130,7 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 
 	// Query total category page number
 	c := model.NewCategory()
-	count, err := c.QueryTotalCount(Ctrl.User.Id)
+	count, err := c.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3412)
@@ -154,7 +154,7 @@ func (Ctrl *Controller) GetTotalCategoryPageNumber(w http.ResponseWriter, r *htt
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	number, err := strconv.Atoi(chi.URLParam(r, "number"))
 	if err != nil || number < 1 {
@@ -184,7 +184,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 
 	// Query total category number
 	c := model.NewCategory()
-	count, err := c.QueryTotalCount(Ctrl.User.Id)
+	count, err := c.QueryTotalCount(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3412)
@@ -222,7 +222,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 	}
 
 	// Query category by page
-	categories, err := c.QueryByPage(Ctrl.User.Id, number, size, orderBy, order)
+	categories, err := c.QueryByPage(ctrl.User.Id, number, size, orderBy, order)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3412)
@@ -244,7 +244,7 @@ func (Ctrl *Controller) GetCategoryByPage(w http.ResponseWriter, r *http.Request
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -256,7 +256,7 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 
 	// Query category by id
 	c := model.NewCategory()
-	category, err := c.GetById(Ctrl.User.Id, categoryId)
+	category, err := c.GetById(ctrl.User.Id, categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3413)
@@ -277,7 +277,7 @@ func (Ctrl *Controller) GetCategoryById(w http.ResponseWriter, r *http.Request) 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -307,7 +307,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 
 	// Check if category name already exists
 	c := model.NewCategory()
-	existCategory, _ := c.GetByName(Ctrl.User.Id, ucp.Name)
+	existCategory, _ := c.GetByName(ctrl.User.Id, ucp.Name)
 	if existCategory.Id > 0 && existCategory.Id != categoryId {
 		resErr := util.GetReturnMessage(3423)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
@@ -317,7 +317,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	// Update category
 	existCategory.Name = ucp.Name
 	existCategory.IsAlive = ucp.IsAlive
-	err = existCategory.Update(Ctrl.User.Id)
+	err = existCategory.Update(ctrl.User.Id)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3424)
@@ -336,7 +336,7 @@ func (Ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	categoryId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -348,7 +348,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 
 	// Check if category exists
 	c := model.NewCategory()
-	existingCategory, err := c.GetById(Ctrl.User.Id, categoryId)
+	existingCategory, err := c.GetById(ctrl.User.Id, categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3431)
@@ -357,7 +357,7 @@ func (Ctrl *Controller) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete category
-	existingCategory, err = existingCategory.Delete(Ctrl.User.Id)
+	existingCategory, err = existingCategory.Delete(ctrl.User.Id)
 	if existingCategory.Id == 0 || err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(3432)

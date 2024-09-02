@@ -43,7 +43,7 @@ func NewUser() UserInterface {
 }
 
 // Method to get the id of the user with the given email
-func (U *User) GetId(sp SignUpParams) int64 {
+func (u *User) GetId(sp SignUpParams) int64 {
 	sqlStatement := `SELECT id FROM users WHERE email = $1`
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, sp.Email)
 
@@ -57,7 +57,7 @@ func (U *User) GetId(sp SignUpParams) int64 {
 	return id
 }
 
-func (U *User) Create(sp SignUpParams) error {
+func (u *User) Create(sp SignUpParams) error {
 	sqlStatement := `INSERT INTO users (email, username, password) VALUES ($1, $2, $3);`
 	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, sp.Email, sp.Name, sp.Password)
 
@@ -68,16 +68,16 @@ func (U *User) Create(sp SignUpParams) error {
 	return nil
 }
 
-func (U *User) Query(si SignInParams) error {
+func (u *User) Query(si SignInParams) error {
 	sqlStatement := `SELECT id, email, username, password FROM users WHERE email= $1;`
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, si.Email)
 
-	err := row.Scan(&U.Id, &U.Email, &U.Name, &U.Password)
+	err := row.Scan(&u.Id, &u.Email, &u.Name, &u.Password)
 	if err != nil {
 		return err
 	}
 
-	err = util.CheckPasswordHash(si.Password, U.Password)
+	err = util.CheckPasswordHash(si.Password, u.Password)
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) GetAllMemberRole(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetAllMemberRole(w http.ResponseWriter, r *http.Request) {
 	// Get all member roles
 	mr := model.MemberRole{}
 	memberRoles, err := mr.QueryAll()

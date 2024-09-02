@@ -42,7 +42,7 @@ func NewCategory() CategoryInterface {
 	return &Category{}
 }
 
-func (C *Category) GetById(userId, id int64) (Category, error) {
+func (c *Category) GetById(userId, id int64) (Category, error) {
 	sqlStatement := `
 		SELECT c.id, c.name, c.created_at, c.is_alive,
 		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
@@ -59,7 +59,7 @@ func (C *Category) GetById(userId, id int64) (Category, error) {
 	return category, nil
 }
 
-func (C *Category) GetByName(userId int64, name string) (Category, error) {
+func (c *Category) GetByName(userId int64, name string) (Category, error) {
 	sqlStatement := `
 		SELECT c.id, c.name, c.created_at, c.is_alive,
 		(SELECT COUNT(*) FROM subcategories sc WHERE sc.category_id  = c.id) AS subcategory_count
@@ -76,7 +76,7 @@ func (C *Category) GetByName(userId int64, name string) (Category, error) {
 	return category, nil
 }
 
-func (C *Category) Create(name string, createdAt time.Time, isAlive bool) (int64, error) {
+func (c *Category) Create(name string, createdAt time.Time, isAlive bool) (int64, error) {
 	sqlStatement := `INSERT INTO categories (name, created_at, is_alive) VALUES ($1, $2, $3) RETURNING id;`
 
 	var id int64
@@ -88,7 +88,7 @@ func (C *Category) Create(name string, createdAt time.Time, isAlive bool) (int64
 	return id, nil
 }
 
-func (C *Category) QueryAll(userId int64) ([]Category, error) {
+func (c *Category) QueryAll(userId int64) ([]Category, error) {
 	sqlStatement := `
 		SELECT c.id, c.name, c.created_at, c.is_alive
 		FROM categories c
@@ -122,7 +122,7 @@ func (C *Category) QueryAll(userId int64) ([]Category, error) {
 	return categories, nil
 }
 
-func (C *Category) QueryTotalCount(userId int64) (int64, error) {
+func (c *Category) QueryTotalCount(userId int64) (int64, error) {
 	sqlStatement := `
 		SELECT COUNT(*) FROM categories
 		WHERE id in (SELECT category_id FROM user_categories WHERE user_id=$1);`
@@ -136,7 +136,7 @@ func (C *Category) QueryTotalCount(userId int64) (int64, error) {
 	return count, nil
 }
 
-func (C *Category) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Category, error) {
+func (c *Category) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Category, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "id"
@@ -182,13 +182,13 @@ func (C *Category) QueryByPage(userId int64, number, size int, orderBy, order st
 	return categories, nil
 }
 
-func (C *Category) Update(userId int64) (error) {
+func (c *Category) Update(userId int64) (error) {
 	sqlStatement := `
 		UPDATE categories
 		SET name = $1, is_alive = $2
 		WHERE id = $3 AND id IN (SELECT category_id FROM user_categories WHERE user_id = $4);`
 
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, C.Name, C.IsAlive, C.Id, userId)
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, c.Name, c.IsAlive, c.Id, userId)
 	if err != nil {
 		return err
 	}

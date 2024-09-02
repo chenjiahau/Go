@@ -10,7 +10,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (Ctrl *Controller) GetDocumentCommentById(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetDocumentCommentById(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -53,7 +53,7 @@ func (Ctrl *Controller) GetDocumentCommentById(w http.ResponseWriter, r *http.Re
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -65,7 +65,7 @@ func (Ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Req
 
 	// Get all document comments
 	dc := model.DocumentComment{}
-	documentComments, err := dc.QueryAll(Ctrl.User.Id, documentId)
+	documentComments, err := dc.QueryAll(ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(8411)
@@ -92,7 +92,7 @@ func (Ctrl *Controller) GetAllDocumentComment(w http.ResponseWriter, r *http.Req
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
-func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -122,7 +122,7 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 
 	// Check if document exists
 	d := model.Document{}
-	_, err = d.GetById(Ctrl.User.Id, documentId)
+	_, err = d.GetById(ctrl.User.Id, documentId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -175,7 +175,7 @@ func (Ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 	util.ResponseJSONWriter(w, http.StatusCreated, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -259,7 +259,7 @@ func (Ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (Ctrl *Controller) DeleteDocumentComment(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) DeleteDocumentComment(w http.ResponseWriter, r *http.Request) {
 	// Validate request
 	documentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

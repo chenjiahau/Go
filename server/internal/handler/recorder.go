@@ -17,7 +17,7 @@ var allowedTypes = map[string]bool{
 	"image/jpeg": true,
 }
 
-func (Ctrl *Controller) UploadRecordImage(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) UploadRecordImage(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(maxUploadSize)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
