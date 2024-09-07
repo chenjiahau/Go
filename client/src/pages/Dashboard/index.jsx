@@ -13,6 +13,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  plugins,
 } from "chart.js";
 
 // Const
@@ -21,6 +22,8 @@ import apiConfig from "@/const/config/api";
 
 // Util
 import apiHandler from "@/util/api.util";
+import { clone, cloneDeep, update } from "lodash";
+import { callback } from "chart.js/helpers";
 
 ChartJS.register(
   ArcElement,
@@ -33,87 +36,133 @@ ChartJS.register(
   Legend
 );
 
+const defaultPieChart = {
+  labels: [],
+  datasets: [
+    {
+      data: [],
+      backgroundColor: [],
+    },
+  ],
+};
+
+const defaultBarChart = {
+  labels: [],
+  datasets: [
+    {
+      borderWidth: 1,
+      data: [],
+      formattedValue: [],
+      backgroundColor: [],
+    },
+  ],
+};
+
+const pieOption = {
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: true,
+      position: "right",
+    },
+  },
+};
+
 const barOption = {
   maintainAspectRatio: false,
-  scales: {
-    y: {
-      beginAtZero: true,
+  plugins: {
+    legend: {
       display: false,
     },
-    x: {
-      beginAtZero: true,
-      display: false,
-    },
-    yAxes: {
-      ticks: {
-        stepSize: 1,
+    tooltip: {
+      callbacks: {
+        label: function (data) {
+          return data.dataset.formattedValue[data.dataIndex];
+        },
       },
+    },
+  },
+  y: {
+    ticks: {
+      stepSize: 1,
+      suggestedMin: "min-int-value",
+      suggestedMax: "max-int-value",
     },
   },
 };
 
 const Dashboard = () => {
   // State
-  const [pieChartData, setPieChartData] = useState(null);
-  const [barChartData, setBarChartData] = useState(null);
+  const [mostPublisherPieChart, setMostPublisherPieChart] = useState(null);
+  const [mostPublisherBarChart, setMostPublisherBarChart] = useState(null);
+  const [mostCommentBarChart, setMostCommentBarChart] = useState(null);
 
   // Method
   const handleInitialization = useCallback(async () => {
-    let response = null;
-    response = await apiHandler.get(
+    const mostPublisherResponse = await apiHandler.get(
       apiConfig.resource.STATISTIC_MOST_PUBLISHERS
     );
 
+    const mostCommentResponse = await apiHandler.get(
+      apiConfig.resource.STATISTIC_MOST_COMMENTS
+    );
+
     // Make pie chart data
-    const updatedPieChartData = {
-      labels: [],
-      datasets: [
-        {
-          data: [],
-          backgroundColor: [],
-        },
-      ],
-    };
-
-    response.data.data.forEach((item) => {
-      updatedPieChartData.labels.push(item.memberName);
-      updatedPieChartData.datasets[0].data.push(item.numberOfPost);
-      updatedPieChartData.datasets[0].backgroundColor.push(
+    const updatedMostPublisherPieChart = cloneDeep(defaultPieChart);
+    mostPublisherResponse.data.data.forEach((item) => {
+      updatedMostPublisherPieChart.labels.push(item.memberName);
+      updatedMostPublisherPieChart.datasets[0].data.push(item.numberOfPost);
+      updatedMostPublisherPieChart.datasets[0].backgroundColor.push(
         "#" + Math.floor(Math.random() * 16777215).toString(16)
       );
     });
-    setPieChartData(updatedPieChartData);
+    setMostPublisherPieChart(updatedMostPublisherPieChart);
 
-    response = await apiHandler.get(apiConfig.resource.STATISTIC_MOST_COMMENTS);
-
-    // Make most comments data
-    const updatedBarCharData = {
-      labels: [],
-      datasets: [
-        {
-          label: "Number of comments",
-          data: [],
-          backgroundColor: [],
-        },
-      ],
-    };
-
-    response.data.data.forEach((item) => {
-      updatedBarCharData.labels.push(item.documentName);
-      updatedBarCharData.datasets[0].data.push(item.numberOfComment);
-      updatedBarCharData.datasets[0].backgroundColor.push(
+    // Make bar chart data
+    const updatedMostPublishBarChart = cloneDeep(defaultBarChart);
+    mostPublisherResponse.data.data.forEach((item) => {
+      updatedMostPublishBarChart.labels.push(item.memberName);
+      updatedMostPublishBarChart.datasets[0].data.push(item.numberOfPost);
+      updatedMostPublishBarChart.datasets[0].backgroundColor.push(
         "#" + Math.floor(Math.random() * 16777215).toString(16)
       );
     });
-    setBarChartData(updatedBarCharData);
+    setMostPublisherBarChart(updatedMostPublishBarChart);
+
+    const updatedMostCommentBarChart = cloneDeep(defaultBarChart);
+    mostCommentResponse.data.data.forEach((item) => {
+      updatedMostCommentBarChart.labels.push(item.categoryName);
+      updatedMostCommentBarChart.datasets[0].formattedValue.push(
+        item.documentName
+      );
+      updatedMostCommentBarChart.datasets[0].data.push(item.numberOfComment);
+      updatedMostCommentBarChart.datasets[0].backgroundColor.push(
+        "#" + Math.floor(Math.random() * 16777215).toString(16)
+      );
+    });
+    setMostCommentBarChart(updatedMostCommentBarChart);
   }, []);
 
   // Side effect
+  useEffect(() => {}, []);
+
   useEffect(() => {
     handleInitialization();
+
+    const intervalId = setInterval(() => {
+      handleInitialization();
+    }, 1000 * 60 * 60);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [handleInitialization]);
 
-  if (!pieChartData || !barChartData) {
+  if (
+    !mostPublisherPieChart ||
+    !mostPublisherBarChart ||
+    !mostCommentBarChart
+  ) {
     return null;
   }
 
@@ -127,17 +176,27 @@ const Dashboard = () => {
         </Link>
       </div>
 
-      <div className='section two-columns'>
-        <div>
-          <div className='type-title'>The most publishers</div>
-          <div className='chart'>
-            <Pie data={pieChartData} height='200px' />
+      <div className='section'>
+        <div className='type-title'>Top 10 Publishers</div>
+        <div className='two-columns'>
+          <div>
+            <div className='chart'>
+              <Pie data={mostPublisherPieChart} options={pieOption} />
+            </div>
+          </div>
+          <div>
+            <div className='chart'>
+              <Bar data={mostPublisherBarChart} options={barOption} />
+            </div>
           </div>
         </div>
+      </div>
+
+      <div className='section'>
+        <div className='type-title'>Top 10 Comments</div>
         <div>
-          <div className='type-title'>The most comments</div>
           <div className='chart'>
-            <Bar data={barChartData} options={barOption} />
+            <Bar data={mostCommentBarChart} options={barOption} />
           </div>
         </div>
       </div>

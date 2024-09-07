@@ -20,6 +20,7 @@ type MostPublisher struct {
 type MostComment struct {
 	DocumentId			int64 	`json:"documentId"`
 	DocumentName		string 	`json:"documentName"`
+	CategoryName		string 	`json:"categoryName"`
 	NumberOfComment int64 	`json:"numberOfComment"`
 }
 
@@ -80,8 +81,11 @@ func (mc *MostComment) Query(userId int64) ([]MostComment, error) {
 		SELECT
 			d.id AS document_id,
 			d.name AS document_name,
+			c.name as category_name,
 			(SELECT count(*) FROM document_comments dc WHERE dc.document_id = d.id) AS number_of_comment
 			FROM documents d
+			INNER JOIN categories c
+			ON c.id = d.category_id 
 			WHERE d.id IN (SELECT document_id FROM user_documents ud WHERE user_id = $1)
 		ORDER BY number_of_comment DESC
 		LIMIT 10;`
@@ -95,7 +99,7 @@ func (mc *MostComment) Query(userId int64) ([]MostComment, error) {
 	for rows.Next() {
 		var mostComment MostComment
 
-		err := rows.Scan(&mostComment.DocumentId, &mostComment.DocumentName, &mostComment.NumberOfComment)
+		err := rows.Scan(&mostComment.DocumentId, &mostComment.DocumentName, &mostComment.CategoryName, &mostComment.NumberOfComment)
 		if err != nil {
 			return nil, err
 		}

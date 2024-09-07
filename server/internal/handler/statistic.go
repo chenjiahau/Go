@@ -49,6 +49,7 @@ func (ctrl *Controller) MostComments(w http.ResponseWriter, r *http.Request) {
 		resData["data"] = append(resData["data"].([]map[string]interface{}), map[string]interface{}{
 			"documentId": row.DocumentId,
 			"documentName": row.DocumentName,
+			"categoryName": row.CategoryName,
 			"numberOfComment": row.NumberOfComment,
 		})
 	}
