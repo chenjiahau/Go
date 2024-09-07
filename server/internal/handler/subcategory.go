@@ -417,6 +417,7 @@ func (Ctrl *Controller) UpdateSubCategory(w http.ResponseWriter, r *http.Request
 	}
 
 	// Update subcategory
+	existSubCategory.Id = subCategoryId
 	existSubCategory.Name = uscp.Name
 	existSubCategory.IsAlive = uscp.IsAlive
 	err = existSubCategory.Update()

@@ -315,6 +315,7 @@ func (ctrl *Controller) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update category
+	existCategory.Id = categoryId
 	existCategory.Name = ucp.Name
 	existCategory.IsAlive = ucp.IsAlive
 	err = existCategory.Update(ctrl.User.Id)
