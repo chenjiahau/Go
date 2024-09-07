@@ -30,6 +30,10 @@ func GetRoutes() http.Handler {
 		mux.Get("/verify-token", handler.Ctrl.VerifyToken)
 		mux.Get("/sign-out", handler.Ctrl.SignOut)
 
+		// Statistic routes
+		mux.Get("/statistic/most-publisher", handler.Ctrl.MostPublisher)
+		mux.Get("/statistic/most-comment", handler.Ctrl.MostComment)
+
 		// Member routes
 		mux.Get("/members", handler.Ctrl.GetAllMember)
 		mux.Get("/member-roles", handler.Ctrl.GetAllMemberRole)
