@@ -12,6 +12,9 @@ const resource = {
   MEMBERS_BY_PAGE: "/auth/members/page/:page/size/:size",
   ADD_MEMBER: "/auth/member",
   EDIT_MEMBER: "/auth/member/:id",
+  // Statistic
+  STATISTIC_MOST_PUBLISHERS: "/auth/statistic/most-publishers",
+  STATISTIC_MOST_COMMENTS: "/auth/statistic/most-comments",
   // Category
   CATEGORIES: "/auth/categories",
   NUMBER_OF_CATEGORIES: "/auth/categories/total",

@@ -1,0 +1,11 @@
+.type-title {
+  font-family: var(--general-font);
+  font-weight: bold;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.chart {
+  width: 100%;
+  height: 300px;
+}

@@ -31,8 +31,8 @@ func GetRoutes() http.Handler {
 		mux.Get("/sign-out", handler.Ctrl.SignOut)
 
 		// Statistic routes
-		mux.Get("/statistic/most-publisher", handler.Ctrl.MostPublisher)
-		mux.Get("/statistic/most-comment", handler.Ctrl.MostComment)
+		mux.Get("/statistic/most-publishers", handler.Ctrl.MostPublishers)
+		mux.Get("/statistic/most-comments", handler.Ctrl.MostComments)
 
 		// Member routes
 		mux.Get("/members", handler.Ctrl.GetAllMember)

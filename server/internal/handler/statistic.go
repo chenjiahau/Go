@@ -7,7 +7,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (ctrl *Controller) MostPublisher(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) MostPublishers(w http.ResponseWriter, r *http.Request) {
 	// Query most publisher
 	mp := model.MostPublisher{}
 	rows, err := mp.Query(ctrl.User.Id)
@@ -31,7 +31,7 @@ func (ctrl *Controller) MostPublisher(w http.ResponseWriter, r *http.Request) {
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
 }
 
-func (ctrl *Controller) MostComment(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) MostComments(w http.ResponseWriter, r *http.Request) {
 	// Query most comment
 	mc := model.MostComment{}
 	rows, err := mc.Query(ctrl.User.Id)

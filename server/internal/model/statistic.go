@@ -52,7 +52,8 @@ func (mp *MostPublisher) Query(userId int64) ([]MostPublisher, error) {
 				WHERE d.id IN (SELECT document_id FROM user_documents ud WHERE user_id = $1)
 				GROUP BY
 					d.post_member_id) m1) m2
-				ORDER BY number_of_post DESC;`
+				ORDER BY number_of_post DESC
+				LIMIT 10;`
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, userId)
 	if err != nil {
