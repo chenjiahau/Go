@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -10,13 +9,14 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func WriteToConsole(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logMessage := fmt.Sprintf("Executing route %s", r.URL.Path) 
-		util.WriteInfoLog(logMessage)
-		next.ServeHTTP(w, r)
-	})
-}
+// func WriteToConsole(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Println("Executing route", r.URL.Path)
+// 		logMessage := fmt.Sprintf("Executing route %s", r.URL.Path)
+// 		util.WriteInfoLog(logMessage)
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
 
 func ParseAuthorization(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

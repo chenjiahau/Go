@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"ivanfun.com/mis/internal/handler"
 )
 
 func GetRoutes() http.Handler {
 	mux := chi.NewRouter()
-	mux.Use(WriteToConsole)
+	mux.Use(middleware.Logger)
 	mux.Use(ParseAuthorization)
 	mux.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"*"},
