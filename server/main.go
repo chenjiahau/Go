@@ -15,32 +15,34 @@ import (
 )
 
 var (
-	appName	string
-	version	string
-	dbUser	string
-	dbPass	string
+	appName			string
+	appVersion	string
+	dbHost			string
+	dbUser			string
+	dbPass			string
 )
 
 func main() {
 	flag.Parse()
 	appName = flag.Arg(0)
-	version = flag.Arg(1)
-	dbUser = flag.Arg(2)
-	dbPass = flag.Arg(3)
+	appVersion = flag.Arg(1)
+	dbHost = flag.Arg(2)
+	dbUser = flag.Arg(3)
+	dbPass = flag.Arg(4)
 
 	var systemInfo string
-	if appName == "" || version == "" {
+	if appName == "" || appVersion == "" {
 		systemInfo = driver.SystemInfo
 	} else {
-		systemInfo = fmt.Sprintf("%s Version %s", appName, version)
+		systemInfo = fmt.Sprintf("%s Version %s", appName, appVersion)
 	}
 	util.WriteInfoLog(systemInfo)
 
 	var dbConnect string
-	if dbUser == "" || dbPass == "" {
+	if dbHost == "" || dbUser == "" || dbPass == "" {
 		dbConnect = driver.PostgreSQLDataSourceName
 	} else {
-		dbConnect = fmt.Sprintf("postgres://%s:%s@localhost:5432/mis?sslmode=disable", dbUser, dbPass)
+		dbConnect = fmt.Sprintf("postgres://%s:%s@%s:5432/mis?sslmode=disable", dbUser, dbPass, dbHost)
 	}
 
 	pgConn, err := driver.ConnectSQL(dbConnect)
@@ -51,7 +53,7 @@ func main() {
 	model.NewDbConfig(pgConn)
 	defer pgConn.SQL.Close()
 
-	c := handler.NewConfig(appName, version)
+	c := handler.NewConfig(appName, appVersion)
 	handler.NewHandler(c)
 	RunServer(c)
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -12,12 +13,23 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
+var (
+	target	string
+	dbHost	string
+	dbUser	string
+	dbPass	string
+)
+
 func main() {
-	target := os.Args[1]
+	flag.Parse()
+	target = flag.Arg(0)
+	dbHost = flag.Arg(1)
+	dbUser = flag.Arg(2)
+	dbPass = flag.Arg(3)
 
 	pgConn := ConnectDB()
 	defer pgConn.SQL.Close()
-	
+
 	if target == "color" {
 		HandleColor(pgConn)
 	}
@@ -28,7 +40,14 @@ func main() {
 }
 
 func ConnectDB() *driver.DBConn {
-	pgConn, err := driver.ConnectSQL(driver.PostgreSQLDataSourceName)
+	var dbConnect string
+	if dbHost == "" || dbUser == "" || dbPass == "" {
+		dbConnect = driver.PostgreSQLDataSourceName
+	} else {
+		dbConnect = fmt.Sprintf("postgres://%s:%s@%s:5432/mis?sslmode=disable", dbUser, dbPass, dbHost)
+	}
+
+	pgConn, err := driver.ConnectSQL(dbConnect)
 	if err != nil {
 		log.Fatal("cannot connect to database")
 	}

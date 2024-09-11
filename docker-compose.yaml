@@ -1,0 +1,38 @@
+services:
+  db:
+    build:
+      context: ./db
+      args:
+        DB_NAME: postgres
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+      dockerfile: Dockerfile
+    container_name: mis-db
+    ports:
+      - "5432:5432"
+    restart: always
+  web:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: mis-web
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+  api:
+    build:
+      context: ./server
+      args:
+        APP_NAME: ${APP_NAME}
+        APP_VERSION: ${APP_VERSION}
+        DB_HOST: ${DB_HOST}
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+      dockerfile: Dockerfile
+    container_name: mis-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    restart: always

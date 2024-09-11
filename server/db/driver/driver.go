@@ -35,7 +35,7 @@ func ConnectSQL(dsn string) (*DBConn, error) {
 	_dbConn.SetConnMaxLifetime(maxConnLifetime)
 
 	dbConn.SQL = _dbConn
-	
+
 	return dbConn, nil
 }
 
