@@ -92,3 +92,17 @@ func GetUnauthorizedResponse() util.ResponseFormat {
 
 	return res
 }
+
+func RenderTemplate(w http.ResponseWriter, tmplPath string, data interface{})  {
+	tmpl, err := util.ParseTemplate(tmplPath)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
