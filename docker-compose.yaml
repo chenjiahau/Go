@@ -8,6 +8,11 @@ services:
         DB_PASSWORD: ${DB_PASSWORD}
       dockerfile: Dockerfile
     container_name: mis-db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - "5432:5432"
     restart: always
@@ -16,8 +21,17 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     container_name: mis-web
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/certs/certificate_m.crt:/etc/nginx/certs/certificate_m.crt
+      - ./nginx/certs/private.key:/etc/nginx/certs/private.key
     depends_on:
       - api
   api:
@@ -31,6 +45,11 @@ services:
         DB_PASSWORD: ${DB_PASSWORD}
       dockerfile: Dockerfile
     container_name: mis-api
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - "8080:8080"
     depends_on:
@@ -39,6 +58,11 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: mis-pgadmin
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - "5050:80"
     environment:
