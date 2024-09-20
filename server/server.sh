@@ -1,1 +1,0 @@
-go run ./main.go MIS 0.0.1

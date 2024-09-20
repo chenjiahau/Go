@@ -16,6 +16,7 @@ import (
 var (
 	target	string
 	dbHost	string
+	dbName	string
 	dbUser	string
 	dbPass	string
 )
@@ -24,6 +25,7 @@ func main() {
 	flag.Parse()
 	target = flag.Arg(0)
 	dbHost = flag.Arg(1)
+	dbName = flag.Arg(2)
 	dbUser = flag.Arg(2)
 	dbPass = flag.Arg(3)
 
@@ -40,12 +42,7 @@ func main() {
 }
 
 func ConnectDB() *driver.DBConn {
-	var dbConnect string
-	if dbHost == "" || dbUser == "" || dbPass == "" {
-		dbConnect = driver.PostgreSQLDataSourceName
-	} else {
-		dbConnect = fmt.Sprintf("postgres://%s:%s@%s:5432/mis?sslmode=disable", dbUser, dbPass, dbHost)
-	}
+	dbConnect := fmt.Sprintf("postgres://%s:%s@%s:5432/%s?sslmode=disable", dbUser, dbPass, dbHost, dbName)
 
 	pgConn, err := driver.ConnectSQL(dbConnect)
 	if err != nil {

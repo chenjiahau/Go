@@ -4,7 +4,7 @@ services:
     container_name: server-db-mis
     restart: always
     env_file:
-      - ./db.env
+      - ./.env
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:

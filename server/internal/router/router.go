@@ -102,6 +102,9 @@ func GetRoutes() http.Handler {
 	// Index route
 	mux.Get("/", handler.Ctrl.Index)
 
+	// Test mail route
+	mux.Get("/test-mail", handler.Ctrl.TestMail)
+
 	// File server
 	fileServer := http.FileServer(http.Dir("./public"))
 	mux.Handle("/*", http.StripPrefix("/", fileServer))

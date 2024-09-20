@@ -2,6 +2,8 @@ package handler
 
 import (
 	"net/http"
+
+	"ivanfun.com/mis/internal/util"
 )
 
 type IndexResponse struct {
@@ -19,4 +21,26 @@ func (ctrl *Controller) Index(w http.ResponseWriter, r *http.Request) {
 
 	tmplPath := "index"
 	RenderTemplate(w, tmplPath, res)
+}
+
+func (ctrl *Controller) TestMail(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Query().Get("title")
+	to := r.URL.Query().Get("to")
+	body := "Test mail"
+
+	if title == "" || to == "" {
+		util.WriteWarnLog("title or to is empty")
+		return
+	}
+
+	util.SendMail(
+		ctrl.Config.EmailConf.Host,
+		ctrl.Config.EmailConf.Port,
+		ctrl.Config.EmailConf.User,
+		ctrl.Config.EmailConf.Pass,
+		ctrl.Config.EmailConf.User,
+		to,
+		title,
+		body,
+	)
 }

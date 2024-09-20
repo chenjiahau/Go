@@ -7,10 +7,17 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
+type EmailConfig struct {
+	Host string
+	Port int
+	User string
+	Pass string
+}
+
 type Config struct {
-	AppName	string
-	Version	string
-	DbConf	*model.DbConfig
+	AppName		string
+	Version		string
+	EmailConf	*EmailConfig
 }
 
 type Controller struct {
@@ -21,10 +28,20 @@ type Controller struct {
 var Conf *Config
 var Ctrl *Controller
 
-func NewConfig(appName, version string) *Config {
+func NewEmailConfig(host string, port int, user, pass string) *EmailConfig {
+	return &EmailConfig{
+		Host: host,
+		Port: port,
+		User: user,
+		Pass: pass,
+	}
+}
+
+func NewConfig(appName, version string, emailConf *EmailConfig) *Config {
 	return &Config{
 		AppName: appName,
 		Version: version,
+		EmailConf: emailConf,
 	}
 }
 

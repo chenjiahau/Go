@@ -11,9 +11,6 @@ import (
 	"github.com/simukti/sqldb-logger/logadapter/zerologadapter"
 )
 
-var SystemInfo = "MIS Version 1.0.0"
-var PostgreSQLDataSourceName = "postgres://mis:mis@localhost:5432/mis?sslmode=disable"
-
 type DBConn struct {
 	SQL *sql.DB
 }
