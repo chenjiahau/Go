@@ -26,8 +26,8 @@ func main() {
 	target = flag.Arg(0)
 	dbHost = flag.Arg(1)
 	dbName = flag.Arg(2)
-	dbUser = flag.Arg(2)
-	dbPass = flag.Arg(3)
+	dbUser = flag.Arg(3)
+	dbPass = flag.Arg(4)
 
 	pgConn := ConnectDB()
 	defer pgConn.SQL.Close()
