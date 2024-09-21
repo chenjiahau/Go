@@ -4,7 +4,7 @@ import Logo from "@/assets/img/brand.png";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import _ from "lodash";
+import _, { set } from "lodash";
 
 // Const
 import routerConfig from "@/const/config/router";
@@ -47,15 +47,28 @@ const Home = () => {
     email: "",
     password: "",
   });
+  const [isTextTypeSIP, setIsTextTypeSIP] = useState(true);
   const [signUpData, setSignUpData] = useState({
     email: "",
     username: "",
     password: "",
     confirmPassword: "",
   });
+  const [isTextTypeSUP, setIsTextTypeSUP] = useState(true);
+  const [isTextTypeSUPC, setIsTextTypeSUPC] = useState(true);
 
   // Method
   const changeStage = (stage) => () => {
+    setSignInData({
+      email: "",
+      password: "",
+    });
+    setSignUpData({
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+    });
     setStage(stage);
   };
 
@@ -212,14 +225,28 @@ const Home = () => {
               <label htmlFor='password'>Password</label>
               <Input
                 id='password'
-                type='password'
+                type={isTextTypeSIP ? "password" : "text"}
                 name='password'
                 placeholder='at least 8 characters'
                 value={signInData.password}
                 onChange={(e) => {
                   changeSignInData("password")(e);
                 }}
-              />
+              >
+                {isTextTypeSIP ? (
+                  <i
+                    className='fa-regular fa-eye'
+                    title='show password'
+                    onClick={() => setIsTextTypeSIP(!isTextTypeSIP)}
+                  ></i>
+                ) : (
+                  <i
+                    className='fa-regular fa-eye-slash'
+                    title='hide password'
+                    onClick={() => setIsTextTypeSIP(!isTextTypeSIP)}
+                  ></i>
+                )}
+              </Input>
             </div>
             <div className='space-b-4'></div>
             <div className='button-container'>
@@ -290,28 +317,56 @@ const Home = () => {
               <label htmlFor='password'>Password</label>
               <Input
                 id='password'
-                type='password'
+                type={isTextTypeSUP ? "password" : "text"}
                 name='password'
                 placeholder='at least 8 characters'
                 value={signUpData.password}
                 onChange={(e) => {
                   changeSignUpData("password")(e);
                 }}
-              />
+              >
+                {isTextTypeSUP ? (
+                  <i
+                    className='fa-regular fa-eye'
+                    title='show password'
+                    onClick={() => setIsTextTypeSUP(!isTextTypeSUP)}
+                  ></i>
+                ) : (
+                  <i
+                    className='fa-regular fa-eye-slash'
+                    title='hide password'
+                    onClick={() => setIsTextTypeSUP(!isTextTypeSUP)}
+                  ></i>
+                )}
+              </Input>
             </div>
             <div className='space-b-3'></div>
             <div className='input-group space-b-3'>
               <label htmlFor='password'>Confirm Password</label>
               <Input
                 id='confirm-password'
-                type='password'
+                type={isTextTypeSUPC ? "password" : "text"}
                 name='confirm-password'
                 placeholder='confirm your password'
                 value={signUpData.confirmPassword}
                 onChange={(e) => {
                   changeSignUpData("confirmPassword")(e);
                 }}
-              />
+              >
+                {isTextTypeSUPC ? (
+                  <i
+                    className='fa-regular fa-eye'
+                    title='show password'
+                    onClick={() => setIsTextTypeSUPC(!isTextTypeSUPC)}
+                  ></i>
+                ) : (
+                  <i
+                    className='fa-regular fa-eye-slash'
+                    title='hide password'
+                    onClick={() => setIsTextTypeSUPC(!isTextTypeSUPC)}
+                  ></i>
+                )}
+              </Input>
             </div>
             <div className='space-b-4'></div>
             <div className='button-container'>
