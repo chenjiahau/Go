@@ -131,6 +131,8 @@ var UserSuccessMessage = map[int]string {
 	1203: "Success to verify token",
 	// Log out
 	1204: "User logged out successfully",
+	// Active user
+	1205: "User activated successfully",
 }
 
 var	UserErrorMessage = map[int]string {
@@ -141,6 +143,9 @@ var	UserErrorMessage = map[int]string {
 	1404: "Email is already registered",
 	1405: "Failed to hash password",
 	1406: "Failed to create user",
+	1407: "Failed to create user register",
+	1408: "Failed to send confirmation email",
+	1409: "Register token is not found or expired",
 	// Sign in
 	1411: "Invalid email or password",
 	1412: "Failed to create token",

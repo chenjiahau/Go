@@ -2,7 +2,7 @@ package util
 
 import "gopkg.in/gomail.v2"
 
-func SendMail(smtpHost string, smtpPort int, smtpUser, smtpPass, from, to, subject, body string) error {
+func SendEmail(smtpHost string, smtpPort int, smtpUser, smtpPass, from, to, subject, body string) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", from)
 	m.SetHeader("To", to)

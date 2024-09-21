@@ -46,7 +46,7 @@ class APIHandler {
     return data.data?.data?.message || message.success.DEFAULT;
   }
 
-  extractMessage(data) {
+  extractErrorMessage(data) {
     return data.response?.data?.message || message.error.UNKNOWN;
   }
 }

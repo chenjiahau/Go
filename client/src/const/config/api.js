@@ -2,6 +2,7 @@ const resource = {
   // API
   // Login
   SIGNIN: "/sign-in",
+  ACTIVE_ACCOUNT: "/activate-account/:token",
   SIGNUP: "/sign-up",
   VERIFY_TOKEN: "/auth/verify-token",
   // Member role

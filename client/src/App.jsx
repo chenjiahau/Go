@@ -9,6 +9,7 @@ import routerConfig from "@/const/config/router";
 
 import Layout from "@/ui/Layout";
 import Login from "@/pages/Login";
+import ActiveAccount from "./pages/ActiveAccount";
 import Dashboard from "@/pages/Dashboard";
 import Members from "@/pages/Members";
 import Categories from "@/pages/Categories";
@@ -26,6 +27,10 @@ function App() {
     <HashRouter>
       <Routes>
         <Route path={routerConfig.routes.LOGIN} element={<Login />} />
+        <Route
+          path={routerConfig.routes.ACTIVE_ACCOUNT}
+          element={<ActiveAccount />}
+        />
         <Route path={routerConfig.routes.HOME} element={<Layout />}>
           <Route path={routerConfig.routes.DASHBOARD} element={<Dashboard />} />
           <Route path={routerConfig.routes.MEMBERS} element={<Members />} />

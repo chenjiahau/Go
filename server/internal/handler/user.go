@@ -2,7 +2,9 @@ package handler
 
 import (
 	"net/http"
+	"os"
 
+	"github.com/go-chi/chi"
 	"github.com/go-playground/validator"
 	"ivanfun.com/mis/internal/model"
 	"ivanfun.com/mis/internal/util"
@@ -59,10 +61,46 @@ func (ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert user
-	err = u.Create(sp)
+	id, err = u.Create(sp)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(1406)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Insert user register
+	ur := model.NewUserRegister()
+  urm := model.UserRegisterParams{
+		UserId: id,
+		Token: util.CreateMD5Hash(id),
+		ExpiredAt: util.GetNow().AddDate(0, 0, 1), // 1 day
+	}
+	err = ur.Create(urm)
+
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1407)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Send confirmation email
+	confirmUrl := os.Getenv("PORTAL_URL") + "/active-account?token=" + urm.Token
+	err = util.SendEmail(
+		ctrl.Config.EmailConf.Host,
+		ctrl.Config.EmailConf.Port,
+		ctrl.Config.EmailConf.User,
+		ctrl.Config.EmailConf.Pass,
+		ctrl.Config.EmailConf.User,
+		sp.Email,
+		"User Registration",
+		"Click <a href=\"" + confirmUrl + "\">here</a> to confirm your registration.",
+	)
+
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1408)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}
@@ -74,6 +112,58 @@ func (ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 		"name": sp.Name,
 	}
 
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (ctrl *Controller) ActivateAccount(w http.ResponseWriter, r *http.Request) {
+	// Validate request
+	token := chi.URLParam(r, "token")
+	if token == "" {
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Query user register
+	ur := model.NewUserRegister()
+	err := ur.Query(token)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1409)
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Check token expiration
+	expiredAt := ur.(*model.UserRegister).ExpiredAt
+	now := util.GetNow()
+	if now.After(expiredAt) {
+		resErr := util.GetReturnMessage(1409)
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Update user's status to active
+	u := model.NewUser()
+	err = u.Active(ur.(*model.UserRegister).UserId)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1409)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Delete user register
+	err = ur.Delete(ur.(*model.UserRegister).Id)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1409)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Response
+	resData := util.GetReturnMessage(1205)
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 

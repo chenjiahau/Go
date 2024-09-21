@@ -1,6 +1,8 @@
 package model
 
 import (
+	"errors"
+
 	"ivanfun.com/mis/internal/util"
 )
 
@@ -8,8 +10,9 @@ import (
 // For the methods that have to be implemented by the User struct
 type UserInterface interface {
 	GetId(SignUpParams)		int64
-	Create(SignUpParams)	error
+	Create(SignUpParams)	(int64, error)
 	Query(SignInParams)		error
+	Active(int64)					error
 }
 
 // Request model
@@ -30,11 +33,12 @@ type SignInParams struct {
 // Database model
 // Struct for the user corresponding to the users table in the database
 type User struct {
-	Id				int64		`json:"id"`
-	Email			string	`json:"email"`
-	Name			string	`json:"username"`
-	Password	string	`json:"password"`
-	Token			string	`json:"token"`
+	Id						int64		`json:"id"`
+	Email					string	`json:"email"`
+	Name					string	`json:"username"`
+	Password			string	`json:"password"`
+	Token					string	`json:"token"`
+	IsRegistered	bool		`json:"isRegistered"`
 }
 
 // Methods
@@ -57,10 +61,33 @@ func (u *User) GetId(sp SignUpParams) int64 {
 	return id
 }
 
-func (u *User) Create(sp SignUpParams) error {
-	sqlStatement := `INSERT INTO users (email, username, password) VALUES ($1, $2, $3);`
-	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, sp.Email, sp.Name, sp.Password)
+func (u *User) Create(sp SignUpParams) (int64, error) {
+	sqlStatement := `INSERT INTO users (email, username, password) VALUES ($1, $2, $3) RETURNING id;`
 
+	var userId int64
+	err := DbConf.PgConn.SQL.QueryRow(sqlStatement, sp.Email, sp.Name, sp.Password).Scan(&userId)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return userId, nil
+}
+
+func (u *User) Query(si SignInParams) error {
+	sqlStatement := `SELECT id, email, username, password, is_registered FROM users WHERE email= $1;`
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, si.Email)
+
+	err := row.Scan(&u.Id, &u.Email, &u.Name, &u.Password, &u.IsRegistered)
+	if err != nil {
+		return err
+	}
+
+	if !u.IsRegistered {
+		return errors.New("User is not registered")
+	}
+
+	err = util.CheckPasswordHash(si.Password, u.Password)
 	if err != nil {
 		return err
 	}
@@ -68,16 +95,10 @@ func (u *User) Create(sp SignUpParams) error {
 	return nil
 }
 
-func (u *User) Query(si SignInParams) error {
-	sqlStatement := `SELECT id, email, username, password FROM users WHERE email= $1;`
-	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, si.Email)
+func (u *User) Active(id int64) error {
+	sqlStatement := `UPDATE users SET is_registered = TRUE WHERE id = $1;`
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, id)
 
-	err := row.Scan(&u.Id, &u.Email, &u.Name, &u.Password)
-	if err != nil {
-		return err
-	}
-
-	err = util.CheckPasswordHash(si.Password, u.Password)
 	if err != nil {
 		return err
 	}

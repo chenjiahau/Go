@@ -29,7 +29,7 @@ const stageType = {
 
 const successMessage = {
   SIGNIN: "Login successfully",
-  SIGNUP: "Login successfully, please back to login",
+  SIGNUP: "Register successfully, please check your email to verify",
 };
 
 const errorMessage = {
@@ -117,7 +117,7 @@ const Home = () => {
       localStorage.setItem("user", JSON.stringify(response.data.data));
       navigate(routerConfig.routes.DASHBOARD);
     } catch (error) {
-      messageUtil.showErrorMessage(apiHandler.extractMessage(error));
+      messageUtil.showErrorMessage(apiHandler.extractErrorMessage(error));
     }
   };
 
@@ -167,6 +167,20 @@ const Home = () => {
       navigate(routerConfig.routes.HOME);
     }
   }, []);
+
+  useEffect(() => {
+    setSignInData({
+      email: "",
+      password: "",
+    });
+
+    setSignUpData({
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+    });
+  }, [stageType]);
 
   let content = null;
   if (stage === stageType.LOGIN) {

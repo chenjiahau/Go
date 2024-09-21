@@ -33,7 +33,7 @@ func (ctrl *Controller) TestMail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	util.SendMail(
+	util.SendEmail(
 		ctrl.Config.EmailConf.Host,
 		ctrl.Config.EmailConf.Port,
 		ctrl.Config.EmailConf.User,

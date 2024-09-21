@@ -24,8 +24,11 @@ migratedownAll:
 migratedown:
 	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" -verbose down ${N}
 
+migrateversion:
+	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" version
+
 migrateforce:
 	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" force ${N}
 
-.PHONY: postgres createdb dropdb migrateupAll migrateup migratedownAll migratedown migrateforce
+.PHONY: postgres createdb dropdb migrateupAll migrateup migratedownAll migratedown migrateversion migrateforce
 
