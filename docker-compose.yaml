@@ -38,6 +38,7 @@ services:
     build:
       context: ./server
       args:
+        DOMAIN: ${DOMAIN}
         APP_NAME: ${APP_NAME}
         APP_VERSION: ${APP_VERSION}
         DB_HOST: ${DB_HOST}

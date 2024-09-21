@@ -28,27 +28,30 @@ var (
 	emailPort		string
 	emailFrom		string
 	emailPass		string
+	domain			string
 )
 
 func main() {
 	flag.Parse()
-	appName = flag.Arg(0)
-	appVersion = flag.Arg(1)
-	dbHost = flag.Arg(2)
-	dbName = flag.Arg(3)
-	dbUser = flag.Arg(4)
-	dbPass = flag.Arg(5)
-	emailHost = flag.Arg(6)
-	emailPort = flag.Arg(7)
-	emailFrom = flag.Arg(8)
-	emailPass = flag.Arg(9)
+	domain = flag.Arg(0)
+	appName = flag.Arg(1)
+	appVersion = flag.Arg(2)
+	dbHost = flag.Arg(3)
+	dbName = flag.Arg(4)
+	dbUser = flag.Arg(5)
+	dbPass = flag.Arg(6)
+	emailHost = flag.Arg(7)
+	emailPort = flag.Arg(8)
+	emailFrom = flag.Arg(9)
+	emailPass = flag.Arg(10)
 
-	if appName == "" || appVersion == "" || dbHost == "" || dbUser == "" || dbPass == "" || emailHost == "" || emailPort == "" || emailFrom == "" || emailPass == "" {
+	if domain == "" || appName == "" || appVersion == "" || dbHost == "" || dbUser == "" || dbPass == "" || emailHost == "" || emailPort == "" || emailFrom == "" || emailPass == "" {
 		err := godotenv.Load(".env")
 		if err != nil {
 			log.Fatal("Error loading .env file")
 		}
 
+		domain = os.Getenv("DOMAIN")
 		appName = os.Getenv("APPLICATION_NAME")
 		appVersion = os.Getenv("APPLICATION_VERSION")
 		dbHost = os.Getenv("POSTGRES_HOST")
@@ -85,7 +88,7 @@ func main() {
 	emailConf := handler.NewEmailConfig(emailHost, int(ePort), emailFrom, emailPass)
 
 	// Server configuration
-	c := handler.NewConfig(appName, appVersion, emailConf)
+	c := handler.NewConfig(domain, appName, appVersion, emailConf)
 	handler.NewHandler(c)
 	RunServer(c)
 }
