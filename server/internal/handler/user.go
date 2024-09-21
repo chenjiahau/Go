@@ -86,7 +86,7 @@ func (ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send confirmation email
-	confirmUrl := os.Getenv("PORTAL_URL") + "/active-account?token=" + urm.Token
+	confirmUrl := os.Getenv("PORTAL_URL") + "/#/active-account?token=" + urm.Token
 	err = util.SendEmail(
 		ctrl.Config.EmailConf.Host,
 		ctrl.Config.EmailConf.Port,
