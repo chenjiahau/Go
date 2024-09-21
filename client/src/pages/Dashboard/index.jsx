@@ -109,7 +109,7 @@ const Dashboard = () => {
 
     // Make pie chart data
     const updatedMostPublisherPieChart = cloneDeep(defaultPieChart);
-    mostPublisherResponse.data.data.forEach((item) => {
+    mostPublisherResponse.data.data?.forEach((item) => {
       updatedMostPublisherPieChart.labels.push(item.memberName);
       updatedMostPublisherPieChart.datasets[0].data.push(item.numberOfPost);
       updatedMostPublisherPieChart.datasets[0].backgroundColor.push(
@@ -120,7 +120,7 @@ const Dashboard = () => {
 
     // Make bar chart data
     const updatedMostPublishBarChart = cloneDeep(defaultBarChart);
-    mostPublisherResponse.data.data.forEach((item) => {
+    mostPublisherResponse.data.data?.forEach((item) => {
       updatedMostPublishBarChart.labels.push(item.memberName);
       updatedMostPublishBarChart.datasets[0].data.push(item.numberOfPost);
       updatedMostPublishBarChart.datasets[0].backgroundColor.push(
@@ -130,7 +130,7 @@ const Dashboard = () => {
     setMostPublisherBarChart(updatedMostPublishBarChart);
 
     const updatedMostCommentBarChart = cloneDeep(defaultBarChart);
-    mostCommentResponse.data.data.forEach((item) => {
+    mostCommentResponse.data.data?.forEach((item) => {
       updatedMostCommentBarChart.labels.push(item.categoryName);
       updatedMostCommentBarChart.datasets[0].formattedValue.push(
         item.documentName
@@ -181,12 +181,22 @@ const Dashboard = () => {
         <div className='two-columns'>
           <div>
             <div className='chart'>
-              <Pie data={mostPublisherPieChart} options={pieOption} />
+              {mostPublisherBarChart.datasets[0].backgroundColor.length ===
+              0 ? (
+                <div className='no-data'>No data</div>
+              ) : (
+                <Pie data={mostPublisherPieChart} options={pieOption} />
+              )}
             </div>
           </div>
           <div>
             <div className='chart'>
-              <Bar data={mostPublisherBarChart} options={barOption} />
+              {mostPublisherBarChart.datasets[0].backgroundColor.length ===
+              0 ? (
+                <div className='no-data'>No data</div>
+              ) : (
+                <Bar data={mostPublisherBarChart} options={barOption} />
+              )}
             </div>
           </div>
         </div>
@@ -196,7 +206,11 @@ const Dashboard = () => {
         <div className='type-title'>Top 10 Comments</div>
         <div>
           <div className='chart'>
-            <Bar data={mostCommentBarChart} options={barOption} />
+            {mostCommentBarChart.datasets[0].backgroundColor.length === 0 ? (
+              <div className='no-data'>No data</div>
+            ) : (
+              <Bar data={mostCommentBarChart} options={barOption} />
+            )}
           </div>
         </div>
       </div>
