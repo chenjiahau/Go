@@ -23,6 +23,9 @@ func GetRoutes() http.Handler {
 	mux.Post("/api/sign-up", handler.Ctrl.SignUp)
 	mux.Get("/api/activate-account/{token}", handler.Ctrl.ActivateAccount)
 	mux.Post("/api/sign-in", handler.Ctrl.SignIn)
+	mux.Post("/api/create-reset-password", handler.Ctrl.CreateResetPassword)
+	mux.Get("/api/check-reset-password-token/{email}/{token}", handler.Ctrl.CheckRestPasswordToken)
+	mux.Post("/api/reset-password", handler.Ctrl.ResetPassword)
 
 	// Protected routes
 	mux.Route("/api/auth", func(mux chi.Router) {

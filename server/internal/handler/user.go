@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-playground/validator"
@@ -71,12 +72,12 @@ func (ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// Insert user register
 	ur := model.NewUserRegister()
-  urm := model.UserRegisterParams{
+  urp := model.UserRegisterParams{
 		UserId: id,
 		Token: util.CreateMD5Hash(id),
 		ExpiredAt: util.GetNow().AddDate(0, 0, 1), // 1 day
 	}
-	err = ur.Create(urm)
+	err = ur.Create(urp)
 
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -88,9 +89,9 @@ func (ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	// Send confirmation email
 	var confirmUrl string
 	if os.Getenv("PORTAL_URL") == "" {
-		confirmUrl = ctrl.Config.Domain + "/#/active-account?token=" + urm.Token
+		confirmUrl = ctrl.Config.Domain + "/#/active-account?token=" + urp.Token
 	} else {
-		confirmUrl = os.Getenv("PORTAL_URL") + "/#/active-account?token=" + urm.Token
+		confirmUrl = os.Getenv("PORTAL_URL") + "/#/active-account?token=" + urp.Token
 	}
 
 	err = util.SendEmail(
@@ -231,5 +232,225 @@ func (ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 		"token": tokenString,
 	}
 
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (ctrl *Controller) CreateResetPassword(w http.ResponseWriter, r *http.Request) {
+	// Validate request
+	var cuep model.CheckUserExistParams
+	err := util.DecodeJSONBody(r, &cuep)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Check if email has signed up, if not return success
+	u := model.NewUser()
+  existUser, err := u.CheckUserExist(cuep.Email)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1431)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	if existUser.Id == 0 {
+		resData := util.GetReturnMessage(1206)
+		resData["data"] = map[string]interface{}{
+			"email": cuep.Email,
+		}
+
+		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+		return
+	}
+
+	// Check if user is registered, if not return success
+	if !existUser.IsRegistered {
+		resData := util.GetReturnMessage(1206)
+		resData["data"] = map[string]interface{}{
+			"email": cuep.Email,
+		}
+
+		util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+		return
+	}
+	
+	// Check the last reset password record is over 15 minutes, if not return success
+	urp := model.NewUserResetPassword()
+	existRecord, _ := urp.Query(cuep.Email)
+	if existRecord.Id != 0 {
+		overValidTimestamp := existRecord.ExpiredAt.Add(-60 * 24 * time.Minute + 15 * time.Minute).Unix()
+		nowTimestamp := util.GetNow().Unix()
+
+		if nowTimestamp < overValidTimestamp {
+			resData := util.GetReturnMessage(1206)
+			resData["data"] = map[string]interface{}{
+				"email": cuep.Email,
+			}
+
+			util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+			return
+	  }
+	}
+
+	// Invalidate the last reset password record
+	err = urp.Invalidate(existUser.Id)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1432)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil	, resErr))
+		return
+	}
+
+	// Insert a new user reset password, expired in 1 day
+	urpp := model.UserResetPasswordParams{
+		UserId: existUser.Id,
+		Token: util.CreateMD5Hash(existUser.Id),
+		ExpiredAt: util.GetNow().AddDate(0, 0, 1),
+	}
+	err = urp.Create(urpp)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1433)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Send confirmation email
+	var confirmUrl string
+	if os.Getenv("PORTAL_URL") == "" {
+		confirmUrl = ctrl.Config.Domain + "/#/reset-password?token=" + urpp.Token
+	} else {
+		confirmUrl = os.Getenv("PORTAL_URL") + "/#/reset-password?token=" + urpp.Token
+	}
+
+	err = util.SendEmail(
+		ctrl.Config.EmailConf.Host,
+		ctrl.Config.EmailConf.Port,
+		ctrl.Config.EmailConf.User,
+		ctrl.Config.EmailConf.Pass,
+		ctrl.Config.EmailConf.User,
+		cuep.Email,
+		"Reset Password",
+		"Click <a href=\"" + confirmUrl + "\">here</a> to reset your password.",
+	)
+
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1434)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Response
+	resData := util.GetReturnMessage(1206)
+	resData["data"] = map[string]interface{}{
+		"email": cuep.Email,
+	}
+
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (ctrl *Controller) CheckRestPasswordToken(w http.ResponseWriter, r *http.Request) {
+	// Validate request
+	email := chi.URLParam(r, "email")
+	token := chi.URLParam(r, "token")
+	if email == "" || token == "" {
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Check token is valid
+	urp := model.NewUserResetPassword()
+	existTicket, err := urp.Query(email)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1435)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	if existTicket.Id == 0 || existTicket.Token != token {
+		resErr := util.GetReturnMessage(1435)
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Check token expiration
+	expiredAt := existTicket.ExpiredAt
+	now := util.GetNow()
+	if now.After(expiredAt) {
+		resErr := util.GetReturnMessage(1435)
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Response
+	resData := util.GetReturnMessage(1207)
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (ctrl *Controller) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	// Validate request
+	var cpp model.ChangePasswordParams
+	err := util.DecodeJSONBody(r, &cpp)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Check token is valid
+	urp := model.NewUserResetPassword()
+	existTicket, _ := urp.Query(cpp.Email)
+	if existTicket.Id == 0 {
+		resErr := util.GetReturnMessage(1435)
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Check token expiration
+	expiredAt := existTicket.ExpiredAt
+	now := util.GetNow()
+	if now.After(expiredAt) {
+		resErr := util.GetReturnMessage(1435)
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Hash password
+	cpp.Password, err = util.HashPassword(cpp.Password)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1436)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Change password
+	u := model.NewUser()
+	err = u.ResetPassword(existTicket.UserId, cpp.Password)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1437)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Invalidate user reset password
+	err = urp.Invalidate(existTicket.UserId)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(1432)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Response
+	resData := util.GetReturnMessage(1208)
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

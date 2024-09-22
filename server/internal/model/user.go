@@ -9,10 +9,12 @@ import (
 // Interface
 // For the methods that have to be implemented by the User struct
 type UserInterface interface {
-	GetId(SignUpParams)		int64
-	Create(SignUpParams)	(int64, error)
-	Query(SignInParams)		error
-	Active(int64)					error
+	GetId(SignUpParams)						int64
+	Create(SignUpParams)					(int64, error)
+	Query(SignInParams)						error
+	Active(int64)									error
+	CheckUserExist(string)				(User, error)
+	ResetPassword(int64, string)	error
 }
 
 // Request model
@@ -28,6 +30,11 @@ type SignUpParams struct {
 type SignInParams struct {
 	Email			string	`json:"email" validate:"required,email"`
 	Password	string	`json:"password" validate:"required,min=8,max=20"`
+}
+
+// Struct for check user exist
+type CheckUserExistParams struct {
+	Email string `json:"email" validate:"required,email"`
 }
 
 // Database model
@@ -98,6 +105,30 @@ func (u *User) Query(si SignInParams) error {
 func (u *User) Active(id int64) error {
 	sqlStatement := `UPDATE users SET is_registered = TRUE WHERE id = $1;`
 	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *User) CheckUserExist(email string) (User, error) {
+	sqlStatement := `SELECT id, email, is_registered FROM users WHERE email = $1;`
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, email)
+
+	var user User
+	err := row.Scan(&user.Id, &user.Email, &user.IsRegistered)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}
+
+func (ur *User) ResetPassword(id int64, password string) error {
+	sqlStatement := `UPDATE users SET password = $1 WHERE id = $2;`
+	_, err := DbConf.PgConn.SQL.Exec(sqlStatement, password, id)
 
 	if err != nil {
 		return err

@@ -133,6 +133,10 @@ var UserSuccessMessage = map[int]string {
 	1204: "User logged out successfully",
 	// Active user
 	1205: "User activated successfully",
+	// Forgot password
+	1206: "Success to create reset password token",
+	1207: "Reset password token is valid",
+	1208: "Success to update password",
 }
 
 var	UserErrorMessage = map[int]string {
@@ -152,6 +156,14 @@ var	UserErrorMessage = map[int]string {
 	1413: "Failed to insert token",
 	// Log out
 	1421: "Failed to log out",
+	// Forgot password
+	1431: "Invalid email",
+	1432: "Failed to invalid reset password token",
+	1433: "Failed to create reset password token",
+	1434: "Failed to send reset password email",
+	1435: "Reset password token is not found or expired",
+	1436: "Failed to create hash password",
+	1437: "Failed to update password",
 }
 
 // Member role
