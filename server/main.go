@@ -18,17 +18,21 @@ import (
 )
 
 var (
-	appName			string
-	appVersion	string
-	dbHost			string
-	dbName			string
-	dbUser			string
-	dbPass			string
-	emailHost		string
-	emailPort		string
-	emailFrom		string
-	emailPass		string
-	domain			string
+	appName				string
+	appVersion		string
+	dbHost				string
+	dbName				string
+	dbUser				string
+	dbPass				string
+	emailHost			string
+	emailPort			string
+	emailFrom			string
+	emailPass			string
+	domain				string
+	awsRegion			string
+	awsAccessKey	string
+	awsSecretKey	string
+	awsBucketName	string
 )
 
 func main() {
@@ -44,6 +48,10 @@ func main() {
 	emailPort = flag.Arg(8)
 	emailFrom = flag.Arg(9)
 	emailPass = flag.Arg(10)
+	awsRegion = flag.Arg(11)
+	awsAccessKey = flag.Arg(12)
+	awsSecretKey = flag.Arg(13)
+	awsBucketName = flag.Arg(14)
 
 	if domain == "" || appName == "" || appVersion == "" || dbHost == "" || dbUser == "" || dbPass == "" || emailHost == "" || emailPort == "" || emailFrom == "" || emailPass == "" {
 		err := godotenv.Load(".env")
@@ -62,6 +70,10 @@ func main() {
 		emailPort = os.Getenv("EMAIL_PORT")
 		emailFrom = os.Getenv("EMAIL_USER")
 		emailPass = os.Getenv("EMAIL_PASSWORD")
+		awsRegion = os.Getenv("AWS_REGION")
+		awsAccessKey = os.Getenv("AWS_ACCESS_KEY")
+		awsSecretKey = os.Getenv("AWS_SECRETE_KEY")
+		awsBucketName = os.Getenv("AWS_BUCKET_NAME")
 	}
 
 	// Application info
@@ -87,8 +99,11 @@ func main() {
 	}
 	emailConf := handler.NewEmailConfig(emailHost, int(ePort), emailFrom, emailPass)
 
+	// AWS configuration
+	awsConf := handler.NewAWSConfig(awsRegion, awsAccessKey, awsSecretKey, awsBucketName)
+
 	// Server configuration
-	c := handler.NewConfig(domain, appName, appVersion, emailConf)
+	c := handler.NewConfig(domain, appName, appVersion, emailConf, awsConf)
 	handler.NewHandler(c)
 	RunServer(c)
 }

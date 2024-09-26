@@ -7,6 +7,13 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
+type AWSConfig struct {
+	Region				string
+	AccessKey			string
+	SecretKey			string
+	BucketName		string
+}
+
 type EmailConfig struct {
 	Host string
 	Port int
@@ -19,6 +26,7 @@ type Config struct {
 	AppName		string
 	Version		string
 	EmailConf	*EmailConfig
+	AWSConf		*AWSConfig
 }
 
 type Controller struct {
@@ -29,6 +37,15 @@ type Controller struct {
 var Conf *Config
 var Ctrl *Controller
 
+func NewAWSConfig(region, accessKey, secretKey, bucketName string) *AWSConfig {
+	return &AWSConfig{
+		Region: region,
+		AccessKey: accessKey,
+		SecretKey: secretKey,
+		BucketName: bucketName,
+	}
+}
+
 func NewEmailConfig(host string, port int, user, pass string) *EmailConfig {
 	return &EmailConfig{
 		Host: host,
@@ -38,12 +55,13 @@ func NewEmailConfig(host string, port int, user, pass string) *EmailConfig {
 	}
 }
 
-func NewConfig(domain, appName, version string, emailConf *EmailConfig) *Config {
+func NewConfig(domain, appName, version string, emailConf *EmailConfig, awsConf *AWSConfig) *Config {
 	return &Config{
 		Domain: domain,
 		AppName: appName,
 		Version: version,
 		EmailConf: emailConf,
+		AWSConf: awsConf,
 	}
 }
 

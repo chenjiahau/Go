@@ -11,14 +11,8 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-const maxUploadSize = 1024 * 1024 // 1MB
-var allowedTypes = map[string]bool{
-	"image/png":  true,
-	"image/jpeg": true,
-}
-
-func (ctrl *Controller) UploadRecordImage(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(maxUploadSize)
+func (ctrl *Controller) UploadImageToLocal(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(util.MaxUploadSize)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -27,27 +21,28 @@ func (ctrl *Controller) UploadRecordImage(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	file, handler, err := r.FormFile("image")
+	file, handler, err := util.CheckFormFile(r, "image")
 	if err != nil {
-		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
-		resErr["message"] = "Failed to get file"
+		resErr["message"] = err.Error()
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 	defer file.Close()
 
-	if handler.Size > maxUploadSize {
+	err = util.CheckFileSize(handler)
+	if err != nil {
 		resErr := util.GetReturnMessage(400)
-		resErr["message"] = "File is too big. Please upload a file less than 1MB"
+		resErr["message"] = err.Error()
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
 
 	fileType := handler.Header.Get("Content-Type")
-	if _, ok := allowedTypes[fileType]; !ok {
+	err = util.CheckFileType(fileType)
+	if err != nil {
 		resErr := util.GetReturnMessage(400)
-		resErr["message"] = "File type is not supported. Please upload a file with the following types: jpeg, png, bmp"
+		resErr["message"] = err.Error()
 		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
 		return
 	}
@@ -92,5 +87,72 @@ func (ctrl *Controller) UploadRecordImage(w http.ResponseWriter, r *http.Request
 		"url": fmt.Sprintf( "/upload/%s", fileName),
 	}
 
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func (ctrl *Controller) UploadImageToS3(w http.ResponseWriter, r *http.Request) {
+	filePath := "/upload"
+	fileName := uuid.New().String()
+
+	err := r.ParseMultipartForm(util.MaxUploadSize)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
+		resErr["message"] = "Failed to parse form"
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	file, handler, err := util.CheckFormFile(r, "image")
+	if err != nil {
+		resErr := util.GetReturnMessage(400)
+		resErr["message"] = err.Error()
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+	defer file.Close()
+
+	err = util.CheckFileSize(handler)
+	if err != nil {
+		resErr := util.GetReturnMessage(400)
+		resErr["message"] = err.Error()
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	fileType := handler.Header.Get("Content-Type")
+	err = util.CheckFileType(fileType)
+	if err != nil {
+		resErr := util.GetReturnMessage(400)
+		resErr["message"] = err.Error()
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	fileExtension := filepath.Ext(handler.Filename)
+	output, err := util.UploadFileToS3(
+		file,
+		fileType,
+		filePath,
+		fileName,
+		fileExtension,
+		ctrl.Config.AWSConf.Region,
+		ctrl.Config.AWSConf.AccessKey,
+		ctrl.Config.AWSConf.SecretKey,
+		ctrl.Config.AWSConf.BucketName,
+	)
+
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(500)
+		resErr["message"] = "Failed to upload file to S3"
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	resData := util.GetReturnMessage(200)
+	resData["data"] = map[string]interface{}{
+		"url": output.Location,
+	}
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
