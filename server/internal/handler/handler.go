@@ -22,7 +22,7 @@ type EmailConfig struct {
 }
 
 type Config struct {
-	Domain		string
+	PortalUrl	string
 	AppName		string
 	Version		string
 	EmailConf	*EmailConfig
@@ -55,9 +55,9 @@ func NewEmailConfig(host string, port int, user, pass string) *EmailConfig {
 	}
 }
 
-func NewConfig(domain, appName, version string, emailConf *EmailConfig, awsConf *AWSConfig) *Config {
+func NewConfig(portalUrl, appName, version string, emailConf *EmailConfig, awsConf *AWSConfig) *Config {
 	return &Config{
-		Domain: domain,
+		PortalUrl: portalUrl,
 		AppName: appName,
 		Version: version,
 		EmailConf: emailConf,

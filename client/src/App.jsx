@@ -10,6 +10,7 @@ import routerConfig from "@/const/config/router";
 import Layout from "@/ui/Layout";
 import Login from "@/pages/Login";
 import ActiveAccount from "./pages/ActiveAccount";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "@/pages/Dashboard";
 import Members from "@/pages/Members";
 import Categories from "@/pages/Categories";
@@ -30,6 +31,10 @@ function App() {
         <Route
           path={routerConfig.routes.ACTIVE_ACCOUNT}
           element={<ActiveAccount />}
+        />
+        <Route
+          path={routerConfig.routes.RESET_PASSWORD}
+          element={<ResetPassword />}
         />
         <Route path={routerConfig.routes.HOME} element={<Layout />}>
           <Route path={routerConfig.routes.DASHBOARD} element={<Dashboard />} />

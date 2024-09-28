@@ -1,0 +1,17 @@
+.success-text {
+  color: var(--success-color);
+  font-family: var(--regular-font);
+  font-size: 14px;
+}
+
+.warning-text {
+  color: var(--warning-color);
+  font-family: var(--regular-font);
+  font-size: 14px;
+}
+
+.error-text {
+  color: var(--danger-color);
+  font-family: var(--regular-font);
+  font-size: 14px;
+}

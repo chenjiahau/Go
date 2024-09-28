@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"os"
+	"net/url"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -87,13 +87,7 @@ func (ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send confirmation email
-	var confirmUrl string
-	if os.Getenv("PORTAL_URL") == "" {
-		confirmUrl = ctrl.Config.Domain + "/#/active-account?token=" + urp.Token
-	} else {
-		confirmUrl = os.Getenv("PORTAL_URL") + "/#/active-account?token=" + urp.Token
-	}
-
+	confirmUrl := ctrl.Config.PortalUrl + "/#/active-account?token=" + url.QueryEscape(urp.Token)
 	err = util.SendEmail(
 		ctrl.Config.EmailConf.Host,
 		ctrl.Config.EmailConf.Port,
@@ -319,13 +313,7 @@ func (ctrl *Controller) CreateResetPassword(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Send confirmation email
-	var confirmUrl string
-	if os.Getenv("PORTAL_URL") == "" {
-		confirmUrl = ctrl.Config.Domain + "/#/reset-password?token=" + urpp.Token
-	} else {
-		confirmUrl = os.Getenv("PORTAL_URL") + "/#/reset-password?token=" + urpp.Token
-	}
-
+	confirmUrl := ctrl.Config.PortalUrl + "/#/reset-password?email=" + url.QueryEscape(cuep.Email) + "&token=" + url.QueryEscape(urpp.Token)
 	err = util.SendEmail(
 		ctrl.Config.EmailConf.Host,
 		ctrl.Config.EmailConf.Port,

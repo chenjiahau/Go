@@ -18,6 +18,7 @@ import (
 )
 
 var (
+	portalUrl			string
 	appName				string
 	appVersion		string
 	dbHost				string
@@ -37,7 +38,7 @@ var (
 
 func main() {
 	flag.Parse()
-	domain = flag.Arg(0)
+	portalUrl = flag.Arg(0)
 	appName = flag.Arg(1)
 	appVersion = flag.Arg(2)
 	dbHost = flag.Arg(3)
@@ -53,13 +54,13 @@ func main() {
 	awsSecretKey = flag.Arg(13)
 	awsBucketName = flag.Arg(14)
 
-	if domain == "" || appName == "" || appVersion == "" || dbHost == "" || dbUser == "" || dbPass == "" || emailHost == "" || emailPort == "" || emailFrom == "" || emailPass == "" {
+	if portalUrl == "" || appName == "" || appVersion == "" || dbHost == "" || dbUser == "" || dbPass == "" || emailHost == "" || emailPort == "" || emailFrom == "" || emailPass == "" {
 		err := godotenv.Load(".env")
 		if err != nil {
 			log.Fatal("Error loading .env file")
 		}
 
-		domain = os.Getenv("DOMAIN")
+		portalUrl = os.Getenv("PORTAL_URL")
 		appName = os.Getenv("APPLICATION_NAME")
 		appVersion = os.Getenv("APPLICATION_VERSION")
 		dbHost = os.Getenv("POSTGRES_HOST")
@@ -103,7 +104,7 @@ func main() {
 	awsConf := handler.NewAWSConfig(awsRegion, awsAccessKey, awsSecretKey, awsBucketName)
 
 	// Server configuration
-	c := handler.NewConfig(domain, appName, appVersion, emailConf, awsConf)
+	c := handler.NewConfig(portalUrl, appName, appVersion, emailConf, awsConf)
 	handler.NewHandler(c)
 	RunServer(c)
 }

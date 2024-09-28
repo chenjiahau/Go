@@ -4,6 +4,9 @@ const resource = {
   SIGNIN: "/sign-in",
   ACTIVE_ACCOUNT: "/activate-account/:token",
   SIGNUP: "/sign-up",
+  CREATE_FORGOT_PASSWORD: "/create-reset-password",
+  CHECK_RESET_PASSWORD_TOKEN: "/check-reset-password-token/:email/:token",
+  RESET_PASSWORD: "/reset-password",
   VERIFY_TOKEN: "/auth/verify-token",
   // Member role
   MEMBER_ROLES: "/auth/member-roles",

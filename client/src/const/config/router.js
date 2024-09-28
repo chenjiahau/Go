@@ -2,6 +2,7 @@ const routes = {
   HOME: '/',
   LOGIN: '/login',
   ACTIVE_ACCOUNT: '/active-account',
+  RESET_PASSWORD: '/reset-password',
   DASHBOARD: '/dashboard',
   MEMBERS: '/members',
   CATEGORIES: '/categories',
