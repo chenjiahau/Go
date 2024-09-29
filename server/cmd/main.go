@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/joho/godotenv"
@@ -55,7 +56,13 @@ func main() {
 	awsBucketName = flag.Arg(14)
 
 	if portalUrl == "" || appName == "" || appVersion == "" || dbHost == "" || dbUser == "" || dbPass == "" || emailHost == "" || emailPort == "" || emailFrom == "" || emailPass == "" {
-		err := godotenv.Load(".env")
+		cwd, err := os.Getwd()
+    if err != nil {
+        log.Fatalf("Error getting current working directory: %v", err)
+    }
+		envPath := filepath.Join(cwd, ".env")
+
+		err = godotenv.Load(envPath)
 		if err != nil {
 			log.Fatal("Error loading .env file")
 		}

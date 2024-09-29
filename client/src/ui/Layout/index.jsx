@@ -52,7 +52,11 @@ const Layout = () => {
     } else {
       navigate(routerConfig.routes.LOGIN);
     }
-  }, []);
+  }, [dispatch, navigate]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <>
