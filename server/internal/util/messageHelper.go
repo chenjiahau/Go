@@ -154,6 +154,7 @@ var	UserErrorMessage = map[int]string {
 	1411: "Invalid email or password",
 	1412: "Failed to create token",
 	1413: "Failed to insert token",
+	1414: "Invalid recaptcha",
 	// Log out
 	1421: "Failed to log out",
 	// Forgot password

@@ -21,12 +21,17 @@ type EmailConfig struct {
 	Pass string
 }
 
+type RecaptchaConfig struct {
+	SecretKey string
+}
+
 type Config struct {
-	PortalUrl	string
-	AppName		string
-	Version		string
-	EmailConf	*EmailConfig
-	AWSConf		*AWSConfig
+	PortalUrl			string
+	AppName				string
+	Version				string
+	EmailConf			*EmailConfig
+	AWSConf				*AWSConfig
+	RecaptchaConf	*RecaptchaConfig
 }
 
 type Controller struct {
@@ -46,6 +51,12 @@ func NewAWSConfig(region, accessKey, secretKey, bucketName string) *AWSConfig {
 	}
 }
 
+func NewRecaptchaConfig(secretKey string) *RecaptchaConfig {
+	return &RecaptchaConfig{
+		SecretKey: secretKey,
+	}
+}
+
 func NewEmailConfig(host string, port int, user, pass string) *EmailConfig {
 	return &EmailConfig{
 		Host: host,
@@ -55,13 +66,14 @@ func NewEmailConfig(host string, port int, user, pass string) *EmailConfig {
 	}
 }
 
-func NewConfig(portalUrl, appName, version string, emailConf *EmailConfig, awsConf *AWSConfig) *Config {
+func NewConfig(portalUrl, appName, version string, emailConf *EmailConfig, awsConf *AWSConfig, recaptchaConf *RecaptchaConfig) *Config {
 	return &Config{
 		PortalUrl: portalUrl,
 		AppName: appName,
 		Version: version,
 		EmailConf: emailConf,
 		AWSConf: awsConf,
+		RecaptchaConf: recaptchaConf,
 	}
 }
 

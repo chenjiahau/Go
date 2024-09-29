@@ -1,9 +1,10 @@
 import "../module.scss";
 import Logo from "@/assets/img/brand.png";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import ReCAPTCHA from "react-google-recaptcha";
 import _ from "lodash";
 
 // Const
@@ -31,6 +32,8 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
     password: "",
   });
   const [isTextTypeP, setIsTextTypeP] = useState(true);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const recaptchaRef = useRef();
 
   // Method
   const changeForm = (key) => (e) => {
@@ -50,7 +53,7 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
   };
 
   const handleSignIn = async () => {
-    if (!form.email || !form.password) {
+    if (!form.email || !form.password || !recaptchaToken) {
       messageUtil.showErrorMessage(errorMessage.fieldsNotFill);
       return;
     }
@@ -59,13 +62,11 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
       email: form.email,
       password: form.password,
     };
+    const url = `${apiConfig.resource.SIGNIN}?recaptchaToken=${recaptchaToken}`;
 
     // Call API
     try {
-      const response = await apiHandler.post(
-        apiConfig.resource.SIGNIN,
-        payload
-      );
+      const response = await apiHandler.post(url, payload);
 
       apiHandler.setToken(response.data.data.token);
       messageUtil.showSuccessMessage(successMessage.signin);
@@ -73,6 +74,8 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
       localStorage.setItem("user", JSON.stringify(response.data.data));
       navigate(routerConfig.routes.DASHBOARD);
     } catch (error) {
+      setRecaptchaToken(null);
+      recaptchaRef.current.reset();
       messageUtil.showErrorMessage(apiHandler.extractErrorMessage(error));
     }
   };
@@ -128,7 +131,15 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
               )}
             </Input>
           </div>
-          <div className='space-b-4'></div>
+          <div className='space-b-3'></div>
+          <div className='recaptcah-group'>
+            <ReCAPTCHA
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              onChange={(token) => setRecaptchaToken(token)}
+              ref={recaptchaRef}
+            />
+          </div>
+          <div className='space-b-3'></div>
           <div className='button-container'>
             <Button id='submitBtn' onClick={handleSignIn}>
               Submit

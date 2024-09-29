@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -10,6 +12,15 @@ import (
 	"ivanfun.com/mis/internal/model"
 	"ivanfun.com/mis/internal/util"
 )
+
+const recaptchaAPIURL = "https://www.google.com/recaptcha/api/siteverify"
+
+type RecaptchaResponse struct {
+	Success     bool     `json:"success"`
+	ChallengeTs string   `json:"challenge_ts"`
+	Hostname    string   `json:"hostname"`
+	ErrorCodes  []string `json:"error-codes"`
+}
 
 func (ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	// Validate request
@@ -169,6 +180,20 @@ func (ctrl *Controller) ActivateAccount(w http.ResponseWriter, r *http.Request) 
 }
 
 func (ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
+	// Validate recaptcha
+	recaptchaToken := r.URL.Query().Get("recaptchaToken")
+	if recaptchaToken == "" {
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	if !verifyRecaptcha(ctrl, recaptchaToken) {
+		resErr := util.GetReturnMessage(1414)
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		return
+	}
+
 	// Validate request
 	var si model.SignInParams
 	err := util.DecodeJSONBody(r, &si)
@@ -441,4 +466,28 @@ func (ctrl *Controller) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	// Response
 	resData := util.GetReturnMessage(1208)
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
+}
+
+func verifyRecaptcha(ctrl *Controller, recaptchaToken string) bool {
+	secretKey := ctrl.Config.RecaptchaConf.SecretKey
+	data := url.Values{
+		"secret": {secretKey},
+		"response": {recaptchaToken},
+	}
+
+	resp, err := http.PostForm(recaptchaAPIURL, data)
+	if err != nil {
+		log.Printf("Error sending recaptcha request: %v", err)
+		return false
+	}
+	defer resp.Body.Close()
+
+	var recaptchaResponse RecaptchaResponse
+	err = json.NewDecoder(resp.Body).Decode(&recaptchaResponse)
+	if err != nil {
+		log.Printf("Error decoding recaptcha response: %v", err)
+		return false
+	}
+
+	return recaptchaResponse.Success
 }

@@ -19,22 +19,22 @@ import (
 )
 
 var (
-	portalUrl			string
-	appName				string
-	appVersion		string
-	dbHost				string
-	dbName				string
-	dbUser				string
-	dbPass				string
-	emailHost			string
-	emailPort			string
-	emailFrom			string
-	emailPass			string
-	domain				string
-	awsRegion			string
-	awsAccessKey	string
-	awsSecretKey	string
-	awsBucketName	string
+	portalUrl						string
+	appName							string
+	appVersion					string
+	dbHost							string
+	dbName							string
+	dbUser							string
+	dbPass							string
+	emailHost						string
+	emailPort						string
+	emailFrom						string
+	emailPass						string
+	awsRegion						string
+	awsAccessKey				string
+	awsSecretKey				string
+	awsBucketName				string
+	recaptchaSecretKey	string
 )
 
 func main() {
@@ -54,8 +54,13 @@ func main() {
 	awsAccessKey = flag.Arg(12)
 	awsSecretKey = flag.Arg(13)
 	awsBucketName = flag.Arg(14)
+	recaptchaSecretKey = flag.Arg(15)
 
-	if portalUrl == "" || appName == "" || appVersion == "" || dbHost == "" || dbUser == "" || dbPass == "" || emailHost == "" || emailPort == "" || emailFrom == "" || emailPass == "" {
+	if portalUrl == "" || appName == "" || appVersion == "" ||
+	dbHost == "" || dbUser == "" || dbPass == "" ||
+	emailHost == "" || emailPort == "" || emailFrom == "" || emailPass == "" ||
+	awsRegion == "" || awsAccessKey == "" || awsSecretKey == "" || awsBucketName == "" ||
+	recaptchaSecretKey == "" {
 		cwd, err := os.Getwd()
     if err != nil {
         log.Fatalf("Error getting current working directory: %v", err)
@@ -82,6 +87,7 @@ func main() {
 		awsAccessKey = os.Getenv("AWS_ACCESS_KEY")
 		awsSecretKey = os.Getenv("AWS_SECRETE_KEY")
 		awsBucketName = os.Getenv("AWS_BUCKET_NAME")
+		recaptchaSecretKey = os.Getenv("RECAPTCHA_SECRET_KEY")
 	}
 
 	// Application info
@@ -110,8 +116,11 @@ func main() {
 	// AWS configuration
 	awsConf := handler.NewAWSConfig(awsRegion, awsAccessKey, awsSecretKey, awsBucketName)
 
+	// Recaptcha configuration
+	recaptchaConf := handler.NewRecaptchaConfig(recaptchaSecretKey)
+
 	// Server configuration
-	c := handler.NewConfig(portalUrl, appName, appVersion, emailConf, awsConf)
+	c := handler.NewConfig(portalUrl, appName, appVersion, emailConf, awsConf, recaptchaConf)
 	handler.NewHandler(c)
 	RunServer(c)
 }
