@@ -181,18 +181,18 @@ func (ctrl *Controller) ActivateAccount(w http.ResponseWriter, r *http.Request) 
 
 func (ctrl *Controller) SignIn(w http.ResponseWriter, r *http.Request) {
 	// Validate recaptcha
-	recaptchaToken := r.URL.Query().Get("recaptchaToken")
-	if recaptchaToken == "" {
-		resErr := util.GetReturnMessage(400)
-		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
-		return
-	}
+	// recaptchaToken := r.URL.Query().Get("recaptchaToken")
+	// if recaptchaToken == "" {
+	// 	resErr := util.GetReturnMessage(400)
+	// 	util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+	// 	return
+	// }
 
-	if !verifyRecaptcha(ctrl, recaptchaToken) {
-		resErr := util.GetReturnMessage(1414)
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
-		return
-	}
+	// if !verifyRecaptcha(ctrl, recaptchaToken) {
+	// 	resErr := util.GetReturnMessage(1414)
+	// 	util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+	// 	return
+	// }
 
 	// Validate request
 	var si model.SignInParams

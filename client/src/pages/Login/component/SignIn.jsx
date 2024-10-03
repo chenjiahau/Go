@@ -32,8 +32,8 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
     password: "",
   });
   const [isTextTypeP, setIsTextTypeP] = useState(true);
-  const [recaptchaToken, setRecaptchaToken] = useState(null);
-  const recaptchaRef = useRef();
+  // const [recaptchaToken, setRecaptchaToken] = useState(null);
+  // const recaptchaRef = useRef();
 
   // Method
   const changeForm = (key) => (e) => {
@@ -53,7 +53,11 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
   };
 
   const handleSignIn = async () => {
-    if (!form.email || !form.password || !recaptchaToken) {
+    // if (!form.email || !form.password || !recaptchaToken) {
+    //   messageUtil.showErrorMessage(errorMessage.fieldsNotFill);
+    //   return;
+    // }
+    if (!form.email || !form.password) {
       messageUtil.showErrorMessage(errorMessage.fieldsNotFill);
       return;
     }
@@ -62,7 +66,8 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
       email: form.email,
       password: form.password,
     };
-    const url = `${apiConfig.resource.SIGNIN}?recaptchaToken=${recaptchaToken}`;
+    // const url = `${apiConfig.resource.SIGNIN}?recaptchaToken=${recaptchaToken}`;
+    const url = `${apiConfig.resource.SIGNIN}`;
 
     // Call API
     try {
@@ -74,8 +79,8 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
       localStorage.setItem("user", JSON.stringify(response.data.data));
       navigate(routerConfig.routes.DASHBOARD);
     } catch (error) {
-      setRecaptchaToken(null);
-      recaptchaRef.current.reset();
+      // setRecaptchaToken(null);
+      // recaptchaRef.current.reset();
       messageUtil.showErrorMessage(apiHandler.extractErrorMessage(error));
     }
   };
@@ -131,15 +136,15 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
               )}
             </Input>
           </div>
-          <div className='space-b-3'></div>
-          <div className='recaptcah-group'>
+          <div className='space-b-4'></div>
+          {/* <div className='recaptcah-group'>
             <ReCAPTCHA
               sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
               onChange={(token) => setRecaptchaToken(token)}
               ref={recaptchaRef}
             />
           </div>
-          <div className='space-b-3'></div>
+          <div className='space-b-3'></div> */}
           <div className='button-container'>
             <Button id='submitBtn' onClick={handleSignIn}>
               Submit
