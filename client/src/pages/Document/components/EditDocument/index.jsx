@@ -13,6 +13,7 @@ import Editor from "@/components/Editor";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import Dropdown from "@/components/Dropdown";
+import TitleButton from "@/components/TitleButton";
 
 // Util
 import apiHandler from "@/util/api.util";
@@ -26,11 +27,17 @@ const errorMessage = {
   duplicated: "Document name is duplicated.",
 };
 
+const modeType = {
+  edit: "edit",
+  view: "view",
+};
+
 const EditDocument = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
   // State
+  const [mode, setMode] = useState(modeType.edit);
   const [editorData, setEditorData] = useState(getDefaultEditorData());
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState([]);
@@ -163,6 +170,15 @@ const EditDocument = () => {
     } catch (error) {
       messageUtil.showErrorMessage(commonMessage.error);
     }
+  };
+
+  const changeMode = (mode) => {
+    setMode(mode);
+    setReload(true);
+
+    setTimeout(() => {
+      setReload(false);
+    }, 1000);
   };
 
   const reset = () => {
@@ -421,11 +437,27 @@ const EditDocument = () => {
         />
         <div className='space-t-4'></div>
 
+        <div className='edit-container'>
+          {mode === modeType.edit ? (
+            <TitleButton
+              onClick={() => changeMode(modeType.view)}
+              title='View mode'
+            />
+          ) : (
+            <TitleButton
+              onClick={() => changeMode(modeType.edit)}
+              title='Edit mode'
+            />
+          )}
+        </div>
+        <div className='space-t-1'></div>
+
         {/* Editor */}
         {!reload && (
           <div style={{ width: "100%" }}>
             <Editor
               reload={reload}
+              readOnly={mode === modeType.view}
               data={editorData}
               onChange={setEditorData}
               editorBlock='editorjs-container'
