@@ -38,6 +38,7 @@ function App() {
           element={<ResetPassword />}
         />
         <Route path={routerConfig.routes.HOME} element={<Layout />}>
+          <Route path='/' element={<Dashboard />} />
           <Route path={routerConfig.routes.DASHBOARD} element={<Dashboard />} />
           <Route path={routerConfig.routes.MEMBERS} element={<Members />} />
           <Route

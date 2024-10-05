@@ -20,11 +20,20 @@ const Header = (props) => {
     }
   };
 
+  const redirectToHome = () => {
+    window.location.href = "/";
+  };
+
   return (
     <div className='layout__header'>
       <div className='header'>
         <div className='header_left'>
-          <img src={Logo} alt='logo' className='logo' />
+          <img
+            src={Logo}
+            alt='logo'
+            className='logo'
+            onClick={redirectToHome}
+          />
           <h1>Management Information System</h1>
         </div>
         <div className='header_right'>
