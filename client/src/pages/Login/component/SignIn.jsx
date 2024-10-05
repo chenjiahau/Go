@@ -1,10 +1,10 @@
 import "../module.scss";
 import Logo from "@/assets/img/brand.png";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import ReCAPTCHA from "react-google-recaptcha";
+// import ReCAPTCHA from "react-google-recaptcha";
 import _ from "lodash";
 
 // Const

@@ -22,6 +22,7 @@ import AddDocument from "./pages/Documents/components/AddDocument";
 import EditDocument from "./pages/Document/components/EditDocument";
 import AddDocumentComment from "./pages/Document/components/AddDocumentComment";
 import EditDocumentComment from "./pages/Document/components/EditDocumentComment";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
             path={routerConfig.routes.EDIT_DOCUMENT_COMMENT}
             element={<EditDocumentComment />}
           />
+          <Route path={routerConfig.routes.SETTINGS} element={<Settings />} />
         </Route>
       </Routes>
       <ToastContainer />

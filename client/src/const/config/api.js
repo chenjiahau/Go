@@ -50,6 +50,8 @@ const resource = {
   ADD_DOCUMENT_COMMENT: "/auth/document/:id/comment",
   EDIT_DOCUMENT_COMMENT: "/auth/document/:id/comment/:commentId",
   SEARCH_DOCUMENTS: "/auth/documents/search",
+  // Setting
+  SETTINGS_CHANGE_PASSWORD: "/auth/settings/change-password",
 }
 
 export default {

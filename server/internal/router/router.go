@@ -82,7 +82,7 @@ func GetRoutes() http.Handler {
 		mux.Put("/tag/{id}", handler.Ctrl.UpdateTag)
 		mux.Delete("/tag/{id}", handler.Ctrl.DeleteTag)
 
-		// Record
+		// Record routes
 		mux.Post("/record/upload-image-v1", handler.Ctrl.UploadImageToLocal)
 		mux.Post("/record/upload-image-v2", handler.Ctrl.UploadImageToS3)
 
@@ -102,6 +102,9 @@ func GetRoutes() http.Handler {
 		mux.Delete("/document/{id}/comment/{commentId}", handler.Ctrl.DeleteDocumentComment)
 
 		mux.Get("/documents/search", handler.Ctrl.GetDocumentBySearch)
+
+		// Settings routes
+		mux.Post("/settings/change-password", handler.Ctrl.ChangePassword)
 	})
 
 	// Index route

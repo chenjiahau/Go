@@ -94,6 +94,15 @@ func GetReturnMessage(code int) map[string]interface{} {
 		message = DocumentCommentErrorMessage[code]
 	}
 
+	// Settings
+	if code >= 9200 && code < 9300 {
+		message = SettingSuccessMessage[code]
+	}
+
+	if code >= 9400 && code < 9500 {
+		message = SettingErrorMessage[code]
+	}
+
 	// Response
 	resData = map[string]interface{} {
 		"code": code,
@@ -421,4 +430,18 @@ var DocumentCommentErrorMessage = map[int]string {
 	// Delete document comment
 	8431: "Document comment is not found",
 	8432: "Failed to delete document comment",
+}
+
+// Settings
+var SettingSuccessMessage = map[int]string {
+	// Change password
+	9201: "Success to change password",
+}
+
+var SettingErrorMessage = map[int]string {
+	// Change password
+	9401: "New password and confirm password do not match",
+	9402: "Invalid current password",
+	9403: "Failed to hash password",
+	9404: "Failed to update password",
 }

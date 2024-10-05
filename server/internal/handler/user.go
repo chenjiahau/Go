@@ -408,8 +408,8 @@ func (ctrl *Controller) CheckRestPasswordToken(w http.ResponseWriter, r *http.Re
 
 func (ctrl *Controller) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	// Validate request
-	var cpp model.ChangePasswordParams
-	err := util.DecodeJSONBody(r, &cpp)
+	var rpp model.ResetPasswordParams
+	err := util.DecodeJSONBody(r, &rpp)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(400)
@@ -419,7 +419,7 @@ func (ctrl *Controller) ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	// Check token is valid
 	urp := model.NewUserResetPassword()
-	existTicket, _ := urp.Query(cpp.Email)
+	existTicket, _ := urp.Query(rpp.Email)
 	if existTicket.Id == 0 {
 		resErr := util.GetReturnMessage(1435)
 		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
@@ -436,7 +436,7 @@ func (ctrl *Controller) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Hash password
-	cpp.Password, err = util.HashPassword(cpp.Password)
+	rpp.Password, err = util.HashPassword(rpp.Password)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(1436)
@@ -446,7 +446,7 @@ func (ctrl *Controller) ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	// Change password
 	u := model.NewUser()
-	err = u.ResetPassword(existTicket.UserId, cpp.Password)
+	err = u.ResetPassword(existTicket.UserId, rpp.Password)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(1437)
@@ -490,4 +490,64 @@ func verifyRecaptcha(ctrl *Controller, recaptchaToken string) bool {
 	}
 
 	return recaptchaResponse.Success
+}
+
+func (ctrl *Controller) ChangePassword(w http.ResponseWriter, r *http.Request) {
+	// Validate request
+	var cpp model.ChangePasswordParams
+	err := util.DecodeJSONBody(r, &cpp)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	validate := validator.New()
+	err = validate.Struct(cpp)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(400)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Check new password and confirm password
+	if cpp.NewPassword != cpp.ConfirmPassword {
+		resErr := util.GetReturnMessage(1401)
+		util.ResponseJSONWriter(w, http.StatusBadRequest, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Check original password is correct
+	u := model.NewUser()
+	u.GetUserById(ctrl.User.Id)
+	err = util.CheckPasswordHash(cpp.OriginalPassword, u.(*model.User).Password)
+	if err != nil {
+		resErr := util.GetReturnMessage(9402)
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Hash new password
+	hashPassword, err := util.HashPassword(cpp.NewPassword)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(9403)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Change password
+	err = u.ResetPassword(ctrl.User.Id, hashPassword)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(9404)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Response
+	resData := util.GetReturnMessage(9201)
+	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }

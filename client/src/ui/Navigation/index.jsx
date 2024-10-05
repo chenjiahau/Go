@@ -72,9 +72,10 @@ const Navigation = () => {
         className={`button nav_link ${checkActive(
           routerConfig.routes.SETTING
         )}`}
+        to={routerConfig.routes.SETTINGS}
       >
         <i className='fa-solid fa-bars'></i>
-        <span>Setting</span>
+        <span>Settings</span>
       </Link>
     </div>
   );

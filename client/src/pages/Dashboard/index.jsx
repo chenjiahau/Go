@@ -13,7 +13,6 @@ import {
   Title,
   Tooltip,
   Legend,
-  plugins,
 } from "chart.js";
 
 // Const
@@ -22,8 +21,7 @@ import apiConfig from "@/const/config/api";
 
 // Util
 import apiHandler from "@/util/api.util";
-import { clone, cloneDeep, update } from "lodash";
-import { callback } from "chart.js/helpers";
+import { cloneDeep } from "lodash";
 
 ChartJS.register(
   ArcElement,

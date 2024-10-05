@@ -23,7 +23,7 @@ type UserResetPasswordParams struct {
 }
 
 // Struct for the parameters of the change password request
-type ChangePasswordParams struct {
+type ResetPasswordParams struct {
 	Email			string	`json:"email" validate:"required,email"`
 	Token			string	`json:"token" validate:"required"`
 	Password	string	`json:"password" validate:"required,min=8,max=20"`

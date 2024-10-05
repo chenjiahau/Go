@@ -10,6 +10,7 @@ import (
 // For the methods that have to be implemented by the User struct
 type UserInterface interface {
 	GetId(SignUpParams)						int64
+	GetUserById(int64)						(User, error)
 	Create(SignUpParams)					(int64, error)
 	Query(SignInParams)						error
 	Active(int64)									error
@@ -35,6 +36,12 @@ type SignInParams struct {
 // Struct for check user exist
 type CheckUserExistParams struct {
 	Email string `json:"email" validate:"required,email"`
+}
+
+type ChangePasswordParams struct {
+	OriginalPassword	string	`json:"originalPassword" validate:"required,min=8,max=20"`
+	NewPassword				string	`json:"newPassword" validate:"required,min=8,max=20"`
+	ConfirmPassword		string	`json:"confirmPassword" validate:"required,min=8,max=20"`
 }
 
 // Database model
@@ -66,6 +73,18 @@ func (u *User) GetId(sp SignUpParams) int64 {
 	}
 
 	return id
+}
+
+func (u *User) GetUserById(id int64) (User, error) {
+	sqlStatement := `SELECT id, email, username, password, is_registered FROM users WHERE id = $1;`
+	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, id)
+
+	err := row.Scan(&u.Id, &u.Email, &u.Name, &u.Password, &u.IsRegistered)
+	if err != nil {
+		return User{}, err
+	}
+
+	return *u, nil
 }
 
 func (u *User) Create(sp SignUpParams) (int64, error) {
