@@ -7,6 +7,46 @@ const axiosInstance = axios.create({
   baseURL: server.API_URL,
 });
 
+const showSpinner = () => {
+  const spinner = document.getElementById("spinner");
+
+  if (spinner) {
+    spinner.style.display = "flex";
+  }
+}
+
+const hideSpinner = () => {
+  setTimeout(() => {
+    const spinner = document.getElementById("spinner");
+
+    if (spinner) {
+      spinner.style.display = "none";
+    }
+  }, 500);
+}
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    showSpinner();
+    return config;
+  },
+  (error) => {
+    hideSpinner();
+    return Promise.reject(error);
+  }
+);
+
+axiosInstance.interceptors.response.use(
+  (response) => {
+    hideSpinner();
+    return response;
+  },
+  (error) => {
+    hideSpinner();
+    return Promise.reject(error);
+  }
+);
+
 class APIHandler {
   constructor() {
     this.axios = axiosInstance;

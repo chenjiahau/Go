@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { cloneDeep } from "lodash";
+import { cloneDeep, set } from "lodash";
 
 // Const
 import routerConfig from "@/const/config/router";
@@ -22,6 +22,7 @@ const Documents = () => {
 
   // State
   const [initialized, setInitialized] = useState(false);
+  const [searched, setSearched] = useState(false);
   const [orderBy, setOrderBy] = useState("id");
   const [order, setOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
@@ -84,7 +85,10 @@ const Documents = () => {
     }
 
     if (!search || search.length < 3) {
-      handleInitialization();
+      if (searched) {
+        handleInitialization();
+      }
+
       return;
     }
 
@@ -94,7 +98,8 @@ const Documents = () => {
     );
 
     setDocuments(response.data.data || []);
-  }, [handleInitialization, initialized, search]);
+    setSearched(true);
+  }, [search, initialized]);
 
   const changeOrder = (newOrderBy) => {
     if (newOrderBy === orderBy) {
@@ -225,7 +230,7 @@ const Documents = () => {
         onSearchDocuments={searchDocuments}
       />
 
-      {search ? (
+      {search && searched ? (
         <>
           <Table
             search={search}
