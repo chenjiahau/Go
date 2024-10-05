@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Build the go app
-RUN go build -o main .
+RUN go build -o main ./cmd/main.go
 
 # Copy .env at /app again
 COPY .env /app
