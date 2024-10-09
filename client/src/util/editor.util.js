@@ -2,9 +2,13 @@ import Paragraph from "@editorjs/paragraph";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import Link from "@editorjs/link";
-import Delimiter from "@editorjs/delimiter";
-import CheckList from "@editorjs/checklist";
+import Checklist from "@editorjs/checklist";
 import ImageTool from '@editorjs/image';
+import Quote from '@editorjs/quote';
+import Code from '@editorjs/code';
+import Table from '@editorjs/table';
+import Marker from '@editorjs/marker';
+import Delimiter from '@editorjs/delimiter';
 import { cloneDeep } from "lodash";
 
 import apiHandler from "@/util/api.util";
@@ -28,15 +32,28 @@ export const getEditConfig = () => {
   const authentication = `Bearer ${apiHandler.token}`;
 
   return {
+    header: {
+      class: Header,
+      inlineToolbar: ['link'],
+    },
     paragraph: {
       class: Paragraph,
       inlineToolbar: true,
     },
-    checkList: CheckList,
-    list: List,
-    header: Header,
-    delimiter: Delimiter,
-    link: Link,
+    checklist: {
+      class: Checklist,
+      inlineToolbar: true,
+      config: {
+        defaultStyle: 'checkbox',
+      },
+    },
+    list: {
+      class: List,
+      inlineToolbar: true,
+      config: {
+        defaultStyle: 'unordered',
+      },
+    },
     image: {
       class: ImageTool,
       config: {
@@ -73,6 +90,35 @@ export const getEditConfig = () => {
           },
         },
       }
+    },
+    quote: {
+      class: Quote,
+      inlineToolbar: true,
+      config: {
+        quotePlaceholder: 'Enter a quote',
+        captionPlaceholder: '',
+      },
+    },
+    code: {
+      class: Code,
+      config: {
+        placeholder: 'Enter your code here...',
+      },
+    },
+    table: {
+      class: Table,
+      inlineToolbar: true,
+      config: {
+        rows: 2,
+        cols: 3,
+      },
+    },
+    marker: {
+      class: Marker,
+      shortcut: 'CMD+SHIFT+M',
+    },
+    delimiter: {
+      class: Delimiter,
     },
   };
 }

@@ -36,6 +36,28 @@
   width: 100%;
 }
 
-.image-tool__caption {
+/* Hide all caption fields in Editor.js */
+.cdx-image__caption,
+.cdx-quote__caption {
   display: none;
+}
+
+.cdx-quote__text {
+  background-color: var(--gray-color);
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+/* Custom link styles */
+.ce-paragraph a {
+  color: var(--black-color);
+  text-decoration: none;
+  font-weight: normal;
+}
+
+/* Custom hover effect */
+.ce-paragraph a:hover {
+  color: #0056b3;
+  text-decoration: underline;
 }
