@@ -8,7 +8,16 @@ import (
 )
 
 func (ctrl *Controller) VerifyToken(w http.ResponseWriter, r *http.Request) {
-	if ok := CheckToken(w, r) ; !ok { return }
+	res := CheckToken(w, r)
+
+	if !res {
+		resErr := map[string]interface{}{
+			"code": 401,
+			"message": util.CommonErrorMessages[401],
+		}
+		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+		return
+	}
 
 	resData := util.GetReturnMessage(1203)
 	util.ResponseJSONWriter(w, http.StatusOK, resData)

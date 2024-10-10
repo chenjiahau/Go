@@ -456,6 +456,8 @@ func (ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 
 	// Update document
 	existingDocument.PostMember.Id = udp.PostMemberId
+	existingDocument.Category.Id = udp.CategoryId
+	existingDocument.SubCategory.Id = udp.SubCategoryId
 	existingDocument.Name = udp.Name
 	existingDocument.Content = udp.Content
 	err = existingDocument.Update(ctrl.User.Id, udp.RelationMemberIds, udp.TagIds)

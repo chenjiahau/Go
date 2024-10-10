@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
@@ -24,6 +24,7 @@ const Layout = () => {
 
   // State
   const user = useSelector(selectUser);
+  const [validToken, setValidToken] = useState(false);
 
   // Method
   const onCleanUser = () => {
@@ -38,9 +39,11 @@ const Layout = () => {
       try {
         apiHandler.setToken(savedUser.token);
         await apiHandler.get(apiConfig.resource.VERIFY_TOKEN);
+        setValidToken(true);
         dispatch(userActions.setUser(savedUser));
       } catch (error) {
         localStorage.removeItem("user");
+        setValidToken(false);
         dispatch(userActions.cleanUser());
         navigate(routerConfig.routes.LOGIN);
       }
@@ -54,7 +57,7 @@ const Layout = () => {
     }
   }, [dispatch, navigate]);
 
-  if (!user) {
+  if (!user || !validToken) {
     return null;
   }
 

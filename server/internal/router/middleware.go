@@ -52,7 +52,9 @@ func ParseAuthorization(next http.Handler) http.Handler {
 
 func CheckTokenAlive(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !handler.CheckTokenAlive() {
+		res := handler.CheckTokenAlive()
+
+		if !res {
 			resErr := map[string]interface{}{
 				"code": http.StatusUnauthorized,
 				"message": "Unauthorized access",

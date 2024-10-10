@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"ivanfun.com/mis/internal/model"
@@ -88,47 +89,32 @@ func SetUser(u *model.User) {
 }
 
 func CheckTokenAlive() bool {
-	var _ model.TokenInterface = &model.Token{}
+	var t model.TokenInterface = &model.Token{}
+	token, err := t.Query(Ctrl.User.Token)
 
-	if Ctrl.User != nil {
-		var t model.TokenInterface = &model.Token{}
-
-		token, err := t.Query(Ctrl.User.Token)
-		if err != nil {
-			return false
-		}
-
-		if !token.IsAlive {
-			return false
-		}
-
-		return true
-	}
-
-	return false
-}
-
-func CheckToken(w http.ResponseWriter, r *http.Request) bool {
-	var _ model.TokenInterface = &model.Token{}
-
-	resErr := map[string]interface{}{
-		"code": 401,
-		"message": util.CommonErrorMessages[401],
-	}
-
-	if Ctrl.User != nil {
-		var t model.TokenInterface = &model.Token{}
-
-		token, err := t.Query(Ctrl.User.Token)
-		if err != nil || !token.IsAlive {
-			util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
-		  return false
-		}
-	} else {
-		util.ResponseJSONWriter(w, http.StatusUnauthorized, util.GetResponse(nil, resErr))
+	if err != nil {
 		return false
 	}
 
+	if !token.IsAlive {
+		return false
+	}
+
+	return true
+}
+
+func CheckToken(w http.ResponseWriter, r *http.Request) bool {
+	var t model.TokenInterface = &model.Token{}
+	token, err := t.Query(Ctrl.User.Token)
+
+	fmt.Println(err)
+	fmt.Println(token.IsAlive)
+	if err != nil || !token.IsAlive {
+		fmt.Println(1)
+		return false
+	}
+
+	fmt.Println(2)
 	return true
 }
 
