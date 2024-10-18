@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:12.4-alpine
+    image: postgres:13.16-alpine
     container_name: server-db-mis
     restart: always
     env_file:

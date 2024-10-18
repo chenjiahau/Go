@@ -1,4 +1,4 @@
-FROM postgres:12.4-alpine
+FROM postgres:13.16-alpine
 
 # Volume
 VOLUME ["/var/lib/postgresql/data"]
