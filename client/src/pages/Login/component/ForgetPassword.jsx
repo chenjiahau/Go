@@ -1,11 +1,10 @@
-import "../module.scss";
-import Logo from "@/assets/img/brand.png";
+import "../module.css";
+import logo from "@/assets/img/brand.png";
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import _ from "lodash";
 
 // Const
+import routerConfig from "@/const/config/router";
 import apiConfig from "@/const/config/api";
 
 // Util
@@ -13,8 +12,13 @@ import apiHandler from "@/util/api.util";
 import messageUtil from "@/util/message.util";
 
 // Components
-import Input from "@/components/Input";
-import Button from "@/components/Button";
+import MainTitle from "@/components/MainTitle";
+import FormGroup from "@/components/FormGroup";
+import FormLabel from "@/components/FormLabel";
+import InputBox from "@/components/InputBox";
+import ButtonBox from "@/components/ButtonBox";
+import LinkButton from "@/components/LinkButton";
+import LoadingBox from "@/components/LoadingBox";
 
 const ForgotPassword = ({
   successMessage,
@@ -26,14 +30,10 @@ const ForgotPassword = ({
   const [form, setForm] = useState({
     email: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   // Method
-  const changeForm = (key) => (e) => {
-    let value = "";
-    if (_.isObject(e)) {
-      value = e.target.value;
-    }
-
+  const changeForm = (key) => (value) => {
     setForm({ ...form, [key]: value });
   };
 
@@ -55,58 +55,77 @@ const ForgotPassword = ({
 
     // Call API
     try {
+      setIsLoading(true);
       await apiHandler.post(apiConfig.resource.CREATE_FORGOT_PASSWORD, payload);
       emptyForm();
       messageUtil.showSuccessMessage(successMessage.forgotPassword);
     } catch (error) {
       messageUtil.showErrorMessage(apiHandler.extractErrorMessage(error));
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className='login-section'>
-      <div className='login-block'>
-        <div className='login-block__logo'>
-          <img src={Logo} alt='logo' />
-        </div>
-        <div className='header-title login-block__title'>
-          <h2>Forgot Password</h2>
-        </div>
-        <div className='login-block__body'>
-          <div className='input-group'>
-            <label htmlFor='username'>E-mail</label>
-            <Input
-              id='email'
-              type='text'
-              name='email'
-              placeholder='Your email'
-              value={form.email}
-              onChange={(e) => {
-                changeForm("email")(e);
-              }}
+    <>
+      <div className='login-container'>
+        <div className='login-border light-primary-shadow'>
+          <div className='login-block login-header light-primary-shadow'>
+            <div className='icon'>
+              <img src={logo} />
+            </div>
+            <MainTitle extraClasses={["!mb-0"]}>
+              Management Information System
+            </MainTitle>
+          </div>
+
+          <div className='login-block login-form light-primary-shadow'>
+            <FormGroup>
+              <MainTitle extraClasses={["text-general"]}>
+                Forgot Password
+              </MainTitle>
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='email'>E-mail</FormLabel>
+              <InputBox
+                type='text'
+                id='email'
+                name='email'
+                placeholder='E-mail'
+                value={form.email}
+                onChange={(value) => {
+                  changeForm("email")(value);
+                }}
+              />
+            </FormGroup>
+          </div>
+          <div className='login-block login-button'>
+            <ButtonBox onClick={handleForgotPassword} isSave={true}>
+              Reset Password
+            </ButtonBox>
+            <ButtonBox
+              isClose={true}
+              extraClasses={["cancel-shadow"]}
+              onClick={emptyForm}
+            >
+              Reset
+            </ButtonBox>
+          </div>
+          <div className='login-block login-link'>
+            <div>Do you have an account?</div>
+            <LinkButton
+              to={routerConfig.routes.LOGIN}
+              onClick={onChangeStage(stageType.LOGIN)}
+              title='Back'
             />
           </div>
-          <div className='space-b-4'></div>
-          <div className='button-container'>
-            <Button id='submitBtn' onClick={handleForgotPassword}>
-              Submit
-            </Button>
-            <Button extraClasses={["cancel-button"]} onClick={emptyForm}>
-              Reset
-            </Button>
-          </div>
-          <div className='button-container button-container--right space-t-3'>
-            <div>Do you have an account?</div>
-            <Link
-              className='link-button'
-              onClick={onChangeStage(stageType.LOGIN)}
-            >
-              Sign in
-            </Link>
+          <div className='login-block login-footer light-primary-shadow'>
+            © 2024 Ivan Solutions. All rights reserved.
           </div>
         </div>
       </div>
-    </div>
+      <LoadingBox visible={isLoading} />
+    </>
   );
 };
 

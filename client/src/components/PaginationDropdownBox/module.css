@@ -1,0 +1,43 @@
+.pagination-dropdown-box {
+  @apply h-10 relative visible;
+  z-index: 1;
+
+  & .item {
+    @apply w-28 h-10 flex justify-center items-center gap-2 bg-white text-primary border border-primary rounded-md px-2 py-4 cursor-pointer;
+
+    i.fa-up-long {
+      transform: translateY(3px);
+    }
+
+    i.fa-down-long {
+      transform: translateY(-2px);
+    }
+  }
+
+  & .item:hover {
+    @apply bg-hover border-hover text-white;
+  }
+
+  & .options {
+    @apply w-28 h-auto relative border border-hover rounded-md bg-white top-2 overflow-hidden hidden;
+  }
+
+  & .options.active {
+    @apply block;
+  }
+
+  & .options .option {
+    @apply w-full h-10 flex justify-center items-center text-primary cursor-pointer;
+  }
+
+  & .options .option:hover {
+    @apply bg-hover text-white;
+  }
+
+  & .options .option.active {
+    @apply bg-hover border-hover text-white;
+  }
+}
+
+.space {
+}

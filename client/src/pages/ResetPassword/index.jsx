@@ -1,9 +1,10 @@
-import "@/pages/Login/module.scss";
-import Logo from "@/assets/img/brand.png";
+import "@/pages/Login/module.css";
+import logo from "@/assets/img/brand.png";
 
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import _ from "lodash";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 // Const
 import routerConfig from "@/const/config/router";
@@ -14,8 +15,12 @@ import apiHandler from "@/util/api.util";
 import messageUtil from "@/util/message.util";
 
 // Components
-import Input from "@/components/Input";
-import Button from "@/components/Button";
+import MainTitle from "@/components/MainTitle";
+import FormGroup from "@/components/FormGroup";
+import FormLabel from "@/components/FormLabel";
+import InputBox from "@/components/InputBox";
+import ButtonBox from "@/components/ButtonBox";
+import LoadingBox from "@/components/LoadingBox";
 
 const message = {
   invalidRequest: "Invalid request",
@@ -38,8 +43,9 @@ const ResetPassword = () => {
     password: "",
     confirmPassword: "",
   });
-  const [isTextTypeP, setIsTextTypeP] = useState(true);
-  const [isTextTypeCP, setIsTextTypeCP] = useState(true);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false);
 
   // Method
   const handleInitialization = useCallback(async () => {
@@ -48,6 +54,7 @@ const ResetPassword = () => {
     }
 
     try {
+      setIsLoading(true);
       await apiHandler.get(
         apiConfig.resource.CHECK_RESET_PASSWORD_TOKEN.replace(
           ":email",
@@ -69,24 +76,21 @@ const ResetPassword = () => {
       setTimeout(() => {
         navigate(routerConfig.routes.LOGIN);
       }, 3000);
+    } finally {
+      setIsLoading(false);
     }
   }, [email, navigate, token]);
 
   const emptyForm = () => {
     setForm({
-      email: "",
+      email: form.email,
       token: "",
       password: "",
       confirmPassword: "",
     });
   };
 
-  const changeForm = (key) => (e) => {
-    let value = "";
-    if (_.isObject(e)) {
-      value = e.target.value;
-    }
-
+  const changeForm = (key) => (value) => {
     setForm({ ...form, [key]: value });
   };
 
@@ -123,100 +127,98 @@ const ResetPassword = () => {
     handleInitialization();
   }, [handleInitialization, token]);
 
-  if (isLoading) {
-    return <div className='loader'>Loading...</div>;
-  }
-
   return (
-    <div className='login-section'>
-      <div className='login-block'>
-        <div className='login-block__logo'>
-          <img src={Logo} alt='logo' />
-        </div>
-        <div className='header-title login-block__title'>
-          <h2>Reset Password</h2>
-        </div>
-        <div className='login-block__body'>
-          <div className='input-group'>
-            <label htmlFor='username'>E-mail</label>
-            <Input
-              id='email'
-              type='text'
-              name='email'
-              disabled={true}
-              placeholder='Your email'
-              extraClasses={["disabled"]}
-              value={form.email}
-            />
+    <>
+      <div className='login-container'>
+        <div className='login-border light-primary-shadow'>
+          <div className='login-block login-header light-primary-shadow'>
+            <div className='icon'>
+              <img src={logo} />
+            </div>
+            <MainTitle extraClasses={["!mb-0"]}>
+              Management Information System
+            </MainTitle>
           </div>
-          <div className='space-b-3'></div>
-          <div className='input-group'>
-            <label htmlFor='password'>New password</label>
-            <Input
-              id='password'
-              type={isTextTypeP ? "password" : "text"}
-              name='password'
-              placeholder='at least 8 characters'
-              value={form.password}
-              onChange={(e) => changeForm("password")(e)}
-            >
-              {isTextTypeP ? (
-                <i
-                  className='fa-regular fa-eye'
-                  title='show password'
-                  onClick={() => setIsTextTypeP(!isTextTypeP)}
-                ></i>
-              ) : (
-                <i
-                  className='fa-regular fa-eye-slash'
-                  title='hide password'
-                  onClick={() => setIsTextTypeP(!isTextTypeP)}
-                ></i>
-              )}
-            </Input>
+          <div className='login-block login-form light-primary-shadow'>
+            <FormGroup>
+              <MainTitle extraClasses={["text-general"]}>
+                Reset Password
+              </MainTitle>
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='email'>E-mail</FormLabel>
+              <InputBox
+                type='text'
+                id='email'
+                name='email'
+                placeholder='E-mail'
+                disabled={true}
+                value={form.email}
+                onChange={() => {}}
+              />
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='password'>Password</FormLabel>
+              <InputBox
+                type={isPasswordVisible ? "text" : "password"}
+                id='password'
+                name='password'
+                placeholder='Password'
+                value={form.password}
+                onChange={(value) => {
+                  changeForm("password")(value);
+                }}
+              >
+                {
+                  <FontAwesomeIcon
+                    icon={isPasswordVisible ? faEyeSlash : faEye}
+                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                  />
+                }
+              </InputBox>
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='password'>Confirm Password</FormLabel>
+              <InputBox
+                type={isConfirmPasswordVisible ? "text" : "password"}
+                id='confirmPassword'
+                name='confirm-password'
+                placeholder='Confirm Password'
+                value={form.confirmPassword}
+                onChange={(value) => {
+                  changeForm("confirmPassword")(value);
+                }}
+              >
+                {
+                  <FontAwesomeIcon
+                    icon={isConfirmPasswordVisible ? faEyeSlash : faEye}
+                    onClick={() =>
+                      setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+                    }
+                  />
+                }
+              </InputBox>
+            </FormGroup>
           </div>
-          <div className='space-b-3'></div>
-          <div className='input-group'>
-            <label htmlFor='password'>Confirm new password</label>
-            <Input
-              id='confirmPassword'
-              type={isTextTypeCP ? "password" : "text"}
-              name='password'
-              placeholder='at least 8 characters'
-              value={form.confirmPassword}
-              onChange={(e) => changeForm("confirmPassword")(e)}
-            >
-              {isTextTypeCP ? (
-                <i
-                  className='fa-regular fa-eye'
-                  title='show password'
-                  onClick={() => setIsTextTypeCP(!isTextTypeCP)}
-                ></i>
-              ) : (
-                <i
-                  className='fa-regular fa-eye-slash'
-                  title='hide password'
-                  onClick={() => setIsTextTypeCP(!isTextTypeCP)}
-                ></i>
-              )}
-            </Input>
-          </div>
-          <div className='space-b-4'></div>
-          <div className='button-container'>
-            <Button id='submitBtn' onClick={handleResetPassword}>
+          <div className='login-block login-button'>
+            <ButtonBox onClick={handleResetPassword} isSave={true}>
               Submit
-            </Button>
-            <Button
-              id='cancelBtn'
-              extraClasses={["cancel-button"]}
+            </ButtonBox>
+            <ButtonBox
+              isClose={true}
+              extraClasses={["cancel-shadow"]}
               onClick={emptyForm}
             >
               Reset
-            </Button>
+            </ButtonBox>
+          </div>
+          <div className='login-block login-footer light-primary-shadow'>
+            © 2024 Ivan Solutions. All rights reserved.
           </div>
         </div>
       </div>
-    </div>
+      <LoadingBox visible={isLoading} />
+    </>
   );
 };
 

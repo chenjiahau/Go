@@ -1,5 +1,3 @@
-import "./module.scss";
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -11,7 +9,6 @@ import routerConfig from "@/const/config/router";
 import { userActions } from "@/store/slices/user";
 
 // Component
-import Footer from "@/ui/Footer";
 import SignIn from "./component/SignIn";
 import SignUp from "./component/SignUp";
 import ForgotPassword from "./component/ForgetPassword";
@@ -92,12 +89,7 @@ const Home = () => {
     );
   }
 
-  return (
-    <>
-      {content}
-      <Footer />
-    </>
-  );
+  return <>{content}</>;
 };
 
 export default Home;

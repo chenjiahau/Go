@@ -1,0 +1,35 @@
+.pagination-box {
+  @apply flex flex-wrap justify-center items-center gap-2 relative;
+}
+
+.pagination-item {
+  @apply h-10 flex justify-center items-center gap-2 text-primary border border-primary rounded-md cursor-pointer p-4;
+
+  &:hover {
+    @apply bg-hover border-hover text-white;
+  }
+}
+
+.arrow {
+  @apply w-20 h-10 bg-white text-primary rounded-md flex justify-center items-center cursor-pointer;
+
+  &:hover {
+    @apply bg-hover text-white;
+  }
+}
+
+.active {
+  @apply h-10 bg-primary text-white cursor-not-allowed;
+
+  &:hover {
+    @apply bg-primary text-white border-primary;
+  }
+}
+
+.dots {
+  @apply h-10 flex justify-center items-center border-none;
+}
+
+.disabled {
+  @apply !bg-gray !text-black !border-gray !cursor-not-allowed;
+}

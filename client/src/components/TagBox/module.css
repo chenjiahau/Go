@@ -1,0 +1,21 @@
+.tag-box {
+  @apply h-9 flex justify-center items-center rounded-md text-white text-small px-4 py-1 shadow-md;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.clickable {
+  @apply cursor-pointer;
+
+  &:hover {
+    @apply !bg-hover;
+  }
+}
+
+.unclickable {
+  @apply cursor-default;
+}
+
+.delete-btn {
+  @apply ml-2;
+}

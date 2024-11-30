@@ -1,0 +1,26 @@
+.search-input-box {
+  @apply w-64 h-10 bg-white px-2 rounded-md border border-primary text-general hover:border-hover;
+  display: grid;
+  grid-template-columns: 32px 1fr 32px;
+
+  input {
+    @apply w-full h-full bg-white border-none outline-none;
+  }
+}
+
+.search-input-box .icon {
+  @apply flex items-center justify-center text-primary;
+
+  &:hover {
+    @apply text-hover;
+  }
+
+  img {
+    @apply w-6 h-6 text-primary;
+    transform: translateY(1px);
+  }
+}
+
+.search-input-box .cancel-icon {
+  cursor: pointer;
+}

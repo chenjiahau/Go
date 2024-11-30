@@ -9,6 +9,9 @@ import apiConfig from "@/const/config/api";
 import apiHandler from "@/util/api.util";
 import messageUtil from "@/util/message.util";
 
+// Components
+import LoadingBox from "@/components/LoadingBox";
+
 const errorMessage = {
   success: "Account is activated.",
   error: "Account is not activated.",
@@ -45,7 +48,7 @@ const ActiveAccount = () => {
     handleInitialization();
   }, [handleInitialization, token]);
 
-  return <div className='loader'>Loading...</div>;
+  return <LoadingBox visible={true} />;
 };
 
 export default ActiveAccount;

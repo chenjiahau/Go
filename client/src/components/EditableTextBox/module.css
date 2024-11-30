@@ -1,0 +1,15 @@
+.editable-text-box {
+  @apply flex items-center;
+
+  .label {
+    @apply text-primary text-general;
+
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    cursor: pointer;
+
+    &:hover {
+      @apply text-hover;
+    }
+  }
+}

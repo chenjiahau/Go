@@ -1,0 +1,7 @@
+a.link-button {
+  @apply text-primary text-button;
+
+  &:hover {
+    @apply text-active underline;
+  }
+}

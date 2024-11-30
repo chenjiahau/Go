@@ -1,0 +1,58 @@
+.dropdown-box {
+  @apply relative;
+
+  .color {
+    @apply w-6 h-6 rounded mr-2;
+  }
+}
+
+.dropdown-button {
+  @apply w-full h-10 bg-white rounded-lg border border-primary text-primary text-general;
+  display: grid;
+  grid-template-columns: 1fr 18px 1rem;
+  cursor: pointer;
+
+  &:hover {
+    @apply bg-hover border-hover text-white;
+  }
+
+  .title {
+    @apply h-full flex items-center px-4;
+  }
+
+  .icon {
+    @apply h-full flex items-center justify-center;
+    width: 18px;
+  }
+}
+
+.dropdown-content {
+  @apply absolute w-full bg-white rounded-lg border border-active overflow-y-auto;
+  max-height: 300px;
+  top: 100%;
+  left: 0;
+  transform: translateY(10px);
+  z-index: 11;
+
+  &:hover {
+    @apply border-hover;
+  }
+
+  .option {
+    @apply w-full h-10 flex items-center text-primary text-general px-4;
+    cursor: pointer;
+
+    &:hover {
+      @apply bg-hover text-white;
+    }
+  }
+
+  .active {
+    @apply bg-active text-white;
+  }
+
+  .no-data:hover {
+    @apply bg-white text-primary;
+    cursor: default;
+  }
+}

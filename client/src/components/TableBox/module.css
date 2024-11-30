@@ -1,0 +1,129 @@
+.table-box {
+  @apply relative w-full bg-white shadow-md rounded-md border border-primary p-1;
+
+  @media screen and (min-width: 1024px) {
+    display: block;
+  }
+
+  @media screen and (max-width: 1023px) {
+    display: none;
+  }
+
+  &:hover {
+    @apply border-hover;
+  }
+
+  table {
+    @apply w-full;
+    border-collapse: collapse;
+
+    thead > tr {
+      @apply border-none;
+    }
+
+    th {
+      @apply bg-transparent;
+    }
+
+    .sortable-box {
+      @apply h-10 flex justify-between items-center border bg-primary rounded-md border-transparent text-white text-general;
+
+      &:hover {
+        @apply bg-hover border-hover;
+      }
+    }
+
+    .unsortable-box {
+      @apply h-10 flex justify-center items-center bg-primary rounded-md border-transparent text-white text-general;
+    }
+
+    .sortable {
+      @apply cursor-pointer;
+
+      &:hover {
+        @apply text-white;
+      }
+    }
+
+    .sort-title {
+      @apply ml-4;
+    }
+
+    .sort-icon {
+      @apply w-4 h-4 mr-4;
+    }
+
+    .sorted {
+      @apply bg-primary text-white;
+    }
+
+    tbody > tr {
+      &:hover {
+        background-color: rgba(91, 188, 255, 0.1);
+        cursor: pointer;
+      }
+    }
+
+    .td-box {
+      @apply h-20 flex justify-start items-center border-b border-gray text-general px-4 py-4;
+    }
+
+    .td-max {
+      min-width: 120px;
+      max-width: 380px;
+      text-overflow: ellipsis;
+    }
+
+    .center {
+      @apply justify-center;
+    }
+  }
+}
+
+.vertical-table {
+  @apply w-full flex flex-col bg-white text-general;
+
+  @media screen and (min-width: 1024px) {
+    display: none;
+  }
+
+  @media screen and (max-width: 1023px) {
+    display: block;
+  }
+
+  .row-box {
+    @apply bg-white shadow-md rounded-md border border-primary mb-4 p-2;
+
+    &:hover {
+      @apply border-hover;
+    }
+  }
+
+  .col-box {
+    @apply border-b border-gray p-1;
+    display: grid;
+    grid-template-columns: minmax(120px, auto) 1fr;
+    column-gap: 1rem;
+  }
+
+  .th-box,
+  .th-sort-box {
+    @apply h-10 flex justify-center items-center bg-primary rounded-md text-white text-general font-bold;
+  }
+
+  .td-box {
+    @apply h-auto flex justify-start items-center border-b border-gray text-general px-4;
+  }
+
+  .th-sort-box {
+    @apply cursor-pointer;
+
+    &:hover {
+      @apply bg-hover text-white;
+    }
+  }
+
+  .sorted {
+    @apply flex justify-center items-center border-b px-4 border-gray font-bold;
+  }
+}

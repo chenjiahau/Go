@@ -1,0 +1,7 @@
+.element-group {
+  @apply flex flex-row gap-4;
+
+  @media screen and (max-width: 768px) {
+    display: block;
+  }
+}

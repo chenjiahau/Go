@@ -1,11 +1,12 @@
-import "../module.scss";
-import Logo from "@/assets/img/brand.png";
+import "../module.css";
+import logo from "@/assets/img/brand.png";
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import _ from "lodash";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 // Const
+import routerConfig from "@/const/config/router";
 import apiConfig from "@/const/config/api";
 
 // Util
@@ -13,8 +14,13 @@ import apiHandler from "@/util/api.util";
 import messageUtil from "@/util/message.util";
 
 // Components
-import Input from "@/components/Input";
-import Button from "@/components/Button";
+import MainTitle from "@/components/MainTitle";
+import FormGroup from "@/components/FormGroup";
+import FormLabel from "@/components/FormLabel";
+import InputBox from "@/components/InputBox";
+import ButtonBox from "@/components/ButtonBox";
+import LinkButton from "@/components/LinkButton";
+import LoadingBox from "@/components/LoadingBox";
 
 const SignUp = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
   // State
@@ -24,16 +30,13 @@ const SignUp = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
     password: "",
     confirmPassword: "",
   });
-  const [isTextTypeP, setIsTextTypeP] = useState(true);
-  const [isTextTypeCP, setIsTextTypeCP] = useState(true);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Method
-  const changeForm = (key) => (e) => {
-    let value = "";
-    if (_.isObject(e)) {
-      value = e.target.value;
-    }
-
+  const changeForm = (key) => (value) => {
     setForm({ ...form, [key]: value });
   };
 
@@ -71,128 +74,129 @@ const SignUp = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
 
     // Call API
     try {
+      setIsLoading(true);
       await apiHandler.post(apiConfig.resource.SIGNUP, payload);
       emptyForm();
       messageUtil.showSuccessMessage(successMessage.signup);
     } catch (error) {
       messageUtil.showErrorMessage(apiHandler.extractErrorMessage(error));
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className='login-section'>
-      <div className='login-block'>
-        <div className='login-block__logo'>
-          <img src={Logo} alt='logo' />
-        </div>
-        <div className='header-title login-block__title'>
-          <h2>Sign Up</h2>
-        </div>
-        <div className='login-block__body'>
-          <div className='input-group'>
-            <label htmlFor='username'>E-mail</label>
-            <Input
-              id='email'
-              type='text'
-              name='email'
-              placeholder='Your email'
-              value={form.email}
-              onChange={(e) => {
-                changeForm("email")(e);
-              }}
-            />
+    <>
+      <div className='login-container'>
+        <div className='login-border light-primary-shadow'>
+          <div className='login-block login-header light-primary-shadow'>
+            <div className='icon'>
+              <img src={logo} />
+            </div>
+            <MainTitle extraClasses={["!mb-0"]}>
+              Management Information System
+            </MainTitle>
           </div>
-          <div className='space-b-3'></div>
-          <div className='input-group'>
-            <label htmlFor='username'>Username</label>
-            <Input
-              id='username'
-              type='text'
-              name='username'
-              placeholder='Your username'
-              value={form.username}
-              onChange={(e) => {
-                changeForm("username")(e);
-              }}
-            />
+          <div className='login-block login-form light-primary-shadow'>
+            <FormGroup>
+              <MainTitle extraClasses={["text-general"]}>Sign Up</MainTitle>
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='email'>E-mail</FormLabel>
+              <InputBox
+                type='text'
+                id='email'
+                name='email'
+                placeholder='E-mail'
+                value={form.email}
+                onChange={(value) => {
+                  changeForm("email")(value);
+                }}
+              />
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='username'>Username</FormLabel>
+              <InputBox
+                type='text'
+                id='username'
+                name='username'
+                placeholder='Username'
+                value={form.username}
+                onChange={(value) => {
+                  changeForm("username")(value);
+                }}
+              />
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='password'>Password</FormLabel>
+              <InputBox
+                type={isPasswordVisible ? "text" : "password"}
+                id='password'
+                name='password'
+                placeholder='Password'
+                value={form.password}
+                onChange={(value) => {
+                  changeForm("password")(value);
+                }}
+              >
+                {
+                  <FontAwesomeIcon
+                    icon={isPasswordVisible ? faEyeSlash : faEye}
+                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                  />
+                }
+              </InputBox>
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='password'>Confirm Password</FormLabel>
+              <InputBox
+                type={isConfirmPasswordVisible ? "text" : "password"}
+                id='confirmPassword'
+                name='confirm-password'
+                placeholder='Confirm Password'
+                value={form.confirmPassword}
+                onChange={(value) => {
+                  changeForm("confirmPassword")(value);
+                }}
+              >
+                {
+                  <FontAwesomeIcon
+                    icon={isConfirmPasswordVisible ? faEyeSlash : faEye}
+                    onClick={() =>
+                      setIsConfirmPasswordVisible(!isPasswordVisible)
+                    }
+                  />
+                }
+              </InputBox>
+            </FormGroup>
           </div>
-          <div className='space-b-3'></div>
-          <div className='input-group'>
-            <label htmlFor='password'>Password</label>
-            <Input
-              id='password'
-              type={isTextTypeP ? "password" : "text"}
-              name='password'
-              placeholder='at least 8 characters'
-              value={form.password}
-              onChange={(e) => {
-                changeForm("password")(e);
-              }}
+          <div className='login-block login-button'>
+            <ButtonBox onClick={handleSignUp} isSave={true}>
+              Sign Up
+            </ButtonBox>
+            <ButtonBox
+              isClose={true}
+              extraClasses={["cancel-shadow"]}
+              onClick={emptyForm}
             >
-              {isTextTypeP ? (
-                <i
-                  className='fa-regular fa-eye'
-                  title='show password'
-                  onClick={() => setIsTextTypeP(!isTextTypeP)}
-                ></i>
-              ) : (
-                <i
-                  className='fa-regular fa-eye-slash'
-                  title='hide password'
-                  onClick={() => setIsTextTypeP(!isTextTypeP)}
-                ></i>
-              )}
-            </Input>
-          </div>
-          <div className='space-b-3'></div>
-          <div className='input-group space-b-3'>
-            <label htmlFor='password'>Confirm Password</label>
-            <Input
-              id='confirm-password'
-              type={isTextTypeCP ? "password" : "text"}
-              name='confirm-password'
-              placeholder='confirm your password'
-              value={form.confirmPassword}
-              onChange={(e) => {
-                changeForm("confirmPassword")(e);
-              }}
-            >
-              {isTextTypeCP ? (
-                <i
-                  className='fa-regular fa-eye'
-                  title='show password'
-                  onClick={() => setIsTextTypeCP(!isTextTypeCP)}
-                ></i>
-              ) : (
-                <i
-                  className='fa-regular fa-eye-slash'
-                  title='hide password'
-                  onClick={() => setIsTextTypeCP(!isTextTypeCP)}
-                ></i>
-              )}
-            </Input>
-          </div>
-          <div className='space-b-4'></div>
-          <div className='button-container'>
-            <Button id='submitBtn' onClick={handleSignUp}>
-              Submit
-            </Button>
-            <Button extraClasses={["cancel-button"]} onClick={emptyForm}>
               Reset
-            </Button>
+            </ButtonBox>
           </div>
-          <div className='button-container button-container--right space-t-3'>
+          <div className='login-block login-link'>
             <div>Do you have an account?</div>
-            <Link
-              className='link-button'
+            <LinkButton
+              to={routerConfig.routes.LOGIN}
               onClick={onChangeStage(stageType.LOGIN)}
-            >
-              Sign in
-            </Link>
+              title='Back'
+            />
+          </div>
+          <div className='login-block login-footer light-primary-shadow'>
+            © 2024 Ivan Solutions. All rights reserved.
           </div>
         </div>
       </div>
-    </div>
+      <LoadingBox visible={isLoading} />
+    </>
   );
 };
 

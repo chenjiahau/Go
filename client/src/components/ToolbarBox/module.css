@@ -1,0 +1,3 @@
+.toolbar-box {
+  @apply w-full flex justify-end items-center gap-2 mb-4;
+}

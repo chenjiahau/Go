@@ -1,0 +1,24 @@
+.floating-button {
+  @apply fixed bottom-4 right-8 bg-transparent;
+}
+
+.floating-button .button {
+  @apply w-14 h-14 flex justify-center items-center bg-white text-primary border-white rounded-[50%] text-large;
+  cursor: pointer;
+  box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    @apply bg-darkPrimary text-white;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.4);
+  }
+}
+
+@media (max-width: 768px) {
+  .floating-button {
+    @apply bottom-4 right-4;
+  }
+
+  .floating-button .button {
+    @apply w-12 h-12 text-title;
+  }
+}

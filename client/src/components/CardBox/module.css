@@ -1,0 +1,21 @@
+.card-box {
+  .title {
+    @apply text-primary text-title font-semibold p-0 m-0;
+  }
+
+  .divider {
+    @apply w-12 h-2 border-b-2 border-primary mb-6;
+  }
+
+  .form-label {
+    @apply text-primary text-sm font-semibold p-0 m-0;
+  }
+
+  .footer {
+    @apply flex justify-end items-center gap-4 mt-8;
+  }
+
+  .button-box {
+    @apply w-[10rem] h-8;
+  }
+}

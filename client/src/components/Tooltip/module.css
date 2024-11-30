@@ -1,0 +1,20 @@
+.tooltip-container {
+  @apply relative inline-block;
+}
+
+.tooltip-container .trigger {
+  @apply cursor-pointer;
+}
+
+.tooltip-container .content {
+  @apply absolute left-1/2 transform -translate-x-1/2 w-max  bg-white text-white border border-primary rounded-md mt-2 p-4 z-[9999];
+  cursor: default;
+}
+
+.tooltip-container .triangle {
+  @apply absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-primary;
+}
+
+.tooltip-container .inner {
+  @apply relative bg-white text-primary overflow-auto;
+}

@@ -1,0 +1,65 @@
+.login-container {
+  @apply h-screen flex flex-col justify-center items-center bg-gray p-8 text-[100%];
+}
+
+.login-border {
+  @apply border border-primary rounded-md p-8;
+}
+
+.login-block {
+  @apply flex flex-col gap-2 bg-primary border rounded-md border-primary text-white mb-4 p-4;
+
+  .form-group {
+    @apply mb-2;
+  }
+
+  .form-label {
+    @apply m-0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .input-box,
+  .input-box-with-icon {
+    @apply h-[2.4rem] text-black;
+  }
+
+  .button-box {
+    @apply w-full;
+    font-size: inherit;
+  }
+}
+
+.login-block.login-header {
+  @apply flex justify-center items-center text-2xl font-bold text-center;
+
+  .icon {
+    @apply w-16 bg-darkPrimary text-white text-2xl font-bold rounded-[50%] mr-2 p-2;
+  }
+
+  .main-title {
+    @apply text-2xl font-bold;
+  }
+}
+
+.login-block.login-form {
+  @apply p-4;
+}
+
+.login-block.login-button {
+  @apply !flex-row bg-transparent border-transparent gap-4;
+}
+
+.login-block.login-link {
+  @apply flex flex-row justify-end items-center gap-2 text-primary bg-transparent border-transparent mb-0 px-4 py-0;
+  transform: translateY(-0.5rem);
+
+  .link-button {
+    @apply p-0 text-black;
+    font-size: inherit;
+  }
+}
+
+.login-block.login-footer {
+  @apply flex flex-row justify-center items-center mt-4 mb-0;
+}

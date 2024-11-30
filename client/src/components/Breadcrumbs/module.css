@@ -1,0 +1,29 @@
+ul.breadcrumb {
+  padding: 10px 2rem;
+  list-style: none;
+  @apply bg-lightPrimary text-primary;
+
+  @media (max-width: 768px) {
+    padding: 10px 1rem;
+  }
+}
+
+ul.breadcrumb li {
+  display: inline;
+}
+
+ul.breadcrumb li + li:before {
+  margin: 0 0.5rem;
+  color: black;
+  content: "/\00a0";
+}
+
+ul.breadcrumb li a {
+  @apply text-darkPrimary;
+  text-decoration: none;
+}
+
+ul.breadcrumb li a:hover {
+  @apply text-darkPrimary;
+  text-decoration: underline;
+}

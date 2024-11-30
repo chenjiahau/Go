@@ -1,11 +1,12 @@
-import "../module.scss";
-import Logo from "@/assets/img/brand.png";
+import "../module.css";
+import logo from "@/assets/img/brand.png";
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 // import ReCAPTCHA from "react-google-recaptcha";
-import _ from "lodash";
 
 // Const
 import routerConfig from "@/const/config/router";
@@ -19,8 +20,13 @@ import apiHandler from "@/util/api.util";
 import messageUtil from "@/util/message.util";
 
 // Components
-import Input from "@/components/Input";
-import Button from "@/components/Button";
+import MainTitle from "@/components/MainTitle";
+import FormGroup from "@/components/FormGroup";
+import FormLabel from "@/components/FormLabel";
+import InputBox from "@/components/InputBox";
+import ButtonBox from "@/components/ButtonBox";
+import LinkButton from "@/components/LinkButton";
+import LoadingBox from "@/components/LoadingBox";
 
 const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
   const dispatch = useDispatch();
@@ -31,17 +37,13 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
     email: "",
     password: "",
   });
-  const [isTextTypeP, setIsTextTypeP] = useState(true);
+  const [isPasswordType, setIsPasswordType] = useState(true);
   // const [recaptchaToken, setRecaptchaToken] = useState(null);
   // const recaptchaRef = useRef();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Method
-  const changeForm = (key) => (e) => {
-    let value = "";
-    if (_.isObject(e)) {
-      value = e.target.value;
-    }
-
+  const changeForm = (key) => (value) => {
     setForm({ ...form, [key]: value });
   };
 
@@ -71,6 +73,7 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
 
     // Call API
     try {
+      setIsLoading(true);
       const response = await apiHandler.post(url, payload);
 
       apiHandler.setToken(response.data.data.token);
@@ -82,102 +85,96 @@ const SignIn = ({ successMessage, errorMessage, stageType, onChangeStage }) => {
       // setRecaptchaToken(null);
       // recaptchaRef.current.reset();
       messageUtil.showErrorMessage(apiHandler.extractErrorMessage(error));
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className='login-section'>
-      <div className='login-block'>
-        <div className='login-block__logo'>
-          <img src={Logo} alt='logo' />
-        </div>
-        <div className='header-title login-block__title'>
-          <h2>Sign In</h2>
-        </div>
-        <div className='login-block__body'>
-          <div className='input-group'>
-            <label htmlFor='username'>E-mail</label>
-            <Input
-              id='email'
-              type='text'
-              name='email'
-              placeholder='Your email'
-              value={form.email}
-              onChange={(e) => {
-                changeForm("email")(e);
-              }}
-            />
+    <>
+      <div className='login-container'>
+        <div className='login-border light-primary-shadow'>
+          <div className='login-block login-header light-primary-shadow'>
+            <div className='icon'>
+              <img src={logo} />
+            </div>
+            <MainTitle extraClasses={["!mb-0"]}>
+              Management Information System
+            </MainTitle>
           </div>
-          <div className='space-b-3'></div>
-          <div className='input-group'>
-            <label htmlFor='password'>Password</label>
-            <Input
-              id='password'
-              type={isTextTypeP ? "password" : "text"}
-              name='password'
-              placeholder='at least 8 characters'
-              value={form.password}
-              onChange={(e) => {
-                changeForm("password")(e);
-              }}
-            >
-              {isTextTypeP ? (
-                <i
-                  className='fa-regular fa-eye'
-                  title='show password'
-                  onClick={() => setIsTextTypeP(!isTextTypeP)}
-                ></i>
-              ) : (
-                <i
-                  className='fa-regular fa-eye-slash'
-                  title='hide password'
-                  onClick={() => setIsTextTypeP(!isTextTypeP)}
-                ></i>
-              )}
-            </Input>
+          <div className='login-block login-form light-primary-shadow'>
+            <FormGroup>
+              <MainTitle extraClasses={["text-general"]}>Sign In</MainTitle>
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='email'>E-mail</FormLabel>
+              <InputBox
+                type='text'
+                id='email'
+                name='email'
+                placeholder='E-mail'
+                value={form.email}
+                onChange={(value) => {
+                  changeForm("email")(value);
+                }}
+              />
+            </FormGroup>
+            <FormGroup>
+              <FormLabel forName='password'>Password</FormLabel>
+              <InputBox
+                type={isPasswordType ? "password" : "text"}
+                id='password'
+                name='password'
+                placeholder='Password'
+                value={form.password}
+                onChange={(value) => {
+                  changeForm("password")(value);
+                }}
+              >
+                {
+                  <FontAwesomeIcon
+                    icon={isPasswordType ? faEyeSlash : faEye}
+                    onClick={() => setIsPasswordType(!isPasswordType)}
+                  />
+                }
+              </InputBox>
+            </FormGroup>
           </div>
-          <div className='space-b-4'></div>
-          {/* <div className='recaptcah-group'>
-            <ReCAPTCHA
-              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-              onChange={(token) => setRecaptchaToken(token)}
-              ref={recaptchaRef}
-            />
-          </div>
-          <div className='space-b-3'></div> */}
-          <div className='button-container'>
-            <Button id='submitBtn' onClick={handleSignIn}>
-              Submit
-            </Button>
-            <Button
-              id='cancelBtn'
-              extraClasses={["cancel-button"]}
+          <div className='login-block login-button'>
+            <ButtonBox onClick={handleSignIn} isSave={true}>
+              Sign In
+            </ButtonBox>
+            <ButtonBox
               onClick={emptyForm}
+              isClose={true}
+              extraClasses={["cancel-shadow"]}
             >
               Reset
-            </Button>
+            </ButtonBox>
           </div>
-          <div className='button-container button-container--right'>
-            <div className='me-2'>Do you have not an account?</div>
-            <Link
-              className='link-button'
-              onClick={onChangeStage(stageType.REGISTER)}
-            >
-              Sign up
-            </Link>
-          </div>
-          <div className='button-container button-container--right'>
-            <div className='me-2'>Did you forget your password?</div>
-            <Link
-              className='link-button'
+          <div className='login-block login-link'>
+            <div>Did you forget your password?</div>
+            <LinkButton
+              to={routerConfig.routes.LOGIN}
               onClick={onChangeStage(stageType.FORGOT_PASSWORD)}
-            >
-              Forget password
-            </Link>
+              title='Forget Password'
+            />
+          </div>
+          <div className='login-block login-link'>
+            <div>Do you have not an account?</div>
+            <LinkButton
+              to={routerConfig.routes.LOGIN}
+              onClick={onChangeStage(stageType.REGISTER)}
+              title='Sign Up'
+            />
+          </div>
+          <div className='login-block login-footer light-primary-shadow'>
+            © 2024 Ivan Solutions. All rights reserved.
           </div>
         </div>
       </div>
-    </div>
+      <LoadingBox visible={isLoading} />
+    </>
   );
 };
 

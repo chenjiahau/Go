@@ -1,0 +1,35 @@
+.button-box {
+  @apply w-[15rem] h-10 flex items-center justify-center bg-darkPrimary rounded-md border-2 border-darkPrimary text-white text-button font-bold;
+  cursor: pointer;
+
+  &:hover {
+    @apply bg-hover border-hover;
+  }
+}
+
+.save-button {
+  @apply w-[15rem] h-10 flex items-center justify-center bg-primary rounded-md border-2 border-primary text-white text-button font-bold;
+  cursor: pointer;
+
+  &:hover {
+    @apply bg-hover border-hover;
+  }
+}
+
+.disabled-button {
+  @apply bg-primary border-primary text-white;
+  cursor: not-allowed;
+
+  &:hover {
+    @apply !bg-primary !border-primary;
+  }
+}
+
+.close-button {
+  @apply w-[15rem] h-10 flex items-center justify-center bg-red-500 rounded-md border-2 border-red-500 text-white text-button font-bold;
+  cursor: pointer;
+
+  &:hover {
+    @apply bg-hover border-hover;
+  }
+}

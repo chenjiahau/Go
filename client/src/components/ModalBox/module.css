@@ -1,0 +1,68 @@
+.modal-box {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 overflow-y-auto;
+}
+
+.modal-body {
+  @apply relative w-[80%] min-h-[auto] max-h-[90%] lg:w-[600px] md:w-[600px] px-8 py-6 bg-modal rounded-lg shadow-lg overflow-y-auto;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  transform: translateY(-40px);
+
+  p {
+    @apply flex items-center;
+    min-height: 64px;
+  }
+}
+
+.modal-header {
+  @apply flex items-center justify-between border-b border-reverseModal pb-2 mb-4;
+
+  .title {
+    @apply text-reverseModal text-title font-semibold p-0 m-0;
+  }
+}
+
+.modal-content {
+  @apply flex flex-col pr-4;
+
+  .modal-text {
+    @apply text-black text-general font-normal;
+  }
+
+  .warning-text {
+    @apply text-yellow-500 text-general font-semibold;
+  }
+
+  .danger-text {
+    @apply text-red-500 text-general font-semibold;
+  }
+
+  .input-box,
+  .input-box-with-icon,
+  .dropdown-box,
+  .dropdown-button {
+    @apply border-reverseModal hover:border-hoverModal;
+  }
+
+  .form-label {
+    @apply text-reverseModal text-xl font-semibold mb-2;
+  }
+}
+
+.modal-footer {
+  @apply flex items-center justify-end gap-4 border-t border-reverseModal mt-3 pt-8 pb-4;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: end;
+  }
+}
+
+.modal-message-footer {
+  @apply flex items-center justify-end gap-4 pt-6 pb-4;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: end;
+  }
+}
