@@ -1,10 +1,12 @@
+import "./module.css";
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
 // Const
-import routerConfig from "../../const/config/router";
+import routerConfig from "@/const/config/router";
 import apiConfig from "@/const/config/api";
 
 // Slice
@@ -14,11 +16,10 @@ import { userActions, selectUser } from "@/store/slices/user";
 import apiHandler from "@/util/api.util";
 
 // Component
-import Header from "../Header";
-import Navigation from "../Navigation";
-import Footer from "../Footer";
+import Navbar from "@/ui/Navbar";
+import Footer from "@/ui/Footer";
 
-const Layout = () => {
+function Layout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -63,22 +64,15 @@ const Layout = () => {
 
   return (
     <>
-      {user && (
-        <div className='layout'>
-          <Header user={user} onCleanUser={onCleanUser} />
-          <div className='layout__content'>
-            <div className='content__left'>
-              <Navigation />
-            </div>
-            <div className='content__right'>
-              <Outlet />
-            </div>
-            <Footer />
-          </div>
+      <div className='layout'>
+        <Navbar user={user} onCleanUser={onCleanUser} />
+        <div className='main-content'>
+          <Outlet />
         </div>
-      )}
+        <Footer />
+      </div>
     </>
   );
-};
+}
 
 export default Layout;

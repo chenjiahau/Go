@@ -1,0 +1,7 @@
+.main-content {
+  @apply bg-primary;
+
+  @media (max-width: 768px) {
+    margin-top: 44px;
+  }
+}
