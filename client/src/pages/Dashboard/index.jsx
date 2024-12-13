@@ -1,4 +1,4 @@
-import "./module.scss";
+import "./module.css";
 
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -14,14 +14,19 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { cloneDeep } from "lodash";
 
 // Const
-import routerConfig from "@/const/config/router";
 import apiConfig from "@/const/config/api";
+
+// Component
+import Breadcrumbs from "@/components/Breadcrumbs";
+import MainTitle from "@/components/MainTitle";
+import Form from "@/components/Form";
+import Spacer from "@/components/Spacer";
 
 // Util
 import apiHandler from "@/util/api.util";
-import { cloneDeep } from "lodash";
 
 ChartJS.register(
   ArcElement,
@@ -90,6 +95,8 @@ const barOption = {
 };
 
 const Dashboard = () => {
+  const linkList = [{ to: "/", label: "Dashboard" }];
+
   // State
   const [mostPublisherPieChart, setMostPublisherPieChart] = useState(null);
   const [mostPublisherBarChart, setMostPublisherBarChart] = useState(null);
@@ -142,8 +149,6 @@ const Dashboard = () => {
   }, []);
 
   // Side effect
-  useEffect(() => {}, []);
-
   useEffect(() => {
     handleInitialization();
 
@@ -166,51 +171,38 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className='breadcrumb-container'>
-        <Link to={routerConfig.routes.DASHBOARD} className='breadcrumb--item'>
-          <span className='breadcrumb--item--inner'>
-            <span className='breadcrumb--item-title'>Dashboard</span>
-          </span>
-        </Link>
-      </div>
-
-      <div className='section'>
-        <div className='type-title'>Top 10 Publishers</div>
-        <div className='two-columns'>
-          <div>
+      <Breadcrumbs linkList={linkList} />
+      <div className='custom-container primary-bg'>
+        <MainTitle>Top 10 Publishers</MainTitle>
+        <Form>
+          <div className='publisher-container'>
             <div className='chart'>
-              {mostPublisherBarChart.datasets[0].backgroundColor.length ===
-              0 ? (
-                <div className='no-data'>No data</div>
+              {mostPublisherPieChart.labels.length === 0 ? (
+                <MainTitle extraClasses={["no-data"]}>No data</MainTitle>
               ) : (
                 <Pie data={mostPublisherPieChart} options={pieOption} />
               )}
             </div>
-          </div>
-          <div>
             <div className='chart'>
-              {mostPublisherBarChart.datasets[0].backgroundColor.length ===
-              0 ? (
-                <div className='no-data'>No data</div>
+              {mostPublisherBarChart.labels.length === 0 ? (
+                <MainTitle extraClasses={["no-data"]}>No data</MainTitle>
               ) : (
                 <Bar data={mostPublisherBarChart} options={barOption} />
               )}
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className='section'>
-        <div className='type-title'>Top 10 Comments</div>
-        <div>
+        </Form>
+        <Spacer extraClasses={["mt-4"]} />
+        <MainTitle>Top 10 Comments</MainTitle>
+        <Form>
           <div className='chart'>
-            {mostCommentBarChart.datasets[0].backgroundColor.length === 0 ? (
-              <div className='no-data'>No data</div>
+            {mostCommentBarChart.labels.length === 0 ? (
+              <MainTitle extraClasses={["no-data"]}>No data</MainTitle>
             ) : (
               <Bar data={mostCommentBarChart} options={barOption} />
             )}
           </div>
-        </div>
+        </Form>
       </div>
     </>
   );
