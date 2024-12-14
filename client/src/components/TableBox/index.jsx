@@ -35,7 +35,6 @@ const TableBox = ({ headers, onChangeHeader, data }) => {
           <thead>
             <tr>
               {headers.map((header) => {
-                const center = header.isCenter ? "center" : "";
                 const sortable = header.isSortable ? "sortable" : "";
                 const sort = header.sort ? "sort" : "";
                 const sorted = header.sort ? "sorted" : "";
@@ -48,7 +47,7 @@ const TableBox = ({ headers, onChangeHeader, data }) => {
                   >
                     {sortable ? (
                       <div
-                        className={`sortable-box ${sorted} ${center}`}
+                        className={`sortable-box ${sorted}`}
                         onClick={() => onClickSort(header)}
                       >
                         <div className='sort-title'>{header.label}</div>

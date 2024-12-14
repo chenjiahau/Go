@@ -31,5 +31,6 @@
 
   &:hover {
     @apply bg-hover border-hover;
+    box-shadow: 4px 4px 2px rgba(10, 248, 244, 0.2);
   }
 }
