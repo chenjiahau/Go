@@ -12,7 +12,7 @@ type CategoryInterface interface {
 	Create(string, time.Time, bool)								(int64, error)
 	QueryAll(int64)																([]Category, error)
 	QueryTotalCount(int64)												(int64, error)
-	QueryByPage(int64, int, int, string, string)	([]Category, error)
+	QueryByPage(int64, int, int, string, string)	([]CategoryDetail, error)
 	Update(int64)																	(error)
 	Delete(int64)																			(Category, error)
 }
@@ -35,6 +35,15 @@ type Category struct {
 	CreatedAt					time.Time	`json:"createdAt"`
 	IsAlive						bool			`json:"isAlive"`
 	SubCategoryCount	int64			`json:"subcategoryCount"`
+}
+
+type CategoryDetail struct {
+	Id								int64			`json:"id"`
+	Name							string		`json:"name"`
+	CreatedAt					time.Time	`json:"createdAt"`
+	IsAlive						bool			`json:"isAlive"`
+	SubCategoryCount	int64			`json:"subcategoryCount"`
+	SubCategories     []SubCategory	`json:"subCategories"`
 }
 
 // Method
@@ -110,7 +119,7 @@ func (c *Category) QueryAll(userId int64) ([]Category, error) {
 		}
 
 		SubCategory := SubCategory{}
-		subCategories, err := SubCategory.QueryAll(category.Id)
+		subCategories, err := SubCategory.QueryAllWithoutFilter(category.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +145,7 @@ func (c *Category) QueryTotalCount(userId int64) (int64, error) {
 	return count, nil
 }
 
-func (c *Category) QueryByPage(userId int64, number, size int, orderBy, order string) ([]Category, error) {
+func (c *Category) QueryByPage(userId int64, number, size int, orderBy, order string) ([]CategoryDetail, error) {
 	switch orderBy {
 	case "id":
 		orderBy = "id"
@@ -144,7 +153,7 @@ func (c *Category) QueryByPage(userId int64, number, size int, orderBy, order st
 		orderBy = "name"
 	case "created":
 		orderBy = "created_at"
-	case "subcategory":
+	case "subcategories":
 		orderBy = "subcategory_count"
 	case "status":
 		orderBy = "is_alive"
@@ -167,15 +176,24 @@ func (c *Category) QueryByPage(userId int64, number, size int, orderBy, order st
 	}
 	defer rows.Close()
 
-	var categories []Category
+	var categories []CategoryDetail
 	for rows.Next() {
-		var category Category
-		err := rows.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
+		var category CategoryDetail
 
+		err := rows.Scan(&category.Id, &category.Name, &category.CreatedAt, &category.IsAlive, &category.SubCategoryCount)
 		if err != nil {
 			return nil, err
 		}
 
+		SubCategory := SubCategory{}
+		println(category.Id)
+		subCategories, err := SubCategory.QueryAllWithoutFilter(category.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		println(subCategories)
+		category.SubCategories = subCategories
 		categories = append(categories, category)
 	}
 

@@ -117,3 +117,7 @@ li {
 .no-data {
   @apply !text-primary !text-title;
 }
+
+.empty-box {
+  @apply text-center p-4;
+}

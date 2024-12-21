@@ -11,6 +11,7 @@ type SubCategoryInterface interface {
 	GetByName(int64, string)											(SubCategory, error)
 	Create(int64, string, time.Time, bool)				(int64, error)
 	QueryAll(int64)																([]SubCategory, error)
+	QueryAllWithoutFilter(int64)									([]SubCategory, error)
 	QueryTotalCount(int64)												(int64, error)
 	QueryByPage(int64, int, int, string, string)	([]SubCategory, error)
 	Update()																			(error)
@@ -85,6 +86,31 @@ func (sc *SubCategory) QueryAll(categoryId int64) ([]SubCategory, error) {
 		SELECT id, category_id, name, created_at, is_alive
 		FROM subcategories
 		WHERE category_id = $1 and is_alive = true;`
+
+	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, categoryId)
+	if err != nil {
+		return nil, err
+	}
+
+	var subCategories []SubCategory
+	for rows.Next() {
+		var subCategory SubCategory
+		err := rows.Scan(&subCategory.Id, &subCategory.CategoryId, &subCategory.Name, &subCategory.CreatedAt, &subCategory.IsAlive)
+		if err != nil {
+			return nil, err
+		}
+
+		subCategories = append(subCategories, subCategory)
+	}
+
+	return subCategories, nil
+}
+
+func (sc *SubCategory) QueryAllWithoutFilter(categoryId int64) ([]SubCategory, error) {
+	sqlStatement := `
+		SELECT id, category_id, name, created_at, is_alive
+		FROM subcategories
+		WHERE category_id = $1;`
 
 	rows, err := DbConf.PgConn.SQL.Query(sqlStatement, categoryId)
 	if err != nil {

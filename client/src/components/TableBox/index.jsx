@@ -126,6 +126,13 @@ const TableBox = ({ headers, onChangeHeader, data }) => {
                 </tr>
               );
             })}
+            {data.length === 0 && (
+              <tr>
+                <td colSpan={headers.length} className='empty-box'>
+                  No data available
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

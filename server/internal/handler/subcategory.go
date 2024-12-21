@@ -102,7 +102,7 @@ func (Ctrl *Controller) GetAllSubCategory(w http.ResponseWriter, r *http.Request
 
 	// Query all subcategories
 	sc := model.NewSubCategory()
-	subCategories, err := sc.QueryAll(categoryId)
+	subCategories, err := sc.QueryAllWithoutFilter(categoryId)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(4411)
