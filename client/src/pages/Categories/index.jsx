@@ -36,6 +36,7 @@ import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "@/util/message.util";
 
 const errorMessage = {
+  name: "Category is duplicated.",
   delete: "Category is used or not found.",
 };
 
@@ -160,8 +161,7 @@ const Categories = () => {
   };
 
   const handleAddCategory = async () => {
-    setOpenCategoryModal(false);
-    setOpenDeleteModal(false);
+    handleCloseModal();
     await handleInitialization();
   };
 
@@ -210,6 +210,11 @@ const Categories = () => {
 
         handleInitialization();
       } catch (error) {
+        if (error.response.data.code === 3423) {
+          messageUtil.showErrorMessage(errorMessage.duplicated);
+          return;
+        }
+
         messageUtil.showErrorMessage(commonMessage.error);
       }
     },
@@ -313,7 +318,7 @@ const Categories = () => {
     const updatedTableData = categories.map((category, index) => {
       return {
         ...category,
-        index: index + 1,
+        index: (currentPage - 1) * pageSize + index + 1,
         isEdit: false,
         name: category.isEdit ? (
           <InputBox

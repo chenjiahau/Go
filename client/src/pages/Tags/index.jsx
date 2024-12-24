@@ -1,34 +1,96 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faTrash,
+  faFloppyDisk,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { cloneDeep } from "lodash";
 
+import Breadcrumbs from "@/components/Breadcrumbs";
+import Form from "@/components/Form";
+import InputBox from "@/components/InputBox";
+import EditableTextBox from "@/components/EditableTextBox";
+import TagBox from "@/components/TagBox";
+import IconButton from "@/components/IconButton";
+import ToolbarBox from "@/components/ToolbarBox";
+import TableBox from "@/components/TableBox";
+import PaginationBox, { numberOfRow } from "@/components/PaginationBox";
+import Spacer from "@/components/Spacer";
+
 // Const
-import routerConfig from "@/const/config/router";
 import apiConfig from "@/const/config/api";
 
 // Component
-import { pageSizeDefinition } from "@/components/Pagination";
-import ConfirmationModal from "@/components/ConfirmationModal";
-import Add from "./components/Add";
-import Table from "./components/Table";
-import Page from "./components/Page";
+import TagModal from "./TagModal";
+import ColorModal from "./ColorModal";
+import DeleteModal from "./DeleteModal";
 
 // Util
 import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "@/util/message.util";
 
-const Category = () => {
+const defaultTableHeader = [
+  {
+    key: "index",
+    label: "#",
+    isSortable: false,
+    isCenter: true,
+    width: "50",
+    sort: "",
+  },
+  {
+    key: "name",
+    label: "Tag",
+    isSortable: true,
+    sort: "",
+  },
+  {
+    key: "color",
+    label: "Color",
+    isSortable: true,
+    isCenter: true,
+    width: "220",
+    sort: "",
+  },
+  {
+    key: "action",
+    label: "Action",
+    isSortable: false,
+    isCenter: true,
+    width: "100",
+    sort: "",
+  },
+];
+
+const errorMessage = {
+  duplicated: "Tag is duplicated.",
+};
+
+const Tags = () => {
+  const linkList = [
+    { to: "/", label: "Home" },
+    { to: "/tags", label: "Tags" },
+  ];
+
   // State
-  const [colorCategories, setColorCategories] = useState([]);
-  const [colors, setColors] = useState([]);
   const [orderBy, setOrderBy] = useState("id");
   const [order, setOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(pageSizeDefinition[1]);
-  const [totalTagCount, setTotalTagCount] = useState(0);
+  const [pageSize, setPageSize] = useState(numberOfRow[1]);
+  const [colorCategories, setColorCategories] = useState([]);
+  const [colors, setColors] = useState([]);
   const [tags, setTags] = useState([]);
-  const [selectedTag, setSelectedTag] = useState({});
-  const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false);
+  const [tableHeaders, setTableHeader] = useState(
+    cloneDeep(defaultTableHeader)
+  );
+  const [tableData, setTableData] = useState([]);
+  const [totalDataCount, setTotalDataCount] = useState(0);
+  const [openTagModal, setOpenTagModal] = useState(false);
+  const [openColorModal, setOpenColorModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedTag, setSelectedTag] = useState(null);
 
   // Method
   const handleInitialization = useCallback(async () => {
@@ -42,7 +104,7 @@ const Category = () => {
 
     response = await apiHandler.get(apiConfig.resource.NUMBER_OF_TAGS);
     const totalTagNumber = response.data.data.totalTagNumber;
-    setTotalTagCount(totalTagNumber);
+    setTotalDataCount(totalTagNumber);
 
     // Check if the current page is greater than the total page number
     const totalPageNum = Math.ceil(totalTagNumber / pageSize);
@@ -65,153 +127,269 @@ const Category = () => {
     response.data.data.tags?.forEach((tag) => {
       updatedTags.push({
         ...tag,
+        color: tag.colorName,
         originalName: tag.name,
         isEditing: false,
       });
     });
 
-    if (selectedTag?.id) {
-      const tag = updatedTags.find((tag) => tag.id === selectedTag?.id);
-
-      setSelectedTag(tag);
-    }
-
     setTags(updatedTags);
-  }, [currentPage, order, orderBy, pageSize, selectedTag?.id]);
+  }, [currentPage, order, orderBy, pageSize]);
 
-  const changeOrder = (newOrderBy) => {
-    if (newOrderBy === orderBy) {
-      setOrder(order === "asc" ? "desc" : "asc");
-    } else {
-      setOrderBy(newOrderBy);
-      setOrder("asc");
-    }
+  const handleChangeHeader = (newHeader, column, order) => {
+    setTableHeader(newHeader);
+    setOrderBy(column);
+    setOrder(order);
   };
 
-  const clickTagName = (id) => {
-    const updatedTags = tags.map((tag) => {
-      if (tag.id === id) {
-        tag.isEditing = !tag.isEditing;
-      }
-
-      return tag;
-    });
-
-    setTags(updatedTags);
+  const handleCloseModal = () => {
+    setOpenTagModal(false);
+    setOpenColorModal(false);
+    setOpenDeleteModal(false);
   };
 
-  const changeTagName = (id, name) => {
-    const updatedTags = tags.map((tag) => {
-      if (tag.id === id) {
-        tag.name = name;
-      }
-
-      return tag;
-    });
-
-    setTags(updatedTags);
+  const handleAddTag = async () => {
+    handleCloseModal();
+    await handleInitialization();
   };
 
-  const saveTag = async (id) => {
-    const tagIndex = tags.findIndex((tag) => tag.id === id);
-    const updatedTags = cloneDeep(tags);
-
-    if (updatedTags[tagIndex].name === "") {
-      return;
-    }
-
-    try {
-      const tag = tags.find((tag) => tag.id === id);
-      const apiURL = apiConfig.resource.EDIT_TAG.replace(":id", id);
-      const payload = {
-        colorId: tag.colorId,
-        name: tag.name,
-      };
-      await apiHandler.put(apiURL, payload);
-      messageUtil.showSuccessMessage(commonMessage.success);
-
-      updatedTags[tagIndex].originalName = tag.name;
-      updatedTags[tagIndex].isEditing = false;
-      setTags(updatedTags);
-    } catch (error) {
-      messageUtil.showErrorMessage(error.response.data.message);
-    }
+  const handleChangeColor = async () => {
+    setSelectedTag(null);
+    handleCloseModal();
+    await handleInitialization();
   };
 
-  const deleteTag = async () => {
+  const handleDelete = async () => {
     try {
       const apiURL = apiConfig.resource.EDIT_TAG.replace(":id", selectedTag.id);
+
       await apiHandler.delete(apiURL);
       messageUtil.showSuccessMessage(commonMessage.success);
-      setIsOpenConfirmationModal(false);
+      setOpenDeleteModal(false);
       handleInitialization();
     } catch (error) {
-      messageUtil.showErrorMessage(commonMessage.error);
+      messageUtil.showErrorMessage(
+        messageUtil.showErrorMessage(error.response.data.message)
+      );
     }
   };
 
-  const showConfirmationModal = (id) => {
-    const tag = tags.find((tag) => tag.id === id);
+  const handleChangeTag = useCallback(
+    (id, value) => {
+      const updateTags = tags.map((tag) => {
+        if (tag.id === id) {
+          return {
+            ...tag,
+            name: value,
+          };
+        }
+        return tag;
+      });
+
+      setTags(updateTags);
+    },
+    [tags]
+  );
+
+  const handleSaveTag = useCallback(
+    async (id) => {
+      const tagIndex = tags.findIndex((tag) => tag.id === id);
+      const updatedTags = cloneDeep(tags);
+
+      if (updatedTags[tagIndex].name === "") {
+        return;
+      }
+
+      try {
+        const tag = tags.find((tag) => tag.id === id);
+        const apiURL = apiConfig.resource.EDIT_TAG.replace(":id", id);
+        const payload = {
+          colorId: tag.colorId,
+          name: tag.name,
+        };
+        await apiHandler.put(apiURL, payload);
+        messageUtil.showSuccessMessage(commonMessage.success);
+
+        updatedTags[tagIndex].isEdit = false;
+        updatedTags[tagIndex].originalName = tag.name;
+        setTags(updatedTags);
+
+        handleInitialization();
+      } catch (error) {
+        if (error.response.data.code == 5423) {
+          messageUtil.showErrorMessage(errorMessage.duplicated);
+          return;
+        }
+
+        messageUtil.showErrorMessage(commonMessage.error);
+      }
+    },
+    [handleInitialization, tags]
+  );
+
+  const handleCancelEdit = useCallback(
+    (id) => {
+      const updatedTags = tags.map((tag) => {
+        if (tag.id === id) {
+          return {
+            ...tag,
+            isEdit: false,
+            name: tag.originalName,
+          };
+        }
+        return tag;
+      });
+
+      setTags(updatedTags);
+    },
+    [tags]
+  );
+
+  const handleEditTag = useCallback(
+    (id) => {
+      const updatedTags = tags.map((tag) => {
+        if (tag.id === id) {
+          return {
+            ...tag,
+            isEdit: true,
+          };
+        }
+        return tag;
+      });
+
+      setTags(updatedTags);
+    },
+    [tags]
+  );
+
+  const handleOpenDeleteModal = (tag) => {
     setSelectedTag(tag);
-    setIsOpenConfirmationModal(true);
+    setOpenDeleteModal(true);
   };
 
   // Side effect
   useEffect(() => {
     handleInitialization();
-  }, [currentPage, handleInitialization, pageSize, orderBy, order]);
+  }, [handleInitialization, orderBy, order, currentPage, pageSize]);
+
+  useEffect(() => {
+    const updatedTableData = tags.map((tag, index) => {
+      return {
+        ...tag,
+        index: (currentPage - 1) * pageSize + index + 1,
+        isEdit: false,
+        name: tag.isEdit ? (
+          <InputBox
+            type='text'
+            id={`tag${tag.id}`}
+            name={`tag-${tag.id}`}
+            value={tag.name}
+            onChange={(value) => handleChangeTag(tag.id, value)}
+          >
+            <FontAwesomeIcon
+              icon={faFloppyDisk}
+              onClick={() => handleSaveTag(tag.id)}
+            />
+            <FontAwesomeIcon
+              icon={faXmark}
+              onClick={() => handleCancelEdit(tag.id)}
+            />
+          </InputBox>
+        ) : (
+          <EditableTextBox
+            text={tag.name}
+            onClick={() => {
+              handleEditTag(tag.id);
+            }}
+          />
+        ),
+        color: (
+          <TagBox
+            tag={{ label: tag.colorName, hashCode: tag.colorHexCode }}
+            onClick={() => {
+              setOpenColorModal(true);
+              setSelectedTag(tag);
+            }}
+          />
+        ),
+        action: (
+          <div className='flex items-center gap-4'>
+            <IconButton onClick={() => handleOpenDeleteModal(tag)}>
+              <FontAwesomeIcon icon={faTrash} />
+            </IconButton>
+          </div>
+        ),
+      };
+    });
+
+    setTableData(updatedTableData);
+  }, [
+    currentPage,
+    handleCancelEdit,
+    handleChangeTag,
+    handleEditTag,
+    handleSaveTag,
+    pageSize,
+    tags,
+  ]);
 
   return (
     <>
-      <div className='breadcrumb-container'>
-        <Link to={routerConfig.routes.TAGS} className='breadcrumb--item'>
-          <span className='breadcrumb--item--inner'>
-            <span className='breadcrumb--item-title'>Tags</span>
-          </span>
-        </Link>
+      <Breadcrumbs linkList={linkList} />
+      <div className='custom-container primary-bg'>
+        <Form>
+          <ToolbarBox>
+            <IconButton rounded={true} onClick={() => setOpenTagModal(true)}>
+              <FontAwesomeIcon icon={faPlus} />
+              <div>Add</div>
+            </IconButton>
+          </ToolbarBox>
+
+          <TableBox
+            headers={tableHeaders}
+            onChangeHeader={handleChangeHeader}
+            data={tableData}
+          />
+
+          <Spacer />
+          <PaginationBox
+            currentPage={currentPage}
+            totalCount={totalDataCount}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+            }}
+          />
+        </Form>
       </div>
 
-      <Add
-        onInitialization={handleInitialization}
+      <TagModal
+        openModal={openTagModal}
         colorCategories={colorCategories}
         colors={colors}
+        onClose={handleCloseModal}
+        onSubmit={handleAddTag}
       />
 
-      <Table
-        currentPage={currentPage}
-        pageSize={pageSize}
-        orderBy={orderBy}
-        order={order}
-        onChangeOrder={changeOrder}
-        tags={tags}
-        onClickTagName={clickTagName}
-        changeTagName={changeTagName}
+      <ColorModal
+        openModal={openColorModal}
+        colorCategories={colorCategories}
+        colors={colors}
         selectedTag={selectedTag}
-        onShowConfirmationModal={showConfirmationModal}
-        saveTag={saveTag}
-        onInitialization={handleInitialization}
-        colorCategories={colorCategories}
-        colors={colors}
+        onClose={handleCloseModal}
+        onSubmit={handleChangeColor}
       />
 
-      <Page
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalTagCount={totalTagCount}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-      />
-
-      <ConfirmationModal
-        isOpen={isOpenConfirmationModal}
-        onClose={() => {
-          setSelectedTag(null);
-          setIsOpenConfirmationModal(false);
-        }}
-        onConfirm={deleteTag}
+      <DeleteModal
+        deleteMode={true}
+        openModal={openDeleteModal}
+        selectedTag={selectedTag}
+        onClose={handleCloseModal}
+        onSubmit={handleDelete}
       />
     </>
   );
 };
 
-export default Category;
+export default Tags;

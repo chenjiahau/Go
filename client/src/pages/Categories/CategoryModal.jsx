@@ -16,7 +16,7 @@ import apiHandler from "@/util/api.util";
 import messageUtil, { commonMessage } from "@/util/message.util";
 
 const errorMessage = {
-  category: "Category is required.",
+  name: "Category is required.",
   duplicated: "Category is duplicated.",
 };
 
