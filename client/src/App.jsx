@@ -18,10 +18,6 @@ import Category from "@/pages/Category";
 import Tags from "@/pages/Tags";
 import Documents from "./pages/Documents";
 import Document from "./pages/Document";
-import AddDocument from "./pages/Documents/components/AddDocument";
-import EditDocument from "./pages/Document/components/EditDocument";
-import AddDocumentComment from "./pages/Document/components/AddDocumentComment";
-import EditDocumentComment from "./pages/Document/components/EditDocumentComment";
 import Settings from "./pages/Settings";
 
 function App() {
@@ -49,22 +45,6 @@ function App() {
           <Route path={routerConfig.routes.TAGS} element={<Tags />} />
           <Route path={routerConfig.routes.DOCUMENTS} element={<Documents />} />
           <Route path={routerConfig.routes.DOCUMENT} element={<Document />} />
-          <Route
-            path={routerConfig.routes.ADD_DOCUMENT}
-            element={<AddDocument />}
-          />
-          <Route
-            path={routerConfig.routes.EDIT_DOCUMENT}
-            element={<EditDocument />}
-          />
-          <Route
-            path={routerConfig.routes.ADD_DOCUMENT_COMMENT}
-            element={<AddDocumentComment />}
-          />
-          <Route
-            path={routerConfig.routes.EDIT_DOCUMENT_COMMENT}
-            element={<EditDocumentComment />}
-          />
           <Route path={routerConfig.routes.SETTINGS} element={<Settings />} />
         </Route>
       </Routes>

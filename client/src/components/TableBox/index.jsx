@@ -38,6 +38,7 @@ const TableBox = ({ headers, onChangeHeader, data }) => {
                 const sortable = header.isSortable ? "sortable" : "";
                 const sort = header.sort ? "sort" : "";
                 const sorted = header.sort ? "sorted" : "";
+                const center = header.isCenter ? "center" : "";
 
                 return (
                   <th
@@ -47,10 +48,10 @@ const TableBox = ({ headers, onChangeHeader, data }) => {
                   >
                     {sortable ? (
                       <div
-                        className={`sortable-box ${sorted}`}
+                        className={`sortable-box ${sorted} ${center}`}
                         onClick={() => onClickSort(header)}
                       >
-                        <div className='sort-title'>{header.label}</div>
+                        <div className={`sort-title`}>{header.label}</div>
                         <span className='sort-icon'>
                           {header.sort === "asc" && (
                             <svg

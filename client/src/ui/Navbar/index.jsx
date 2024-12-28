@@ -90,13 +90,20 @@ const Navbar = ({ user, onCleanUser }) => {
               Tags
             </Link>
             <Link
-              to={routerConfig.routes.DASHBOARD}
+              to={routerConfig.routes.DOCUMENTS}
               className='mobile-nav-item'
             >
               DOCUMENTS
             </Link>
             <Link to={routerConfig.routes.SETTINGS} className='mobile-nav-item'>
               Settings
+            </Link>
+            <Link
+              to='/'
+              onClick={onCleanUser}
+              className='text-white hover:text-primary mt-4'
+            >
+              Logout
             </Link>
           </div>
         </div>

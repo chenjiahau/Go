@@ -60,13 +60,14 @@ const defaultTableHeader = [
     label: "Subcategories",
     isSortable: true,
     isCenter: true,
-    width: "50",
+    width: "200",
     sort: "",
   },
   {
     key: "status",
     label: "Status",
     isSortable: true,
+    isCenter: true,
     width: "100",
     sort: "",
   },
@@ -87,6 +88,7 @@ const Categories = () => {
     { to: "/categories", label: "Categories" },
   ];
 
+  // State
   const [orderBy, setOrderBy] = useState("id");
   const [order, setOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);

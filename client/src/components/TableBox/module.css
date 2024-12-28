@@ -26,7 +26,7 @@
     }
 
     .sortable-box {
-      @apply h-10 flex justify-between items-center border bg-primary rounded-md border-transparent text-white text-general;
+      @apply relative h-10 flex items-center border bg-primary rounded-md border-transparent text-white text-general;
 
       &:hover {
         @apply bg-hover border-hover;
@@ -51,6 +51,8 @@
 
     .sort-icon {
       @apply w-4 h-4 mr-4;
+      position: absolute;
+      right: 0;
     }
 
     .sorted {
@@ -76,6 +78,10 @@
 
     .center {
       @apply justify-center;
+
+      .sort-title {
+        @apply ml-0;
+      }
     }
   }
 }

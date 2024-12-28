@@ -1,32 +1,48 @@
+import "./module.css";
+
 import { useState, useEffect, useCallback, Fragment } from "react";
-import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
-import { cloneDeep } from "lodash";
+import { useNavigate, useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile, faTrash } from "@fortawesome/free-solid-svg-icons";
+
+import Breadcrumbs from "@/components/Breadcrumbs";
+import MainTitle from "@/components/MainTitle";
+import Hr from "@/components/Hr";
+import Form from "@/components/Form";
+import IconButton from "@/components/IconButton";
+import TagBox from "@/components/TagBox";
+import EditorJS from "@/components/Editor";
+import FloatingButton from "@/components/FloatingButton";
 
 // Const
 import routerConfig from "@/const/config/router";
 import apiConfig from "@/const/config/api";
 
 // Component
-import ContentViewer from "./components/ContentViewer";
-import ConfirmationModal from "@/components/ConfirmationModal";
+import DocumentModal from "@/pages/Documents/DocumentModal";
+import CommentModal from "@/pages/Document/CommentModal";
+import DeleteDocumentModal from "@/pages/Documents/DeleteDocumentModal";
+import DeleteCommentModal from "./DeleteCommentModal";
 
 // Util
 import apiHandler from "@/util/api.util";
-import { formatDateTime } from "@/util/datetime.util";
 import messageUtil, { commonMessage } from "@/util/message.util";
+import { formatDateTime } from "@/util/datetime.util";
 
 const Document = () => {
   const navigate = useNavigate();
-  const { search } = useLocation();
   const { id } = useParams();
-  const keyword = new URLSearchParams(search).get("keyword");
+  const [linkList, setLinkList] = useState([]);
 
   // State
-  const [showDocument, setShowDocument] = useState(true);
-  const [document, setDocument] = useState({});
-  const [documentComments, setDocumentComments] = useState([]);
-  const [selectedComment, setSelectedComment] = useState({});
-  const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false);
+  const [document, setDocument] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [openDocumentModal, setOpenDocumentModal] = useState(false);
+  const [openCommentModal, setOpenCommentModal] = useState(false);
+  const [openDeleteDocumentModal, setOpenDeleteDocumentModal] = useState(false);
+  const [openDeleteCommentModal, setOpenDeleteCommentModal] = useState(false);
+  const [selectedComment, setSelectedComment] = useState(null);
+  const [reloadContent, setReloadContent] = useState(false);
 
   // Method
   const handleInitialization = useCallback(async () => {
@@ -37,76 +53,130 @@ const Document = () => {
     let response = null;
 
     try {
+      setReloadContent(true);
+
       response = await apiHandler.get(
         apiConfig.resource.EDIT_DOCUMENT.replace(":id", id)
       );
-      const document = response.data.data;
-      setDocument(document);
+
+      const data = response.data.data;
+
+      let tags = data.tags
+        ?.map((tag) => {
+          return {
+            label: tag.tagName,
+            hashCode: tag.colorHexCode,
+          };
+        })
+        .sort((a, b) => a.label.localeCompare(b.label));
+
+      let members = data.relationMembers
+        ?.map((member) => {
+          return {
+            label: member.name,
+          };
+        })
+        .sort((a, b) => a.label.localeCompare(b.label));
+
+      const updatedDocument = {
+        id: data.id,
+        name: data.name,
+        author: data.postMember.name,
+        category: data.category.name,
+        subcategory: data.subCategory.name,
+        tags,
+        members,
+        content: JSON.parse(data.content),
+        createdDate: formatDateTime(data.createdDate),
+        ref: data,
+      };
+      setDocument(updatedDocument);
 
       response = await apiHandler.get(
         apiConfig.resource.DOCUMENT_COMMENTS.replace(":id", id)
       );
 
       if (response.data.data) {
-        setDocumentComments(
-          response.data.data.map((comment) => {
-            return {
-              ...comment,
-              showComment: keyword ? true : false,
-            };
-          })
-        );
+        const updatedComments = response.data.data.map((comment, index) => {
+          return {
+            index,
+            id: comment.id,
+            author: comment.postMemberName,
+            content: JSON.parse(comment.content),
+            createdDate: formatDateTime(comment.createdDate),
+            ref: comment,
+          };
+        });
+
+        setComments(updatedComments);
       } else {
-        setDocumentComments([]);
+        setComments([]);
       }
     } catch (error) {
       messageUtil.showErrorMessage(commonMessage.error);
+      navigate(routerConfig.routes.DOCUMENTS);
+    } finally {
+      setReloadContent(false);
     }
   }, [id, navigate]);
 
-  const formatRelatedMembers = (members) => {
-    const length = members.length;
-    return members.map((member, index) => {
-      return (
-        <div key={member.id} className='tag author'>
-          {member.name}
-          {index < length - 1}
-        </div>
-      );
-    });
+  const handleCloseModal = () => {
+    setOpenDocumentModal(false);
+    setOpenCommentModal(false);
+    setOpenDeleteDocumentModal(false);
+    setOpenDeleteCommentModal(false);
+    setSelectedComment(null);
   };
 
-  const formatTags = (tags) => {
-    return tags.map((tag) => {
-      return (
-        <div
-          key={tag.id}
-          className='tag'
-          style={{ backgroundColor: tag.colorHexCode }}
-        >
-          {tag.tagName}
-        </div>
-      );
-    });
+  const handleUpdateDocument = async () => {
+    handleCloseModal();
+    await handleInitialization();
   };
 
-  const showConfirmationModal = (commentId) => {
-    const comment = documentComments.find(
-      (comment) => comment.id === commentId
-    );
+  const handleAddCommentModal = async () => {
+    handleCloseModal();
+    await handleInitialization();
+  };
+
+  const handleEditCommentModal = (comment) => {
     setSelectedComment(comment);
-    setIsOpenConfirmationModal(true);
+    setOpenCommentModal(true);
   };
 
-  const deleteComment = async () => {
+  const handleOpenDeleteDocumentModal = () => {
+    setOpenDeleteDocumentModal(true);
+  };
+
+  const handleDeleteDocument = async () => {
+    try {
+      const apiURL = apiConfig.resource.EDIT_DOCUMENT.replace(
+        ":id",
+        document.id
+      );
+      await apiHandler.delete(apiURL);
+      messageUtil.showSuccessMessage(commonMessage.success);
+
+      navigate(routerConfig.routes.DOCUMENTS);
+    } catch (error) {
+      messageUtil.showErrorMessage(commonMessage.error);
+    }
+  };
+
+  const handleOpenDeleteCommentModal = (comment) => {
+    setSelectedComment(comment);
+    setOpenDeleteCommentModal(true);
+  };
+
+  const handleDeleteComment = async () => {
     try {
       const apiURL = apiConfig.resource.EDIT_DOCUMENT_COMMENT.replace(
         ":id",
-        id
+        document.id
       ).replace(":commentId", selectedComment.id);
       await apiHandler.delete(apiURL);
       messageUtil.showSuccessMessage(commonMessage.success);
-      setIsOpenConfirmationModal(false);
+
+      handleCloseModal();
       handleInitialization();
     } catch (error) {
       messageUtil.showErrorMessage(commonMessage.error);
@@ -116,181 +186,184 @@ const Document = () => {
   // Side effect
   useEffect(() => {
     handleInitialization();
-  }, [handleInitialization]);
+  }, [handleInitialization, id]);
 
-  if (!document.id) {
+  useEffect(() => {
+    if (!document) {
+      return;
+    }
+
+    const updatedLinkList = [
+      { to: "/", label: "Home" },
+      { to: "/documents", label: "Documents" },
+      {
+        label: document.name,
+      },
+    ];
+
+    setLinkList(updatedLinkList);
+  }, [document, id]);
+
+  if (reloadContent || !document) {
     return null;
   }
 
   return (
     <>
-      <div className='breadcrumb-container'>
-        <Link to={routerConfig.routes.DOCUMENTS} className='breadcrumb--item'>
-          <span className='breadcrumb--item--inner'>
-            <span className='breadcrumb--item-title'>Documents</span>
-          </span>
-        </Link>
-      </div>
-
-      {keyword ? (
-        <div className='floating-button'>
-          <i
-            className='fa-solid fa-arrow-right-from-bracket'
-            onClick={() => window.close()}
-          />
-        </div>
-      ) : (
-        <div className='floating-button'>
-          <i
-            className='fa-solid fa-plus'
-            onClick={() =>
-              navigate(
-                routerConfig.routes.ADD_DOCUMENT_COMMENT.replace(":id", id)
-              )
-            }
-          />
-        </div>
-      )}
-
-      {/* Document */}
-      <div className='document'>
-        {keyword && (
-          <h1 className='search-keyword'>
-            <span>{`Search: ${keyword}`}</span>
-          </h1>
-        )}
-        <div className='title'>{document.name}</div>
-        <div className='box'>
-          <div className='box-author'>
-            <div className='left'>{document.postMember.name}</div>
-            <div className='right'>
-              <div className='data'>{formatDateTime(document.createdAt)}</div>
-              <div className='action'>
-                {!keyword && (
-                  <>
-                    <i
-                      className='fa-solid fa-pen'
-                      onClick={() =>
-                        navigate(
-                          routerConfig.routes.EDIT_DOCUMENT.replace(":id", id)
-                        )
-                      }
-                    />
-                    <i
-                      className='fa-solid fa-expand'
-                      onClick={() => setShowDocument(!showDocument)}
-                    />
-                  </>
+      <Breadcrumbs linkList={linkList} />
+      <div className='custom-container primary-bg'>
+        <Form>
+          <div className='document-title'>
+            <div>
+              <MainTitle extraClasses={["text-title", "!text-primary", "mb-2"]}>
+                {document.name}
+              </MainTitle>
+            </div>
+            <div className='flex items-center gap-4'>
+              <IconButton onClick={() => setOpenDocumentModal(true)}>
+                <FontAwesomeIcon icon={faFile} />
+              </IconButton>
+              {comments.length === 0 && (
+                <IconButton
+                  onClick={() => handleOpenDeleteDocumentModal(document)}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </IconButton>
+              )}
+            </div>
+          </div>
+          <Hr />
+          <div className='document-block mt-4 mb-4'>
+            <div className='document-info'>
+              <div className='document-info-item'>
+                <p className='title'>Author</p>
+                <p className='label'>{document.author}</p>
+              </div>
+              <div className='document-info-item'>
+                <p className='title'>Category</p>
+                <p className='label'>{document.category}</p>
+              </div>
+              <div className='document-info-item'>
+                <p className='title'>Subcategory</p>
+                <p className='label'>{document.subcategory}</p>
+              </div>
+              <div className='document-info-item'>
+                <p className='title'>Tags</p>
+                <div className='label'>
+                  {document.tags?.map((tag) => (
+                    <TagBox key={tag.label} tag={tag} />
+                  ))}
+                </div>
+              </div>
+              <div className='document-info-item'>
+                <p className='title'>Members</p>
+                <div className='label'>
+                  {document.members?.map((member, index) => (
+                    <Fragment key={index}>
+                      <TagBox tag={member} />
+                    </Fragment>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className='document-content'>
+              <div className='editorjs-container '>
+                {!reloadContent && (
+                  <EditorJS
+                    readOnly={true}
+                    extraClasses={["m-0"]}
+                    data={document.content}
+                    editorBlock={`editorjs-container-document-${document.id}`}
+                  />
                 )}
               </div>
             </div>
           </div>
-          {showDocument && (
-            <>
-              <div className='tag-container box-category'>
-                <div className='tag'>{document.category?.name}</div>
-                <div className='tag'>{document.subCategory?.name}</div>
-              </div>
-              {document.relationMembers?.length > 0 && (
-                <div className='tag-container box-related-members'>
-                  {formatRelatedMembers(document.relationMembers)}
-                </div>
-              )}
-
-              <div className='box-content'>
-                <ContentViewer content={document.content} />
-              </div>
-              {document.tags?.length > 0 && (
-                <div className='box-tags'>
-                  <div className='tag-container' style={{ maxHeight: "auto" }}>
-                    {formatTags(document.tags)}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        </Form>
       </div>
 
       {/* Comments */}
-      {documentComments.length > 0 && (
-        <>
-          {documentComments.map((comment, index) => {
-            return (
-              <Fragment key={index}>
-                <div className='document' key={index}>
-                  <div className='box'>
-                    <div key={comment.id} className='box-comment'>
-                      <div className='box-author'>
-                        <div className='left'>{comment.postMemberName}</div>
-                        <div className='right'>
-                          <div className='data'>
-                            {formatDateTime(comment.createdAt)}
-                          </div>
-                          <div className='action'>
-                            {!keyword && (
-                              <>
-                                <i
-                                  className='fa-solid fa-pen'
-                                  onClick={() =>
-                                    navigate(
-                                      routerConfig.routes.EDIT_DOCUMENT_COMMENT.replace(
-                                        ":id",
-                                        id
-                                      ).replace(":commentId", comment.id)
-                                    )
-                                  }
-                                />
-                                <i
-                                  className='fa-solid fa-trash'
-                                  onClick={() =>
-                                    showConfirmationModal(comment.id)
-                                  }
-                                />
-                                <i
-                                  className='fa-solid fa-expand'
-                                  onClick={() => {
-                                    {
-                                      const updatedDocumentComments =
-                                        cloneDeep(documentComments);
-                                      updatedDocumentComments[
-                                        index
-                                      ].showComment = !comment.showComment;
-                                      setDocumentComments(
-                                        updatedDocumentComments
-                                      );
-                                    }
-                                  }}
-                                />
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      {comment.showComment && (
-                        <div className='box-content'>
-                          <ContentViewer content={comment.content} />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {documentComments.length - 1 === index && (
-                  <div className='space-t-4'></div>
-                )}
-              </Fragment>
-            );
-          })}
-        </>
-      )}
+      {comments.map((comment, index) => (
+        <div key={index} className='custom-container primary-bg !pt-0'>
+          <Form>
+            <div className='document-title'>
+              <div>
+                <MainTitle
+                  extraClasses={["text-title", "!text-primary", "mb-2"]}
+                >
+                  Comment #{index + 1}
+                </MainTitle>
+              </div>
+              <div className='flex items-center gap-4'>
+                <IconButton onClick={() => handleEditCommentModal(comment)}>
+                  <FontAwesomeIcon icon={faFile} />
+                </IconButton>
+                <IconButton
+                  onClick={() => handleOpenDeleteCommentModal(comment)}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </IconButton>
+              </div>
+            </div>
+            <Hr extraClasses={["mb-4"]} />
 
-      <ConfirmationModal
-        isOpen={isOpenConfirmationModal}
-        onClose={() => {
-          setSelectedComment(null);
-          setIsOpenConfirmationModal(false);
-        }}
-        onConfirm={deleteComment}
+            <div key={index} className='comment-block mt-4'>
+              <div className='comment-info'>
+                <div className='comment-info-item'>
+                  <p className='title'>Author</p>
+                  <p className='label'>{comment.author}</p>
+                </div>
+                <div className='comment-info-item'>
+                  <p className='title'>Created Date</p>
+                  <p className='label'>{comment.createdDate}</p>
+                </div>
+              </div>
+              <div className='comment-content'>
+                <div className='editorjs-container primary-shadow'>
+                  <EditorJS
+                    readOnly={true}
+                    extraClasses={["m-0"]}
+                    data={comment.content}
+                    editorBlock={`editorjs-container-comment-${document.id}-${comment.id}`}
+                  />
+                </div>
+              </div>
+            </div>
+          </Form>
+        </div>
+      ))}
+
+      <FloatingButton handleExecution={() => setOpenCommentModal(true)} />
+
+      <DocumentModal
+        openModal={openDocumentModal}
+        selectedDocument={document.ref}
+        onClose={handleCloseModal}
+        onSubmit={handleUpdateDocument}
+      />
+
+      <CommentModal
+        openModal={openCommentModal}
+        selectedDocument={document}
+        selectedComment={selectedComment}
+        onClose={handleCloseModal}
+        onSubmit={() => handleAddCommentModal()}
+      />
+
+      <DeleteDocumentModal
+        deleteMode={true}
+        openModal={openDeleteDocumentModal}
+        selectedDocument={document}
+        onClose={() => handleCloseModal()}
+        onSubmit={() => handleDeleteDocument()}
+      />
+
+      <DeleteCommentModal
+        deleteMode={true}
+        openModal={openDeleteCommentModal}
+        selectedComment={selectedComment}
+        onClose={() => handleCloseModal()}
+        onSubmit={() => handleDeleteComment()}
       />
     </>
   );
