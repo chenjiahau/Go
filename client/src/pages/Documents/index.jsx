@@ -256,7 +256,7 @@ const Documents = () => {
         category: document.category,
         subcategory: document.subcategory,
         author: document.author,
-        createdDate: formatDateTime(document.createdAt),
+        createdDate: formatDateTime(document.ref.createdAt),
         action: (
           <div className='flex items-center gap-4'>
             <IconButton onClick={() => handleOpenDeleteModal(document)}>

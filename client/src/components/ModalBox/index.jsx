@@ -35,9 +35,16 @@ const ModalBox = ({
     const mainContent = document.querySelector(".main-content");
     mainContent.style.overflow = "hidden";
 
+    const modalBox = document.querySelector(".modal-box");
+    modalBox.style.zIndex = "1000";
+
     return () => {
       nav.style.display = "block";
+      nav.style.zIndex = "1000";
+
       mainContent.style.overflow = "auto";
+
+      modalBox.style.zIndex = "0";
     };
   }, []);
 
