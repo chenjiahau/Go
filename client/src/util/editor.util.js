@@ -10,6 +10,7 @@ import Code from '@editorjs/code';
 import Table from '@editorjs/table';
 import Marker from '@editorjs/marker';
 import Delimiter from '@editorjs/delimiter';
+import BreakLine from 'editorjs-break-line';
 import { cloneDeep } from "lodash";
 
 import apiHandler from "@/util/api.util";
@@ -161,6 +162,11 @@ export const getEditConfig = () => {
     },
     delimiter: {
       class: Delimiter,
+    },
+    breakLine: {
+      class: BreakLine,
+      inlineToolbar: true,
+      shortcut: 'CMD+SHIFT+ENTER',
     },
   };
 }

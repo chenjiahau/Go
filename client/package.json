@@ -31,6 +31,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.4",
     "dayjs": "^1.11.12",
+    "editorjs-break-line": "^1.0.10",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
