@@ -83,8 +83,8 @@ func GetRoutes() http.Handler {
 		mux.Delete("/tag/{id}", handler.Ctrl.DeleteTag)
 
 		// Record routes
-		mux.Post("/record/upload-image-v1", handler.Ctrl.UploadImageToLocal)
-		mux.Post("/record/upload-image-v2", handler.Ctrl.UploadImageToS3)
+		mux.Post("/record/upload-file-v1", handler.Ctrl.UploadFileToLocal)
+		mux.Post("/record/upload-file-v2", handler.Ctrl.UploadFileToS3)
 
 		// Document routes
 		mux.Get("/documents", handler.Ctrl.GetAllDocument)

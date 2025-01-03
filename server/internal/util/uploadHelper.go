@@ -11,6 +11,7 @@ var MaxUploadSize int64 = 1024 * 1024 // 1MB
 var AllowedTypes = map[string]bool{
 	"image/png":  true,
 	"image/jpeg": true,
+	"application/zip": true,
 }
 
 func CheckFormFile(r *http.Request, name string) (multipart.File, *multipart.FileHeader, error) {

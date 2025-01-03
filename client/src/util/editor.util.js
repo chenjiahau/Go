@@ -1,8 +1,9 @@
+import messageUtil from "@/util/message.util";
 import Paragraph from "@editorjs/paragraph";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
-import Link from "@editorjs/link";
 import Checklist from "@editorjs/checklist";
+import AttachesTool from '@editorjs/attaches';
 import ImageTool from '@editorjs/image';
 import Quote from '@editorjs/quote';
 import Code from '@editorjs/code';
@@ -12,6 +13,10 @@ import Delimiter from '@editorjs/delimiter';
 import { cloneDeep } from "lodash";
 
 import apiHandler from "@/util/api.util";
+
+const errorMessage = {
+  fileNotUploaded: "File is not uploaded",
+};
 
 export const getDefaultEditorData = () => {
   return cloneDeep({
@@ -28,7 +33,7 @@ export const getDefaultEditorData = () => {
 };
 
 export const getEditConfig = () => {
-  const url = `${apiHandler.axios.defaults.baseURL}/auth/record/upload-image-v2`;
+  const url = `${apiHandler.axios.defaults.baseURL}/auth/record/upload-file-v2`;
   const authentication = `Bearer ${apiHandler.token}`;
 
   return {
@@ -54,19 +59,17 @@ export const getEditConfig = () => {
         defaultStyle: 'unordered',
       },
     },
-    image: {
-      class: ImageTool,
+    attaches: {
+      class: AttachesTool,
       config: {
-        endpoints: {
-          byFile: url,
-        },
-        field: 'image',
-        types: 'image/*',
+        endpoint: url,
+        field: 'file',
+        types: 'application/zip',
         uploader: {
           uploadByFile(file) {
             return new Promise((resolve, reject) => {
               const formData = new FormData();
-              formData.append('image', file);
+              formData.append('file', file);
               fetch(url, {
                 method: 'POST',
                 body: formData,
@@ -84,7 +87,46 @@ export const getEditConfig = () => {
                   });
                 })
                 .catch((error) => {
-                  reject(error);
+                  console.debug(error);
+                  messageUtil.showErrorMessage(errorMessage.fileNotUploaded);
+                });
+            });
+          },
+        },
+      }
+    },
+    image: {
+      class: ImageTool,
+      config: {
+        endpoints: {
+          byFile: url,
+        },
+        field: 'image',
+        types: 'image/*',
+        uploader: {
+          uploadByFile(file) {
+            return new Promise((resolve, reject) => {
+              const formData = new FormData();
+              formData.append('file', file);
+              fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                  "Authorization": authentication,
+                },
+              })
+                .then((response) => response.json())
+                .then((result) => {
+                  resolve({
+                    success: 1,
+                    file: {
+                      url: result.data.url,
+                    },
+                  });
+                })
+                .catch((error) => {
+                  console.debug(error);
+                  messageUtil.showErrorMessage(errorMessage.fileNotUploaded);
                 });
             });
           },

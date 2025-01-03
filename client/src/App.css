@@ -121,3 +121,22 @@ li {
 .empty-box {
   @apply text-center p-4;
 }
+
+/* Editor */
+.cdx-attaches--with-file {
+  display: flex;
+  border: none !important;
+
+  .cdx-attaches__file-info {
+    width: auto !important;
+    flex-grow: 0 !important;
+
+    .cdx-attaches__title {
+      max-width: 100% !important;
+    }
+  }
+
+  .cdx-attaches__download-button {
+    margin: 0 0 0 8px !important;
+  }
+}

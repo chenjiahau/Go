@@ -11,7 +11,7 @@ import (
 	"ivanfun.com/mis/internal/util"
 )
 
-func (ctrl *Controller) UploadImageToLocal(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) UploadFileToLocal(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(util.MaxUploadSize)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
@@ -21,7 +21,7 @@ func (ctrl *Controller) UploadImageToLocal(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	file, handler, err := util.CheckFormFile(r, "image")
+	file, handler, err := util.CheckFormFile(r, "file")
 	if err != nil {
 		resErr := util.GetReturnMessage(400)
 		resErr["message"] = err.Error()
@@ -29,7 +29,7 @@ func (ctrl *Controller) UploadImageToLocal(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	defer file.Close()
-
+  print(handler.Filename)
 	err = util.CheckFileSize(handler)
 	if err != nil {
 		resErr := util.GetReturnMessage(400)
@@ -90,7 +90,7 @@ func (ctrl *Controller) UploadImageToLocal(w http.ResponseWriter, r *http.Reques
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
 }
 
-func (ctrl *Controller) UploadImageToS3(w http.ResponseWriter, r *http.Request) {
+func (ctrl *Controller) UploadFileToS3(w http.ResponseWriter, r *http.Request) {
 	filePath := "/upload"
 	fileName := uuid.New().String()
 
@@ -103,7 +103,7 @@ func (ctrl *Controller) UploadImageToS3(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	file, handler, err := util.CheckFormFile(r, "image")
+	file, handler, err := util.CheckFormFile(r, "file")
 	if err != nil {
 		resErr := util.GetReturnMessage(400)
 		resErr["message"] = err.Error()
