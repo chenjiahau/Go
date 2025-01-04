@@ -1,0 +1,1 @@
+DELETE FROM member_roles WHERE title = 'Other';
