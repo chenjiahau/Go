@@ -38,6 +38,7 @@
 
   .label {
     @apply flex flex-wrap gap-2 bg-white text-black p-2;
+    min-height: 35px;
   }
 }
 

@@ -327,16 +327,28 @@ func (d *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 			return []Document{}, err
 		}
 
+		if !category.IsAlive {
+			continue
+		}
+
 		var sc SubCategoryInterface = &SubCategory{}
 		subCategory, err := sc.GetById(categoryId, subcategoryId)
 		if err != nil {
 			return []Document{}, err
 		}
 
+		if !subCategory.IsAlive {
+			continue
+		}
+
 		var m MemberInterface = &Member{}
 		postMember, err := m.GetById(postMemberId)
 		if err != nil {
 			return []Document{}, err
+		}
+
+		if !postMember.IsAlive {
+			continue
 		}
 
 		var drm DocumentRelationMemberInterface = &DocumentRelationMember{}
@@ -476,16 +488,28 @@ func (d *Document) QueryBySearch(userId int64, keyword string) ([]Document, erro
 			return []Document{}, err
 		}
 
+		if !category.IsAlive {
+			continue
+		}
+
 		var sc SubCategoryInterface = &SubCategory{}
 		subCategory, err := sc.GetById(categoryId, subcategoryId)
 		if err != nil {
 			return []Document{}, err
 		}
 
+		if !subCategory.IsAlive {
+			continue
+		}
+
 		var m MemberInterface = &Member{}
 		postMember, err := m.GetById(postMemberId)
 		if err != nil {
 			return []Document{}, err
+		}
+
+		if !postMember.IsAlive {
+			continue
 		}
 
 		var drm DocumentRelationMemberInterface = &DocumentRelationMember{}

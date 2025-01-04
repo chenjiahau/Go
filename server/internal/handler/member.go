@@ -84,13 +84,15 @@ func (ctrl *Controller) GetAllMember(w http.ResponseWriter, r *http.Request) {
 	resData := util.GetReturnMessage(2202)
 	resData["data"] = []map[string]interface{}{}
 	for _, member := range members {
-		resData["data"] = append(resData["data"].([]map[string]interface{}), map[string]interface{}{
-			"id": member.Id,
-			"memberRoleId": member.MemberRoleId,
-			"memberRoleTitle": member.MemberRoleTitle,
-			"name": member.Name,
-			"isAlive": member.IsAlive,
-		})
+		if member.IsAlive {
+			resData["data"] = append(resData["data"].([]map[string]interface{}), map[string]interface{}{
+				"id": member.Id,
+				"memberRoleId": member.MemberRoleId,
+				"memberRoleTitle": member.MemberRoleTitle,
+				"name": member.Name,
+				"isAlive": member.IsAlive,
+			})
+		}
 	}
 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetListResponse(resData))
