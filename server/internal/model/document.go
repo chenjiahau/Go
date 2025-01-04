@@ -64,7 +64,7 @@ func (d *Document) GetById(userId, id int64) (Document, error) {
 	sqlStatement := `
 		SELECT
 		d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at,
-		(SELECT created_at FROM document_updated_histories WHERE document_id = d.id ORDER BY created_at DESC LIMIT 1) as updated_at
+		COALESCE((SELECT created_at FROM document_updated_histories WHERE document_id = d.id ORDER BY created_at DESC LIMIT 1), d.created_at) AS updated_at
 		FROM documents d
 		WHERE d.id = $1;`
 
@@ -292,7 +292,7 @@ func (d *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 		(SELECT name FROM members s WHERE id = d.post_member_id) as post_member_name,
 		d.content,
 		d.created_at,
-		(SELECT created_at FROM document_updated_histories WHERE document_id = d.id ORDER BY created_at DESC LIMIT 1) as updated_at
+		COALESCE((SELECT created_at FROM document_updated_histories WHERE document_id = d.id ORDER BY created_at DESC LIMIT 1), d.created_at) AS updated_at
 		FROM documents d
 		WHERE d.id IN (SELECT document_id FROM user_documents WHERE user_id = %d)
 		ORDER BY %s %s LIMIT $1 OFFSET $2;`,
@@ -317,6 +317,11 @@ func (d *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 			&postMemberId, &postMemberName,
 			&content,
 			&createdAt, &updatedAt)
+
+		if updatedAt.IsZero() {
+			updatedAt = createdAt
+		}
+
 		if err != nil {
 			return []Document{}, err
 		}
