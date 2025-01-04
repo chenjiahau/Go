@@ -1,33 +1,31 @@
-N=1
-# make migrateup N
-# make migratedown N
-# make migrateforce N
+N=1 # Number of migration
+DES=init-schema # Migration name
 
-createdb:
+create_db:
 	docker exec -it server-db-mis createdb --username=mis --owner=mis mis
 
-dropdb:
+drop_db:
 	docker exec -it server-db-mis dropdb mis -U mis
 
-migratecreate:
-	migrate create -ext sql -dir db/migration -seq init-schema
+migrate_create:
+	migrate create -ext sql -dir db/migration -seq ${DES}
 
-migrateupAll:
-	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" -verbose up
+migrate_up_all:
+	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" up
 
-migrateup:
-	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" -verbose up ${N}
+migrate_up:
+	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" up ${N}
 
-migratedownAll:
-	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" -verbose down
+migrate_down_all:
+	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" down
 
-migratedown:
-	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" -verbose down ${N}
+migrate_down:
+	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" down ${N}
 
-migrateversion:
+migrate_version:
 	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" version
 
-migrateforce:
+migrate_force:
 	migrate -path db/migration -database "postgres://mis:mis@localhost:5432/mis?sslmode=disable" force ${N}
 
 .PHONY: postgres createdb dropdb migrateupAll migrateup migratedownAll migratedown migrateversion migrateforce
