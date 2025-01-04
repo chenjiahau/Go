@@ -87,7 +87,8 @@ const Document = () => {
         tags,
         members,
         content: JSON.parse(data.content),
-        createdDate: formatDateTime(data.createdDate),
+        createdDate: formatDateTime(data.createdAt),
+        updatedDate: formatDateTime(data.updatedAt),
         ref: data,
       };
       setDocument(updatedDocument);
@@ -103,7 +104,7 @@ const Document = () => {
             id: comment.id,
             author: comment.postMemberName,
             content: JSON.parse(comment.content),
-            createdDate: formatDateTime(comment.createdDate),
+            createdDate: formatDateTime(comment.createdAt),
             ref: comment,
           };
         });
@@ -264,6 +265,14 @@ const Document = () => {
                     </Fragment>
                   ))}
                 </div>
+              </div>
+              <div className='document-info-item'>
+                <p className='title'>Created Date</p>
+                <p className='label'>{document.createdDate}</p>
+              </div>
+              <div className='document-info-item'>
+                <p className='title'>Updated Date</p>
+                <p className='label'>{document.updatedDate}</p>
               </div>
             </div>
             <div className='document-content'>

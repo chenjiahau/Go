@@ -52,6 +52,7 @@ type Document struct {
 	Tags 						[]DocumentTag							`json:"tags"`
 	Content					string										`json:"content"`
 	CreatedAt 			time.Time									`json:"createdAt"`
+	UpdatedAt 			time.Time									`json:"updatedAt"`
 }
 
 // Method
@@ -61,7 +62,9 @@ func NewDocument() DocumentInterface {
 
 func (d *Document) GetById(userId, id int64) (Document, error) {
 	sqlStatement := `
-		SELECT d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at
+		SELECT
+		d.id, d.name, d.category_id, d.subcategory_id, d.post_member_id, d.content, d.created_at,
+		(SELECT created_at FROM document_updated_histories WHERE document_id = d.id ORDER BY created_at DESC LIMIT 1) as updated_at
 		FROM documents d
 		WHERE d.id = $1;`
 
@@ -71,9 +74,12 @@ func (d *Document) GetById(userId, id int64) (Document, error) {
 	var postMemberId 	int64
 	var content 			string
 	var createdAt 		time.Time
+	var updatedAt 		time.Time
 
 	row := DbConf.PgConn.SQL.QueryRow(sqlStatement, id)
-	err := row.Scan(&id, &name, &categoryId, &subcategoryId, &postMemberId, &content, &createdAt)
+	err := row.Scan(
+		&id, &name, &categoryId, &subcategoryId, &postMemberId, &content,
+		&createdAt, &updatedAt)
 	if err != nil {
 		return Document{}, err
 	}
@@ -118,6 +124,7 @@ func (d *Document) GetById(userId, id int64) (Document, error) {
 		Tags: tags,
 		Content: content,
 		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}, nil
 }
 
@@ -268,8 +275,10 @@ func (d *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 		orderBy = "post_member_name"
 	case "created":
 		orderBy = "created_at"
+	case "updated":
+		orderBy = "updated_at"
 	default:
-		orderBy = "created_at"
+		orderBy = "updated_at"
 	}
 
 	sqlStatement := fmt.Sprintf(`
@@ -281,7 +290,9 @@ func (d *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 		(SELECT name FROM subcategories s WHERE id = d.subcategory_id) as subcategory_name,
 		d.post_member_id,
 		(SELECT name FROM members s WHERE id = d.post_member_id) as post_member_name,
-		d.content, d.created_at
+		d.content,
+		d.created_at,
+		(SELECT created_at FROM document_updated_histories WHERE document_id = d.id ORDER BY created_at DESC LIMIT 1) as updated_at
 		FROM documents d
 		WHERE d.id IN (SELECT document_id FROM user_documents WHERE user_id = %d)
 		ORDER BY %s %s LIMIT $1 OFFSET $2;`,
@@ -297,13 +308,15 @@ func (d *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 		var id, categoryId, subcategoryId, postMemberId int64
 		var name, categoryName, subCategoryName, postMemberName, content string
 		var createdAt time.Time
+		var updatedAt time.Time
 
 		err = rows.Scan(
 			&id, &name,
 			&categoryId, &categoryName,
 			&subcategoryId, &subCategoryName,
 			&postMemberId, &postMemberName,
-			&content, &createdAt)
+			&content,
+			&createdAt, &updatedAt)
 		if err != nil {
 			return []Document{}, err
 		}
@@ -348,6 +361,7 @@ func (d *Document) QueryByPage(userId int64, number, size int, orderBy, order st
 			Tags: tags,
 			Content: content,
 			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
 		})
 	}
 

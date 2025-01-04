@@ -42,6 +42,7 @@ func (ctrl *Controller) GetDocumentById(w http.ResponseWriter, r *http.Request) 
 		"tags": document.Tags,
 		"content": document.Content,
 		"createdAt": document.CreatedAt,
+		"updatedAt": document.UpdatedAt,
 	}
 
 	util.ResponseJSONWriter(w, http.StatusOK, util.GetResponse(resData, nil))
@@ -333,6 +334,16 @@ func (ctrl *Controller) AddDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create document updated history
+	duh := model.NewDocumentUpdatedHistory()
+	_, err = duh.Create(documentId, now)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7403)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
 	// Create user_document
 	ud := model.NewUserDocument()
 	_, err = ud.Create(ctrl.User.Id, documentId)
@@ -461,6 +472,16 @@ func (ctrl *Controller) UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	existingDocument.Name = udp.Name
 	existingDocument.Content = udp.Content
 	err = existingDocument.Update(ctrl.User.Id, udp.RelationMemberIds, udp.TagIds)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(7424)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Create document updated history
+	duh := model.NewDocumentUpdatedHistory()
+	_, err = duh.Create(documentId, util.GetNow())
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(7424)

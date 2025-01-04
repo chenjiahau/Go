@@ -151,6 +151,16 @@ func (ctrl *Controller) AddDocumentComment(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// Create document updated history
+	duh := model.DocumentUpdatedHistory{}
+	_, err = duh.Create(documentId, now)
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(8401)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
 	// Get created document comment
 	createdDocumentComment, err := dc.GetById(documentId, documentCommentId)
 	if err != nil {
@@ -230,6 +240,16 @@ func (ctrl *Controller) UpdateDocumentComment(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		resErr := util.GetReturnMessage(8423)
+		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
+		return
+	}
+
+	// Create document updated history
+	duh := model.DocumentUpdatedHistory{}
+	_, err = duh.Create(documentId, util.GetNow())
+	if err != nil {
+		util.WriteErrorLog(err.Error())
+		resErr := util.GetReturnMessage(8401)
 		util.ResponseJSONWriter(w, http.StatusInternalServerError, util.GetResponse(nil, resErr))
 		return
 	}

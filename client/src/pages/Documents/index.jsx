@@ -75,6 +75,14 @@ const defaultTableHeader = [
     sort: "",
   },
   {
+    key: "updatedDate",
+    label: "Updated Date",
+    isSortable: true,
+    isCenter: true,
+    width: "200",
+    sort: "desc",
+  },
+  {
     key: "action",
     label: "Action",
     isSortable: false,
@@ -96,8 +104,8 @@ const Documents = () => {
 
   // State
   const [initialized, setInitialized] = useState(false);
-  const [orderBy, setOrderBy] = useState("id");
-  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("updated");
+  const [order, setOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(numberOfRow[1]);
   const [documents, setDocuments] = useState([]);
@@ -202,6 +210,9 @@ const Documents = () => {
   );
 
   const handleChangeHeader = (newHeader, column, order) => {
+    column === "createdDate" && (column = "created");
+    column === "updatedDate" && (column = "updated");
+
     setTableHeader(newHeader);
     setOrderBy(column);
     setOrder(order);
@@ -257,6 +268,7 @@ const Documents = () => {
         subcategory: document.subcategory,
         author: document.author,
         createdDate: formatDateTime(document.ref.createdAt),
+        updatedDate: formatDateTime(document.ref.updatedAt),
         action: (
           <div className='flex items-center gap-4'>
             <IconButton onClick={() => handleOpenDeleteModal(document)}>
