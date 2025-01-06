@@ -46,6 +46,7 @@ function App() {
           <Route path={routerConfig.routes.DOCUMENTS} element={<Documents />} />
           <Route path={routerConfig.routes.DOCUMENT} element={<Document />} />
           <Route path={routerConfig.routes.SETTINGS} element={<Settings />} />
+          <Route path='*' redirectTo={routerConfig.routes.DASHBOARD} />
         </Route>
       </Routes>
       <ToastContainer />
