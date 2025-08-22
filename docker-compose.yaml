@@ -14,6 +14,8 @@ services:
     env_file:
       - "./db.env"
     restart: always
+    networks:
+      - shared-network
   web:
     build:
       context: ./nginx
@@ -32,6 +34,8 @@ services:
       - ./nginx/certs/private.key:/etc/nginx/certs/private.key
     depends_on:
       - api
+    networks:
+      - shared-network
   api:
     build:
       context: ./server
@@ -47,6 +51,8 @@ services:
     depends_on:
       - db
     restart: always
+    networks:
+      - shared-network
   pgadmin:
     image: dpage/pgadmin4
     container_name: mis-pgadmin
@@ -62,3 +68,9 @@ services:
     restart: always
     depends_on:
       - db
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true
