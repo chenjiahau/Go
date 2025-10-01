@@ -100,11 +100,14 @@ func (ctrl *Controller) SignUp(w http.ResponseWriter, r *http.Request) {
 	// Send confirmation email
 	confirmUrl := ctrl.Config.PortalUrl + "/#/active-account?token=" + url.QueryEscape(urp.Token)
 	err = util.SendEmail(
-		ctrl.Config.EmailConf.Host,
-		ctrl.Config.EmailConf.Port,
-		ctrl.Config.EmailConf.User,
-		ctrl.Config.EmailConf.Pass,
-		ctrl.Config.EmailConf.User,
+		ctrl.Config.AWSConf.Region,
+		ctrl.Config.AWSConf.AccessKey,
+		ctrl.Config.AWSConf.SecretKey,
+		ctrl.Config.SmtpConf.Host,
+		ctrl.Config.SmtpConf.Port,
+		ctrl.Config.SmtpConf.User,
+		ctrl.Config.SmtpConf.Pass,
+		ctrl.Config.SmtpConf.Sender,
 		sp.Email,
 		"User Registration",
 		"Click <a href=\"" + confirmUrl + "\">here</a> to confirm your registration.",
@@ -340,11 +343,14 @@ func (ctrl *Controller) CreateResetPassword(w http.ResponseWriter, r *http.Reque
 	// Send confirmation email
 	confirmUrl := ctrl.Config.PortalUrl + "/#/reset-password?email=" + url.QueryEscape(cuep.Email) + "&token=" + url.QueryEscape(urpp.Token)
 	err = util.SendEmail(
-		ctrl.Config.EmailConf.Host,
-		ctrl.Config.EmailConf.Port,
-		ctrl.Config.EmailConf.User,
-		ctrl.Config.EmailConf.Pass,
-		ctrl.Config.EmailConf.User,
+		ctrl.Config.AWSConf.Region,
+		ctrl.Config.AWSConf.AccessKey,
+		ctrl.Config.AWSConf.SecretKey,
+		ctrl.Config.SmtpConf.Host,
+		ctrl.Config.SmtpConf.Port,
+		ctrl.Config.SmtpConf.User,
+		ctrl.Config.SmtpConf.Pass,
+		ctrl.Config.SmtpConf.Sender,
 		cuep.Email,
 		"Reset Password",
 		"Click <a href=\"" + confirmUrl + "\">here</a> to reset your password.",

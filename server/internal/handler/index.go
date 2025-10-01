@@ -34,11 +34,14 @@ func (ctrl *Controller) TestMail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	util.SendEmail(
-		ctrl.Config.EmailConf.Host,
-		ctrl.Config.EmailConf.Port,
-		ctrl.Config.EmailConf.User,
-		ctrl.Config.EmailConf.Pass,
-		ctrl.Config.EmailConf.User,
+		ctrl.Config.AWSConf.Region,
+		ctrl.Config.AWSConf.AccessKey,
+		ctrl.Config.AWSConf.SecretKey,
+		ctrl.Config.SmtpConf.Host,
+		ctrl.Config.SmtpConf.Port,
+		ctrl.Config.SmtpConf.User,
+		ctrl.Config.SmtpConf.Pass,
+		ctrl.Config.SmtpConf.Sender,
 		to,
 		title,
 		body,

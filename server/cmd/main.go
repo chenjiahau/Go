@@ -46,19 +46,20 @@ func main() {
 	dbName = flag.Arg(4)
 	dbUser = flag.Arg(5)
 	dbPass = flag.Arg(6)
-	emailHost = flag.Arg(7)
-	emailPort = flag.Arg(8)
-	emailFrom = flag.Arg(9)
-	emailPass = flag.Arg(10)
-	awsRegion = flag.Arg(11)
-	awsAccessKey = flag.Arg(12)
-	awsSecretKey = flag.Arg(13)
-	awsBucketName = flag.Arg(14)
-	recaptchaSecretKey = flag.Arg(15)
+	smtpHost := flag.Arg(7)
+	smtpPort := flag.Arg(8)
+	smtpUsername := flag.Arg(9)
+	smtpPassword := flag.Arg(10)
+	smtpSender := flag.Arg(11)
+	awsRegion = flag.Arg(12)
+	awsAccessKey = flag.Arg(13)
+	awsSecretKey = flag.Arg(14)
+	awsBucketName = flag.Arg(15)
+	recaptchaSecretKey = flag.Arg(16)
 
 	if portalUrl == "" || appName == "" || appVersion == "" ||
 	dbHost == "" || dbUser == "" || dbPass == "" ||
-	emailHost == "" || emailPort == "" || emailFrom == "" || emailPass == "" ||
+	smtpHost == "" || smtpPort == "" || smtpUsername == "" || smtpPassword == "" || smtpSender == "" ||
 	awsRegion == "" || awsAccessKey == "" || awsSecretKey == "" || awsBucketName == "" ||
 	recaptchaSecretKey == "" {
 		cwd, err := os.Getwd()
@@ -79,10 +80,11 @@ func main() {
 		dbName = os.Getenv("POSTGRES_DB")
 		dbUser = os.Getenv("POSTGRES_USER")
 		dbPass = os.Getenv("POSTGRES_PASSWORD")
-		emailHost = os.Getenv("EMAIL_HOST")
-		emailPort = os.Getenv("EMAIL_PORT")
-		emailFrom = os.Getenv("EMAIL_USER")
-		emailPass = os.Getenv("EMAIL_PASSWORD")
+		smtpHost = os.Getenv("SMTP_HOST")
+		smtpPort = os.Getenv("SMTP_PORT")
+		smtpUsername = os.Getenv("SMTP_USERNAME")
+		smtpPassword = os.Getenv("SMTP_PASSWORD")
+		smtpSender = os.Getenv("SMTP_SENDER")
 		awsRegion = os.Getenv("AWS_REGION")
 		awsAccessKey = os.Getenv("AWS_ACCESS_KEY")
 		awsSecretKey = os.Getenv("AWS_SECRETE_KEY")
@@ -106,12 +108,12 @@ func main() {
 	defer pgConn.SQL.Close()
 
 	// Email configuration
-	ePort, err := strconv.ParseInt(emailPort, 10, 64)
+	ePort, err := strconv.ParseInt(smtpPort, 10, 64)
 	if err != nil {
 		util.WriteErrorLog(err.Error())
 		log.Fatal("cannot parse email port")
 	}
-	emailConf := handler.NewEmailConfig(emailHost, int(ePort), emailFrom, emailPass)
+	smtpConf := handler.NewSmtpConfig(smtpHost, int(ePort), smtpUsername, smtpPassword, smtpSender)
 
 	// AWS configuration
 	awsConf := handler.NewAWSConfig(awsRegion, awsAccessKey, awsSecretKey, awsBucketName)
@@ -120,7 +122,7 @@ func main() {
 	recaptchaConf := handler.NewRecaptchaConfig(recaptchaSecretKey)
 
 	// Server configuration
-	c := handler.NewConfig(portalUrl, appName, appVersion, emailConf, awsConf, recaptchaConf)
+	c := handler.NewConfig(portalUrl, appName, appVersion, smtpConf, awsConf, recaptchaConf)
 	handler.NewHandler(c)
 	RunServer(c)
 }
